@@ -29,7 +29,6 @@ class BrandController extends Controller
      */
     public function brand($handle)
     {
-        exit;
         $ts = new TakeShapeApi;
         $response = $ts->getBrand($handle);
 
