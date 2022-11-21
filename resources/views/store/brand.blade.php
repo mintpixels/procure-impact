@@ -4,7 +4,7 @@
 <div class="page-content no-max" id="brand-page" data-brand="{{ $handle }}" v-cloak>
 
     <div class="breadcrumb max-w">
-        Home / <span>${ brand.name }</span>
+        Home / <span>${ brand }</span>
     </div>
 
     <template v-for="section in sections">
