@@ -385,6 +385,11 @@ textarea {
         &:last-child {
             margin-right: 0;
         }
+
+        &.w-100 {
+            width:100px;
+            flex: 0 0 100px;
+        }
     }
 }
 

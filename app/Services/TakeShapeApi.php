@@ -416,6 +416,13 @@ class TakeShapeApi
                 }
                 headline
               }
+              ... on SectionGalleryCarousel {
+                images {
+                  image{
+                    path
+                  }
+                }
+              }
               ... on SectionProductOrCategoryCarousel {
                 SectionProductOrCategoryCarousel_cards: cards {
                   card {
@@ -454,6 +461,9 @@ class TakeShapeApi
                 name
                 testimonial
                 title
+                avatar {
+                  path 
+                }
               }
               ... on Testimonial {
                 name
