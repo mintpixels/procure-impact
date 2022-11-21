@@ -27,20 +27,21 @@ class BrandController extends Controller
     /**
      * Get information on a single brand.
      */
-    public function brand(Brand $brand)
+    public function brand($handle)
     {
+        exit;
         $ts = new TakeShapeApi;
-        $response = $ts->getBrand($brand->handle);
+        $response = $ts->getBrand($handle);
 
         $data = false;
         foreach($response->data->getMerchantBrandPagesList->items as $entry)
         {
-            if($entry->slug == $brand->handle)
+            if($entry->slug == $handle)
                 $data = $entry;
 
         }
         return response()->json([
-            'brand' => $brand,
+            'handle' => $handle,
             'sections' => $data->sections
         ]);
     }

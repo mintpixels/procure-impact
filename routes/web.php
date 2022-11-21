@@ -49,7 +49,7 @@ Route::group([], function () {
     Route::get('data/products/{product}/reviews', [StoreProductController::class, 'reviews']);
     Route::get('data/search/suggestions', [StoreSearchController::class, 'suggestions']);
     Route::get('data/search', [StoreSearchController::class, 'search']);
-    Route::get('data/brands/{brand:handle}', [StoreBrandController::class, 'brand']);
+    Route::get('data/brands/{handle}', [StoreBrandController::class, 'brand']);
 
     Route::group(['prefix' => 'cart'], function () {
         Route::get('json', [StoreCartController::class, 'get']);
