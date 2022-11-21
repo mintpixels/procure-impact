@@ -14,13 +14,13 @@ class BrandController extends Controller
     /**
      * Show the PDP.
      */
-    public function view(Brand $brand)
+    public function view(Request $r, $handle)
     {
         // if(!$product->published_at && !Auth::user())
         //     abort(404);
             
         return view('store.brand')->with([
-            'brand' => $brand
+            'handle' => $handle
         ]);
     }
 

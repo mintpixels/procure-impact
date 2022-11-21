@@ -41,7 +41,7 @@ Route::group([], function () {
     Route::get('pages/{page:handle}', [StorePageController::class, 'viewPage']);
     Route::get('unsubscribe', [StorePageController::class, 'unsubscribe']);
     Route::post('products/{product}/reviews', [StoreProductController::class, 'addReview']);
-    Route::get('brands/{brand:handle}', [StoreBrandController::class, 'view']);
+    Route::get('brands/{handle}', [StoreBrandController::class, 'view']);
 
     // Route::get('data/common', [StoreDataController::class, 'common']);
     // Route::get('data/featured', [StoreDataController::class, 'featured']);
