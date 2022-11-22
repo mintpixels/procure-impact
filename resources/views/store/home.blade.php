@@ -18,7 +18,7 @@
                         </div>
                     </div>
                 </div>
-                <div class="column image" style="background-image:url(https://images.takeshape.io/a81826c6-44c5-4725-8844-1402105665dd/dev/90ba7ddb-10b6-4fcd-8cb6-55a971edb353/Banner%20image.png?auto=format%2Ccompress&w=600)">
+                <div class="column image" :style="'background-image:url(' + getImagePath(section.desktopFeaturedImage.path) + ')'">
                 </div>
             </div>
         </div>

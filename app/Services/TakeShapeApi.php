@@ -196,6 +196,9 @@ class TakeShapeApi
               }
               headline
               statement
+              desktopFeaturedImage {
+                path 
+              }
               SectionHero_type: type
             }
             ... on SectionPopularSearches {
