@@ -198,7 +198,7 @@
                         </div>
                     </div>
 
-                    <div class="section" data-section="customer">
+                    <div class="section" data-section="customer" v-if="!checkout.approved">
 
                         <h3>
                             <span class="number">3</span> 
@@ -218,6 +218,63 @@
 
                                 <button v-on:click="placeOrder()">Submit Purchase Order</button>
                             </div>
+                        </div>
+                    </div>
+
+                    <div class="section" v-else>
+
+                        <h3>
+                            <span class="number">3</span> 
+                            Payment 
+                        </h3>
+                      
+                     <div class="section-content" :class="{ show: stepIndex == 4 }">
+
+                        <div class="subsection"  v-if="!checkout.is_pickup" v-cloak>
+
+                            <div class="cc-inputs">
+                                <h5>Pay with credit card</h5>
+
+                                <div class="columns layout">
+                                    <div class="column">
+                                        <label>Credit Card Number</label>
+                                        <input type="text" name="ccNumber" v-model="card.number" />
+                                    </div>
+                                    <div class="column space small">
+                                        <label>Expiration</label>
+                                        <input type="text" name="ccExpiry" v-model="card.expiry" @keyup="formatExpiry" placeholder="MM/YY" maxlength="5" />
+                                    </div>
+                                </div>
+
+                                <div class="columns layout">
+                                    <div class="column">
+                                        <label>Name on Card</label>
+                                        <input type="text" name="ccName" v-model="card.name" />
+                                    </div>
+                                    <div class="column space small">
+                                        <label>CVV</label>
+                                        <input type="text" name="ccCvv" v-model="card.cvv" />
+                                    </div>
+                                </div>
+                            </div>
+
+                            <br><br>
+
+                            <div class="subsection">
+
+                                <h5>Terms and Conditions</h5>
+                                <p>
+                                    <input type="checkbox" class="confirm" v-model="termsAccepted" /> Yes, I agree with the <a target="_blank" href="/pages/terms-conditions">terms and conditions</a>
+                                </p>
+
+                                <button v-on:click="placeOrder()">Complete Order</button>
+                                </div>
+
+                            <div id="payment-error" v-if="paymentError" style="margin:10px 0; color:red;font-size:13px;">
+                                There was an error with the payment. ${ paymentError }
+                            </div>
+
+                        </div>
                         </div>
                     </div>
                 </div>

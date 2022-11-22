@@ -15,6 +15,8 @@ use App\Services\EasyPostApi;
 use App\Services\InventoryService;
 use App\Services\RulesService;
 use App\Services\OrderService;
+use App\Models\Checkout;
+use App\Models\CheckoutItem;
 use App\Models\Customer;
 use App\Models\CustomerGroup;
 use App\Models\Order;
@@ -349,6 +351,50 @@ class OrderController extends Controller
         {
             $order->completed_at = date('Y-m-d H:i:s');
             $order->saveWithHistory('Order was completed'); 
+        }
+        else if($order->status == 'Approved')
+        {
+            $checkout = Checkout::where('order_id', $order->id)
+                ->whereNull('completed_at')
+                ->where('approved', 1)
+                ->first();
+
+            if(!$checkout) 
+            {
+                $checkout = new Checkout();
+                $checkout->order_id = $order->id;
+                $checkout->guid = bin2hex(random_bytes(16));
+                $checkout->approved = 1;
+                $checkout->billing = $order->billing;
+                $checkout->payment = new \stdClass;
+                $checkout->customer_id = $order->customer->id;
+                $checkout->email = $order->customer->email;
+                $checkout->shipments = [];
+                $checkout->save();
+            }
+
+            CheckoutItem::where('checkout_id', $checkout->id)->delete();
+
+            $items = [];
+            foreach($order->items as $item)
+            {
+                CheckoutItem::create([
+                    'checkout_id' => $checkout->id,
+                    'product_id' => $item->product_id,
+                    'variant_id' => $item->variant_id,
+                    'price' => $item->price,
+                    'base_price' => $item->base_price,
+                    'quantity' => $item->quantity,
+                    'discount' => $item->discount,
+                    'tax' => 0,
+                    'properties' => $item->properties
+                ]);
+            }
+            
+            $checkout->load('items');
+            
+            $checkout->save();
+            $order->saveWithHistory('Order was approved'); 
         }
         else
         {

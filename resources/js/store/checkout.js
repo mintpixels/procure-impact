@@ -382,6 +382,11 @@ class Checkout {
                 ctx.vm.step = 'billing'
             }
 
+            if(response.data.checkout.approved) {
+                ctx.vm.stepIndex = 4;
+                ctx.vm.step = 'payment';
+            }
+
             ctx.vm.loaded = true;
         });
     }
