@@ -1,7 +1,6 @@
 const { default: axios } = require("axios");
 import nestedDraggable from "./components/categories.vue";
 import draggable from "vuedraggable";
-import { createAssignmentExpression } from "@vue/compiler-core";
 
 class Categories {
 

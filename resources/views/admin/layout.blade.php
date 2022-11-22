@@ -14,8 +14,6 @@
         <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
         <script src="https://kit.fontawesome.com/b493cac541.js" crossorigin="anonymous"></script>
         
-        <script src="https://unpkg.com/vue@next"></script>
-        
         <link rel="stylesheet" href="{{ mix('/css/admin.css') }}" />
 
         @yield('head')

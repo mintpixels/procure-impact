@@ -99,7 +99,7 @@ Route::group(['middleware' => 'auth.customer'], function ()
 
 Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () 
 {
-    Route::get('/', [AdminProductController::class, 'ordersView']);
+    Route::get('/', [AdminOrderController::class, 'ordersView']);
 
     Route::get('drafts', [AdminOrderController::class, 'draftsView']);
     Route::get('drafts/create', [AdminOrderController::class, 'newDraftView']);

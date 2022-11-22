@@ -55,8 +55,6 @@ class Brand {
 }
 
 Brand.page = '#brand-page';
-console.log('page', Brand.page);
-console.log($(Brand.page));
 
 if($(Brand.page).length > 0) {
     window.Brand = new Brand;

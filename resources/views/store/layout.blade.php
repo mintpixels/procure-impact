@@ -13,8 +13,6 @@
         <link rel="stylesheet" href="https://use.typekit.net/shl1pyf.css">
         <script src="https://kit.fontawesome.com/21e055b1b3.js" crossorigin="anonymous"></script>
         
-        <script src="https://unpkg.com/vue@next"></script>
-        
         <link rel="stylesheet" href="{{ mix('/css/store.css') }}" />
 
         @yield('head')

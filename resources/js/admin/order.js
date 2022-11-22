@@ -1,6 +1,5 @@
 const { default: axios } = require("axios");
 
-const page = '#order-page';
 class Order {
 
     init() {
@@ -463,7 +462,7 @@ class Order {
                     return Util.formatMoney(p);
                 }
             }
-        }).mount(page);
+        }).mount('#order-page');
     }
 
     freeShipment() {
@@ -1001,7 +1000,7 @@ class Order {
     }
 }
 
-if($(page).length > 0) {
+if($('#order-page').length > 0) {
     window.order = new Order;
     window.order.init();
 }

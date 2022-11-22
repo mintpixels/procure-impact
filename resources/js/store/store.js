@@ -1,3 +1,5 @@
+window.Vue = require('vue');
+
 require('../bootstrap');
 require('../util');
 require('./common');

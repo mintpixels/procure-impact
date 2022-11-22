@@ -27,10 +27,18 @@
           <span class="actions">
             <i class="fa-regular fa-square-plus" v-on:click="addCategory(element)"></i>
             <i class="fa-regular fa-square-minus delete" v-on:click="showDeleteCategory(element)"></i>
-            <i class="fa-regular fa-filter" v-on:click="showFilters(element)"></i>
           </span>
         </div>
-        
+        <nested-draggable 
+          v-if="element.children"
+          :categories="element.children" 
+          @toggle-visible="toggleVisible" 
+          @toggle-category="toggleCategory" 
+          @check-changed="checkChanged"
+          @update-category="updateCategory" 
+          @add-category="addCategory" 
+          @delete-category="showDeleteCategory"
+          @filters="showFilters" />
       </li>
     </template>
   </draggable>

@@ -143,7 +143,7 @@ class OrderController extends Controller
                     if($item->brand_id == Auth::user()->brand_id)
                     {
                         $items[] = $item;
-                        $itemCount += $item->quantity;
+                        $itemCount++;
                         $itemTotal += $item->line_price;
                     }
                 }
@@ -242,9 +242,12 @@ class OrderController extends Controller
     public function saveOrder(Request $r, Order $order) 
     {
         $fields = json_decode(json_encode($r->fields));
-        foreach($fields as $name => $value) {
-            if(in_array($name, $order->syncFields))
-                $order->$name = $value;
+        if(Auth::user()->isAdmin())
+        {
+            foreach($fields as $name => $value) {
+                if(in_array($name, $order->syncFields))
+                    $order->$name = $value;
+            }
         }
         
         // Make sure all of the latest data is in the model.
