@@ -12,13 +12,13 @@ class Order extends WithHistory
     protected $table = 'order';
 
     protected $fillable = [
-        'checkout_id', 'customer_id', 'dealer_id', 'email', 'phone', 'first_name', 'last_name', 'status',
-        'subtotal', 'tax', 'shipping', 'insurance', 'total', 'discount', 'customer_notes', 'staff_notes', 'ip_address'
+        'checkout_id', 'buyer_id', 'customer_id', 'email', 'phone', 'first_name', 'last_name', 'status',
+        'subtotal', 'tax', 'shipping', 'total', 'discount', 'customer_notes', 'staff_notes', 'ip_address'
     ];
 
     public $syncFields = [
-        'customer_id', 'dealer_id', 'email', 'phone', 'subtotal',
-        'tax', 'total', 'shipping', 'insurance', 'discount', 'paid', 'customer_notes',
+        'customer_id', 'email', 'phone', 'subtotal',
+        'tax', 'total', 'shipping',  'discount', 'paid', 'customer_notes',
         'staff_notes'
     ];
 
@@ -29,8 +29,8 @@ class Order extends WithHistory
     protected $createdMessage = 'Order was created';
     protected $updatedMessage = 'Order was updated';
     protected $historyFields = [
-        'email', 'status', 'customer_id', 'dealer_id', 'staff_notes', 'customer_notes', 'subtotal', 'tax',
-        'shipping', 'insurance', 'total', 'discount', 'email', 'phone', 'source', 'created_at'
+        'email', 'status', 'customer_id', 'staff_notes', 'customer_notes', 'subtotal', 'tax',
+        'shipping', 'total', 'discount', 'email', 'phone', 'source', 'created_at'
     ];
 
     /**
@@ -110,16 +110,6 @@ class Order extends WithHistory
         if(!$query) $query = Order::query();
 
         return $query->where('status', 'Held');
-    }
-
-    /**
-     * Get orders that have been marked with a problem.
-     */
-    public static function problemOrders($query = false)
-    {
-        if(!$query) $query = Order::query();
-
-        return $query->where('status', 'Problem');
     }
 
     /**
@@ -210,10 +200,5 @@ class Order extends WithHistory
     public function verifiedBy()
     {
         return $this->belongsTo('\App\Models\User', 'verified_by');
-    }
-
-    public function problem()
-    {
-        return $this->belongsTo('\App\Models\Problem');
     }
 }

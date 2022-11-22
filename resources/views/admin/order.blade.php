@@ -16,7 +16,7 @@
 <div id="order-page" class="padded-content printable" data-order-id="{{ $order->id }}" v-cloak>
   @include('admin.snippets.save-bar')
   <h1 class="with-subtitle">
-      ${ order.id }
+      #${ order.id }
       <span>
         ${ order.status }
       </span>
@@ -49,27 +49,6 @@
 
   <div class="modal" :class="{ show: modalView }">
 
-    <div class="modal-view"  :class="{ show: modalView == 'add-shipment' }">
-      <h3>Select shipment items</h3>
-      <div class="field">
-        
-        <div v-for="(shipment, i) in order.shipments" class="shipment-option">
-          <div>
-            <h4>Shipment ${ i + 1 }</h4>
-            <div v-for="item in shipment.items" class="line">
-              <input type="number" class="shipment-item-qty" min="0" :max="item.quantity" value="0" :data-shipment-idx="i" :data-item-idx="item.idx"  />
-              <b>${ item.quantity }</b> x ${ order.items[item.idx].product.name }
-            </div>
-          </div>
-        </div>
-        
-        <div class="actions">
-          <button class="primary" v-on:click="addShipment()">Add</button>
-          <button class="secondary" v-on:click="closeModal()">Cancel</button>
-        </div>
-      </div>
-    </div>
-
     <!------------------------------------------------------------------------------>
 
     <div class="modal-view"  :class="{ show: modalView == 'zoom-photo' }">
@@ -92,7 +71,7 @@
         <label>Payment Method</label>
         <select v-model="paymentMethod">
           <option selected>Credit Card</option>
-          <option>Check</option>
+          <option>Purchase Order</option>
           <option v-if="order.customer && order.customer.pay_later">House Account</option>
         </select>
       </div>
@@ -134,57 +113,9 @@
 
     <!------------------------------------------------------------------------------>
 
-    <div class="modal-view" :class="{ show: modalView == 'edit-method' }" v-if="activeShipment">
-      <h3>Shipping Methods</h3>
-      <div class="field methods">
-        <table>
-          <tbody>
-          <tr v-for="method in activeShipment.methods" class="line padded">
-            <td><a class="button small" v-on:click="selectMethod(method)">Select</a></td>
-            <td><b>${ method.carrier }</b></td>
-            <td>${ method.service }</td>
-            <td>${ formatMoney(method.price) }</td>
-          </tr>
-          <tr class="line padded">
-            <td><a class="button small" v-on:click="selectMethod(freight)">Select</a></td>
-            <td><b>Freight</b></td>
-            <td>N/A</td>
-            <td>N/A</td>
-          </tr>
-        </table>
-      </div>
-      <div class="actions">
-        <button class="secondary" v-on:click="closeModal()">Cancel</button>
-      </div>
-    </div>
-
-    <!------------------------------------------------------------------------------>
-
-    <div class="modal-view" :class="{ show: modalView == 'edit-shipping-price' }" v-if="activeShipment">
-      <h3>Shipping Price</h3>
-      <div class="field">
-        <div class="input-with-label">
-          <span>$</span>
-          <input type="text" v-model="shipmentPrice" class="currency" />
-        </div>
-      </div>
-      <div class="field" v-if="activeShipment.method">
-        <input type="checkbox" v-model="resetShipmentPrice" /> Reset price to <b>${ formatMoney(activeShipment.method.originalPrice) }</b>
-      </div>
-      <div class="actions">
-      <button class="primary" v-on:click="saveShipmentPrice()">Save</button>
-        <button class="secondary" v-on:click="closeModal()">Cancel</button>
-      </div>
-    </div>
-
-    <!------------------------------------------------------------------------------>
-
     <div class="modal-view" :class="{ show: modalView == 'cancel-order' }">
       <h3>Cancel Order</h3>
-    
-      <div class="field">
-        <input type="checkbox" v-model="cancelRestock" /> Restock inventory from order
-      </div>
+
       <div class="actions">
         <button class="primary wide" v-on:click="cancelOrder()">Cancel Order</button>
         <button class="secondary" v-on:click="closeModal()">Cancel</button>
@@ -276,31 +207,6 @@
 
     <!------------------------------------------------------------------------------>
 
-    <div class="modal-view" :class="{ show: modalView == 'problem' }">
-      <h3>Problem Details</h5>
-
-      <div class="field">
-        <select v-model="problemType">
-          <option v-for="problem in problems" :value="problem.id">${ problem.name }</option>
-        </select>
-      </div>
-
-      <div class="field">
-        <label>
-          <input type="checkbox" v-model="sendProblemEmail" />
-          Send an email to the customer
-        </label>
-      </div>
-
-      <div class="actions">
-        <button class="primary" v-on:click="saveProblem()">Save</button>
-        <button class="secondary" v-on:click="closeModal()">Cancel</button>
-      </div>
-
-    </div>
-
-    <!------------------------------------------------------------------------------>
-
   </div>
 
   <div class="columns layout" v-if="loaded">
@@ -318,6 +224,7 @@
         <ul class="matches" v-if="productMatches.length > 0">
           <li v-for="product in productMatches" v-on:click="addProduct(product)">
             <div><img v-if="product.thumbnail" :src="product.thumbnail.indexOf('http') == 0 ? product.thumbnail : '{{ env('AWS_CDN_PRODUCTS_PATH') }}' + product.thumbnail" /></div>
+            <div>${ product.brand.name }</div>
             <div class="name">${ product.name }<br>${ product.sku }</div>
             <div class="price text-right">${ formatMoney(product.price) }</div>    
             <!-- <div class="available text-right">${ product.available } available</div>     -->
@@ -341,6 +248,8 @@
                                 
                 <div class="item-name">
                   <a :href="'/admin/products/' + item.product.id">${ item.product.name }</a>
+                  <div class="variant" v-if="item.variant">${ item.variant.name }</div>
+                  <div class="brand">${ item.product.brand.name }</div>
                 </div>
 
                 <div class="item-sku">
@@ -385,71 +294,6 @@
 
       <!------------------------------------------------------------------------------>
       
-      <div class="section" v-if="order.shipments.length > 0">
-        <div class="loading-shipments" v-if="loadingShipments"><img src="/img/loading.gif" /></div>
-
-        <div class="shipments" v-for="(shipment, i) in order.shipments">
-
-          <div class="shipment">
-              <div class="shipment-items column">
-                <h5>
-                  Shipment ${ i + 1 } 
-                  <span v-if="shipment.weight" class="small">(${ shipment.weight } lbs)</span>
-                  <span v-if="shipment.tracking_number" class="tracking-info">
-                    ${ shipment.carrier } (${ shipment.service })
-                    <a target="_blank" :href="shipment.tracking_url">${ shipment.tracking_number}</a>
-                </span>
-                </h5>
-                <div class="shipment-item" v-for="item in shipment.items">
-                  <b>${ item.quantity }</b> x ${ order.items[item.idx].product.name }
-                </div>
-              </div>
-              <div class="columns shipment-details">
-                <div class="shipment-address column">
-                  <h5>Shipping Address</h5>
-                  <div v-if="shipment.ffl_required">
-                    <div v-if="order.dealer">
-                      <i>Shipping to Dealer</i><br>
-                      ${ order.dealer.name }<br>
-                      ${ order.dealer.address1 } ${ order.dealer.address2 }<br>
-                      ${ order.dealer.city }, ${ order.dealer.state } ${ order.dealer.zip }
-                    </div>
-                    <div v-else>
-                      <i>FFL Required</i>
-                    </div>
-                  </div>
-                  <div :class="{ overwritten : shipment.ffl_required }">
-                    <div v-if="shipment.address && addressComplete(shipment.address)">
-                      <div v-if="shipment.address.first_name">${ shipment.address.first_name } ${ shipment.address.last_name }</div>
-                      <div v-if="shipment.address.company">${ shipment.address.company }</div>
-                      ${ shipment.address.address1 } ${ shipment.address.address2 }<br>
-                      ${ shipment.address.city }, ${ shipment.address.state } ${ shipment.address.zip }
-                    </div>
-                    <div v-else>
-                        No Shipping Address.
-                    </div>
-                    <a v-on:click="editShippingAddress(shipment)" v-if="!readonly && !shipment.ffl_required">Edit Address</a>  
-                  </div>  
-                </div>
-               
-                <div class="remove-item" v-if="order.shipments.length > 1">
-                  <i class="fal fa-times" v-on:click="removeShipment(i)"></i>
-                </div>
-              </div>
-          </div>
-        </div>
-        <div class="photos" v-if="order.shipments.length > 0">
-          <span v-for="photo in order.shipments[0].photos">
-            <img :src="'{{ env('AWS_CDN_PATH') }}' + photo" v-on:click="photoZoom('{{ env('AWS_CDN_PATH') }}' + photo)" />
-          </span>
-        </div>
-
-
-        <div class="field">
-          <a v-on:click="showAddShipment" v-if="!readonly">Add Shipment</a>
-        </div>
-
-      </div>
       <div class="section">
         <h5>Customer Notes</h5>
         <textarea v-model="order.customer_notes"></textarea>
@@ -494,19 +338,6 @@
     </div>
 
     <div class="secondary column">
-
-     <!------------------------------------------------------------------------------>
-
-      <div class="section summary" v-if="order.problem">
-        <h5>Problem</h5>
-
-        <div class="problem-name">
-            ${ order.problem.name }
-        </div>
-        <div class="problem-description">
-          ${ order.problem.description }
-        </div>
-      </div>
 
     <!------------------------------------------------------------------------------>
 
@@ -558,7 +389,7 @@
               <td>
                 ${ payment.method } 
                 <span v-if="payment.avs">(${ payment.avs })</span>
-                <i class="fa fa-times" v-if="draft" v-on:click="removePayment(i)"></i>
+                <i class="fa fa-times" v-on:click="removePayment(i)"></i>
                 <div class="capture-payment" v-if="order.status == 'Completed' && payment.transaction_id && !payment.captured_at">
                   <a v-on:click="capturePayment(payment)">Capture Payment</a>
                 </div>
@@ -577,7 +408,7 @@
           </tbody>
         </table>
 
-        <div class="field text-right" v-if="due > 0 && readyForPayment() && order.shipments.length > 0">
+        <div class="field text-right" v-if="due > 0 && readyForPayment()">
           <a v-on:click="setupPayment();showModal('add-payment')">Add Payment</a>
         </div>
       </div>
@@ -668,55 +499,6 @@
 
       <!------------------------------------------------------------------------------>
 
-      <div class="section" v-if="order.shipments.length > 0">
-        <h5>FFL Dealer</h5>
-
-        <div v-if="order.dealer">
-          <a :href="'/admin/dealers/' + order.dealer.id">${ order.dealer.name }</a><br>
-          <div v-if="order.dealer.phone">
-            ${ order.dealer.phone }
-          </div>
-            ${ order.dealer.address1 } ${ order.dealer.address2 }<br>
-            ${ order.dealer.city } ${ order.dealer.state } ${ order.dealer.zip }<br>
-            Expires: ${ formatDate(order.dealer.ffl_expires) }<br>
-          <a v-if="!readonly" v-on:click="removeDealer">remove</a>
-        </div>
-        <div class="relative" v-else  v-if="!readonly">
-          <input type="text" class="light" v-model="dealerLookup" @keyup="lookupDealer(dealerLookup)" placeholder="Search dealers" />
-          <div v-if="dealerMatches.length > 0">
-            <div class="close-lookup" v-on:click="dealerMatches = [];dealerLookup = '';">
-              <i class="fal fa-times" aria-hidden="true"></i>
-            </div>
-            <ul class="matches">
-              <li v-for="dealer in dealerMatches" v-on:click="addDealer(dealer)">
-                <div class="name">
-                  ${ dealer.name }
-                  <span v-if="dealer.distance"><b>${ dealer.distance }mi</b></span>
-                </div>
-                <div class="breadcrumb">${ dealer.address1 }<br>${ dealer.city} , ${ dealer.state }</div>    
-              </li>
-            </ul>
-          </div>
-
-          <div class="field text-right local-dealers" v-if="order.billing && order.billing.address1">
-            <img src="/img/loading.gif" v-if="loadingDealers" />
-            <a v-if="order.shipments.length > 0" v-on:click="localDealers(order.shipments[0].address.zip)">Local Dealers</a>
-          </div>
-
-          <div v-if="order.customer && order.customer.dealers && order.customer.dealers.length > 0">
-            <h4>Previous Dealers</h4>
-            <div v-for="dealer in order.customer.dealers" class="subsection">
-              <a v-on:click="addDealer(dealer)">${ dealer.name }</a><br>
-                <div v-if="order.dealer.phone">
-                  ${ dealer.phone }
-                </div>
-                ${ dealer.address1 } ${ dealer.address2 }<br>
-                ${ dealer.city } ${ dealer.state } ${ dealer.zip }<br>
-            </div>
-          </div>
-        </div>
-      </div>
-      
     </div>
 
   </div>
@@ -728,7 +510,5 @@
   </div>
 
 </div>
-
-<script type="text/javascript" src="https://js.authorize.net/v1/Accept.js" charset="utf-8"></script>
 
 @stop

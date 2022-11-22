@@ -120,7 +120,7 @@ class Checkout {
                         return this.card.number && this.card.expiry.length == 5 && this.card.name && this.card.cvv;
                     },
                     validCheckout() {
-                        return this.termsAccepted && (this.houseAccount || this.checkout.is_pickup || this.validCard());
+                        return true; // this.termsAccepted && (this.houseAccount || this.checkout.is_pickup || this.validCard());
                     },
                     addressChanged(shipment) {
                         ctx.addressChanged(shipment);
@@ -129,6 +129,7 @@ class Checkout {
                         return Util.formatMoney(price);
                     },
                     placeOrder() {
+                        console.log('place order');
                         ctx.completeCheckout();
                     },
                     saveCustomer() {
@@ -213,14 +214,14 @@ class Checkout {
     }
 
     validAddress(address) {
+        console.log('address', address);
         return address &&
             address.first_name && 
             address.last_name &&
             address.address1 &&
             address.city && 
             address.state &&
-            address.zip &&
-            address.phone;
+            address.zip;
     }
 
     lookupAddress(id) {
@@ -448,16 +449,13 @@ class Checkout {
         if(this.vm.submitting)
             return;
 
-        let params = { 
-            houseAccount: false,
-        }
 
         let vm = this.vm;
         vm.errorMessage = '';
         vm.submitting = true;
         vm.errorProducts = [];
         
-        axios.post(`/checkout/${this.guid}/complete`, params).then(function (response) {
+        axios.post(`/checkout/${this.guid}/complete`).then(function (response) {
             window.location.reload();
         }).catch(function(error) {
             vm.errorMessage = error.response.data.error;

@@ -28,35 +28,37 @@
         The bridge between high-quality products that transform lives and mission-driven companies.
         </div>
 
-        <div class="top-bar columns">
-            <div class="column logo">
-                <a href="/"><img src="{{ asset('img/logo.svg') }}" /></a>
-            </div>  
+        @if(!isset($noheader))
+            <div class="top-bar columns">
+                <div class="column logo">
+                    <a href="/"><img src="{{ asset('img/logo.svg') }}" /></a>
+                </div>  
 
-            <div class="column search">
+                <div class="column search">
 
-                <form method="get" action="/search">
-                <div class="search-box">
-                    
-                        <div class="icon">
-                            <img src="{{ asset('img/search.svg') }}" />
-                        </div>
-                        <input type="text" name="qs" placeholder="Search" />
+                    <form method="get" action="/search">
+                    <div class="search-box">
+                        
+                            <div class="icon">
+                                <img src="{{ asset('img/search.svg') }}" />
+                            </div>
+                            <input type="text" name="qs" placeholder="Search" />
+                    </div>
+                    </form>
+
                 </div>
-                </form>
 
+                <div class="column links">
+                    <span class="cart-icon">
+                        <img src="{{ asset('img/cart.svg') }}" class="side-cart-trigger"/>
+                        <span class="cart-item-count"></span>
+                    </span>
+                    <img src="{{ asset('img/account.svg') }}" />
+                </div>
             </div>
 
-            <div class="column links">
-                <span class="cart-icon">
-                    <img src="{{ asset('img/cart.svg') }}" class="side-cart-trigger"/>
-                    <span class="cart-item-count"></span>
-                </span>
-                <img src="{{ asset('img/account.svg') }}" />
-            </div>
-        </div>
-
-        @include('store.snippets.menu')
+            @include('store.snippets.menu')
+        @endif
 
         <div class="content">
             @yield('content')

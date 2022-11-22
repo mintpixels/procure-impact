@@ -59,8 +59,6 @@ class Order {
                         shipping: false,
                         shipments: [ctx.emptyShipment()],
                         holdInventory: false,
-                        dealer: false,
-                        dealer_id: false
                     },
                     verification: false,
                     timeline: [],
@@ -76,8 +74,6 @@ class Order {
                     productMatches: [],
                     customerLookup: '',
                     customerMatches: [],
-                    dealerLookup: '',
-                    dealerMatches: [],
                     editAddress: {},
                     selectedAddress: '',
                     billingIndex: '',
@@ -87,14 +83,8 @@ class Order {
                     paymentAmount: 0,
                     paymentNotes: '',
                     manualCard: false,
-                    loadingDealers: false,
-                    loadingShipments: false,
                     showActions: false,
                     cancelRestock: true,
-                    problemType: '',
-                    sendProblemEmail: '',
-                    problems: [],
-                    noverify:[],
                     zoomPhoto: '',
                     due: 0,
                     paymentError: '',
@@ -228,30 +218,11 @@ class Order {
                     });
                 },
 
-                lookupDealer(q) {
-                    axios.get(`/admin/data/dealers/lookup`, { params: { q: q }} ).then(function (response) {
-                        ctx.vm.dealerMatches = response.data.dealers;
-                    });
-                },
-
-                localDealers(zip) {
-                    this.loadingDealers = true;
-                    axios.get(`/admin/data/dealers/lookup`, { params: { q: 'local', zip: zip }} ).then(function (response) {
-                        ctx.vm.dealerMatches = response.data.dealers;
-                        ctx.vm.loadingDealers = false;
-                    });
-                },
 
                 removeItem(index) {
                     const idx = parseInt(index);
-                    ctx.removeItemFromShipments(idx);
                     this.order.items.splice(idx, 1);
-                    ctx.updateShipments();
                     ctx.checkChanged();
-                },
-
-                reloadShipments() {
-                    ctx.updateShipments();
                 },
 
                 newCustomer(customer) {
@@ -345,13 +316,6 @@ class Order {
 
                     this.productLookup = '';
                     this.productMatches = [];
-
-                    // If this isn't a pickup order then add the product to the first shipment.
-                    if(this.order.shipments.length > 0) {
-                        ctx.updateShipmentQuantity(this.order.shipments[0], this.order.items.length - 1, 1);
-                    }
-
-                    ctx.updateShipments();
                     ctx.checkChanged();
                 },
 
@@ -363,145 +327,8 @@ class Order {
                 itemUpdated(item, itemIndex) {
                     if(!this.loaded) return;
 
-                    // Make sure the max quantity wasn't exceeded.
-                    // If this is an existing order, then the inventory is already claimed
-                    // so we can add the original quantity to the number available.
-                    item.underStocked = false;
-                    if(item.product.available < item.quantity) {
-                        item.min = item.product.available;
-                        if(item.originalQty)
-                            item.min = item.originalQty + item.product.available;
-                            
-                        if(item.quantity > item.min) {
-                            item.quantity = item.min;
-                            item.underStocked = true;    
-                        }
-                    }
-
                     ctx.setQuantityPrice(item);
-
-                    if(this.order.shipments.length > 0)
-                        ctx.applyItemUpdates(item, itemIndex);
-                    
-                    ctx.cleanupShipments();
                     ctx.checkChanged();
-                },
-
-                removeShipment(index) {
-
-                    const shipmentToRemove = this.order.shipments[index];
-
-                    // Add the shipment items to the first shipment that will
-                    // still exist.
-                    for(var i = 0; i < this.order.shipments.length; i++) {
-                        if(index != i) {
-                            let shipmentToUpdate = this.order.shipments[i];
-                            shipmentToRemove.items.map(item => {
-                                ctx.updateShipmentQuantity(shipmentToUpdate, item.idx, item.quantity);
-                            });
-                        }
-                    }
-                    this.order.shipments.splice(index, 1);
-                    ctx.checkChanged();
-                },
-
-                addShipment() {
-
-                    let shipment = ctx.emptyShipment();
-
-                    // If there aren't any shipments then add all items to 
-                    // a new shipment.
-                    if(this.order.shipments.length == 0) {
-                        this.order.items.map((item, i) => {
-                            shipment.items.push({ idx: i, quantity: parseInt(item.quantity) })
-                        });
-
-                        setTimeout(function() {
-                            ctx.applyAddress();
-                        }, 1);
-                    }
-                    else {
-                        $('.shipment-item-qty').each(function() {
-                            const $item = $(this);
-                            const qty = parseInt($item.val());
-                            const shipmentIndex = parseInt($item.attr('data-shipment-idx'));
-                            const itemIndex = parseInt($item.attr('data-item-idx'));
-
-                            if(qty <= 0) return;
-
-                            // Remove from the selected shipment.
-                            ctx.updateShipmentQuantity(ctx.vm.order.shipments[shipmentIndex], itemIndex, -qty);
-
-                            // Add to the new shipment.
-                            ctx.updateShipmentQuantity(shipment, itemIndex, qty);
-
-                            // Update shipments to remove items or shipments that have a zero quantity.
-                            ctx.cleanupShipments();
-                            
-                        });
-                        
-                        // Default the address of the previous shipment.
-                        shipment.address =  this.order.shipments[this.order.shipments.length-1].address;
-                    }
-                    
-                    this.order.shipments.push(shipment);
-                    this.closeModal();
-                    ctx.checkChanged();
-                },
-
-                selectMethod(method) {
-                    this.activeShipment.method = method;
-                    this.activeShipment.method.originalPrice = Math.round(100*parseFloat(method.price)) / 100;
-                    this.activeShipment.method.price = this.activeShipment.free ? 0 :
-                        this.activeShipment.method.originalPrice;
-                        
-                    this.shippingUpdated = true;
-                    this.closeModal();
-                    ctx.checkChanged();
-                },
-
-                updateFreeShipping(shipment) {
-                    if(shipment.free) {
-                        if(!shipment.method) {
-                            shipment.method = ctx.freeShipment();
-                        }
-                        else {
-                            shipment.method.price = 0;
-                        }
-                    }
-                    else {
-                        if(shipment.method.free) 
-                            shipment.method = false;
-                        else
-                            shipment.method.price = shipment.method.originalPrice;
-                    }
-
-                    this.shippingUpdated = true;
-
-                    ctx.checkChanged();
-                },
-
-                editShipmentPrice(shipment) {
-                    this.activeShipment = shipment;
-                    this.shipmentPrice = shipment.method.price;
-                    this.resetShipmentPrice = false;
-                    this.showModal('edit-shipping-price');
-                },
-
-                saveShipmentPrice() {
-                    this.activeShipment.method.price = this.shipmentPrice;
-                    if(this.resetShipmentPrice)
-                        this.activeShipment.method.price = this.activeShipment.method.originalPrice;
-
-                    this.closeModal();
-                    this.shippingUpdated = true;
-                    ctx.checkChanged();
-                },
-
-                editShippingMethod(shipment) {
-                    ctx.getShipmentWeight(shipment);
-                    this.activeShipment = shipment;
-                    ctx.getShippingRates(shipment);
                 },
 
                 addCustomer(c) {
@@ -511,21 +338,8 @@ class Order {
                     ctx.getCustomerAddresses(c.id);
                 },
 
-                addDealer(d) {
-                    this.order.dealer = d;
-                    this.dealerLookup = '';
-                    this.dealerMatches = [];
-                    ctx.checkChanged();
-                },
-
                 removeCustomer() {
                     this.order.customer = false;
-                    ctx.checkChanged();
-                },
-
-                removeDealer() {
-                    this.order.dealer_id = null;
-                    this.order.dealer = false;
                     ctx.checkChanged();
                 },
 
@@ -616,24 +430,10 @@ class Order {
                     ctx.totals();
                 },
 
-                toggleShipping(shipping) {
-                    if(this.order.shipments.length > 0)
-                        this.order.shipments = [];
-                    else {
-                        this.addShipment();
-                        ctx.updateShipments();
-                    }
-                    ctx.checkChanged();
-                },
+             
 
                 readyForPayment() {
                 
-                    // Do all shipments have a method selected.
-                    for(var i = 0; i < this.order.shipments.length; i++) {
-                        if(!this.order.shipments[i].method)
-                            return false;
-                    }
-
                     // Must be a customer assigned.
                     return this.order.customer && this.order.customer.email && // Customer is set
                         this.order.taxCalculated && // Tax is calculated
@@ -703,7 +503,6 @@ class Order {
             group_id: '',
             notes: '',
             addresses: [],
-            dealers: [],
             taxable: 1
         }
     }
@@ -727,20 +526,11 @@ class Order {
             sku: p.sku,
             name: p.name,
             price: p.price,
+            brand_id: p.brand_id,
             tax: 0,
             product: p
         };
     }
-
-    applyBilling() {
-        
-        this.vm.order.shipments.map(shipment => {
-            if(!shipment.address.address1) {
-                shipment.address = Util.clone(this.vm.order.billing);
-            }
-        });
-    }
-
     applyAddress() {
 
         let address = false;
@@ -753,36 +543,10 @@ class Order {
         }
         
         if(!address) return;
-    
-        this.vm.order.shipments.map(shipment => {
-            if(!shipment.address.address1) {
-                shipment.address = Util.clone(address);
-            }
-        });
 
         if(!this.vm.order.billing.address1) {
             this.vm.order.billing = Util.clone(address);
         }
-    }
-
-    getShippingRates(shipment) {
-        const ctx = this;
-
-        const address = shipment.ffl_required && this.vm.order.dealer ? 
-            this.vm.order.dealer : 
-            shipment.address;
-
-        const params = {
-            address: address,
-            weight: shipment.weight
-        };
-
-        shipment.loading = true;
-        axios.post(`/admin/data/orders/rates`, params ).then(function (response) {
-            shipment.methods = response.data.rates;
-            shipment.loading = false;
-            ctx.vm.showModal('edit-method');
-        });
     }
 
     getOrder() {
@@ -1000,7 +764,6 @@ class Order {
         let ctx = this;
         axios.get(`/admin/data/customers/${id}/addresses`).then(function (response) {
             ctx.vm.order.customer.addresses = response.data.addresses;
-            ctx.vm.order.customer.dealers = response.data.dealers;
             ctx.applyAddress();
             ctx.checkChanged();
         });
@@ -1030,49 +793,11 @@ class Order {
 
     setOrder(response) {
         this.vm.order = response.data.order;
-        this.vm.groups = response.data.groups;
         this.vm.loaded = true;
         this.vm.timeline = response.data.timeline;
-        this.vm.verification = response.data.shippable;
-        this.vm.problems = response.data.problems;
-        this.vm.noverify = response.data.noverify;
 
         // Format shipping data to match expected format.
         const ctx = this;
-        this.vm.order.shipments.map(shipment => {
-            shipment.address = Util.clone(shipment);
-            
-            if(parseFloat(shipment.amount) === 0)
-                shipment.free = true;
-
-            // Shipping method
-            let method = shipment.method.split('-');
-            shipment.method = {
-                id: shipment.id,
-                carrier: method[0],
-                service: method[1],
-                price: shipment.amount
-            };
-
-            shipment.method.originalPrice = shipment.method.price;
-
-            // Shipping items.
-            shipment.items.map(item => {
-                for(var i = 0; i < this.vm.order.items.length; i++) {
-                    if(item.item.product_id == this.vm.order.items[i].product_id) {
-                        item.idx = i;
-                        break;
-                    }
-                }
-            });
-
-            ctx.getShipmentWeight(shipment);
-        });
-
-        if(this.vm.order.insurance > 0) {
-            this.vm.order.acceptInsurance = true;
-        }
-
         for(var i = 0;  i < this.vm.order.items.length; i++) {
             let item = this.vm.order.items[i];
             item.originalQty = item.quantity;
@@ -1147,22 +872,16 @@ class Order {
             phone: order.phone,
             customer_id: order.customer ? order.customer.id : null,
             customer: order.customer,
-            dealer_id: order.dealer ? order.dealer.id : null,
-            dealer: order.dealer,
             customer_notes: order.customer_notes,
             staff_notes: order.staff_notes,
             shipping: order.shipping,
             billing: order.billing,
-            shipments: order.shipments,
             acceptInsurance: order.acceptInsurance,
-            insurance: order.insurance,
             subtotal: order.subtotal,
             tax: order.tax,
             taxCalculated: order.taxCalculated,
             total: order.total,
-            payments: order.payments,
-            holdInventory: order.holdInventory,
-            shippingUpdated: this.vm.shippingUpdated
+            payments: order.payments
         });
     }
 
@@ -1192,8 +911,6 @@ class Order {
 
         // Make sure inputs are numbers.
         this.vm.order.subtotal = parseFloat(this.vm.order.subtotal);
-        this.vm.order.shipping =  parseFloat(this.vm.order.shipping);
-        this.vm.order.insurance =  parseFloat(this.vm.order.insurance);
 
         // Item subtotal
         let subtotal = 0;
@@ -1203,45 +920,15 @@ class Order {
             subtotal = Math.round(subtotal * 100) / 100;
         }
 
-        // Insurance
-        let insurance = 0;
-        if(this.vm.order.shipments.length > 0) {
-            insurance = Math.round((0.02 * subtotal) * 100) / 100;
-            if(insurance < 0.99) insurance = 0.99;
-        }
-        this.vm.order.insuranceAmount = insurance;
-        insurance = this.vm.order.acceptInsurance ? insurance : 0;
-    
-        // Special handling because insurance use to be a line item in bc orders.
-        const diff = Math.round((this.vm.order.subtotal - subtotal)*100)/100;
-        if(!this.vm.draft && diff > 0 && diff == this.vm.order.insurance) {
-            subtotal += parseFloat(this.vm.order.insurance);
-            subtotal = Math.round(subtotal * 100) / 100;
-            this.vm.order.insuranceIncluded = true;
-        }
-
-        // Shipping
-        let shipping = 0;
-        for(var i = 0; i < this.vm.order.shipments.length; i++) {
-            if(this.vm.order.shipments[i].method) {
-                shipping += parseFloat(this.vm.order.shipments[i].method.price);
-                shipping = Math.round(shipping * 100) / 100;
-            }
-        }
-
         // If the subtotals have changed then we need to recalculate the tax.
-        if(shipping != this.vm.order.shipping || subtotal != this.vm.order.subtotal || insurance != this.vm.order.insurance) {
+        if(subtotal != this.vm.order.subtotal) {
             this.vm.order.tax = 0;
             this.vm.order.taxCalculated = false;
         }
 
         this.vm.order.subtotal = subtotal;
-        this.vm.order.shipping = shipping;
-        this.vm.order.insurance = insurance;
-        this.vm.order.total = subtotal + shipping + parseFloat(this.vm.order.tax);
-        if(!this.vm.order.insuranceIncluded)
-            this.vm.order.total += insurance;
-
+        this.vm.order.total = subtotal + parseFloat(this.vm.order.tax);
+        
         if(this.vm.order.total == 0) {
             this.vm.order.taxCalculated = true;
         }
@@ -1267,24 +954,14 @@ class Order {
         });
     }
 
-    getShipmentWeight(shipment) {
-        shipment.weight = 0;
-        const items = this.vm.order.items;
-        for(var j = 0; j < shipment.items.length; j++) {
-            let index = shipment.items[j].idx;
-            shipment.weight += items[index].product.dimensions.weight * shipment.items[j].quantity;
-        }
-        shipment.weight = Math.round(10*shipment.weight) / 10;
-    }
-
     setQuantityPrice(item) {
-        item.customPrice = parseFloat(item.product.lowest_price);
-        for(var qty in item.product.qty_prices) {
-            var price = parseFloat(item.product.qty_prices[qty]);
-            if(qty <= item.quantity && price < item.customPrice) {
-                item.customPrice = price;
-            }
-        }
+        // item.customPrice = parseFloat(item.product.lowest_price);
+        // for(var qty in item.product.qty_prices) {
+        //     var price = parseFloat(item.product.qty_prices[qty]);
+        //     if(qty <= item.quantity && price < item.customPrice) {
+        //         item.customPrice = price;
+        //     }
+        // }
     }
 
     getAuthToken(callback){

@@ -115,14 +115,15 @@ select {
 
         &:hover > a {
             border-bottom: 2px solid #C5C1A0;
-            font-weight: 600;
+            background-color: #fafafa;
+            // font-weight: 600;
         }
 
         .subnav {
             display: none;
             background: #fff;
             position: absolute;
-            top: 45px;
+            top: 43px;
             left: 0;
             width: 100%;
             padding:15px;

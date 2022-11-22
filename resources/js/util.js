@@ -27,7 +27,6 @@ class Util {
     }
 
     formatMoney(p) {
-        console.log('fm', p);
         return this.priceFormatter.format(p);
     }
 

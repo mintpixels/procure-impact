@@ -100,7 +100,12 @@ class ProductController extends Controller
         // Support sku prefix search.
         $search = str_replace('*', '', $r->search);
 
-        $products = Product::whereNull('archived_at')->withCount('categoryMap')->with('tags')->with('variants')->take(50);
+        $products = Product::whereNull('archived_at')
+            ->withCount('categoryMap')
+            ->with('tags')
+            ->with('variants')
+            ->with('brand')
+            ->take(50);
         $filtered = false;
 
         if($search || $r->category || $r->pricerule || $r->tag || $r->property)

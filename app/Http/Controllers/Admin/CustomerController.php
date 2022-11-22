@@ -87,8 +87,7 @@ class CustomerController extends CrudController
         return response()->json([
             'customer' => $customer,
             'groups' => $groups,
-            'metrics' => $customer->metrics(),
-            'dealers' => $customer->loadDealers()
+            'metrics' => $customer->metrics()
         ]);
     }
 
@@ -175,8 +174,7 @@ class CustomerController extends CrudController
     public function addresses(Customer $customer)
     {
         return response()->json([
-            'addresses' => $customer->addresses,
-            'dealers' => $customer->loadDealers()
+            'addresses' => $customer->addresses
         ]);
     }
 

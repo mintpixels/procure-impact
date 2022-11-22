@@ -5,7 +5,6 @@ namespace App\Http\Controllers\Admin;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
-use App\Mail\OrderProblem;
 use App\Mail\OrderConfirmation;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
@@ -25,7 +24,6 @@ use App\Models\OrderShipment;
 use App\Models\OrderShipmentItem;
 use App\Models\OrderPayment;
 use App\Models\Product;
-use App\Models\Problem;
 use App\Models\Carrier;
 use App\Models\OrderDraft;
 use \Auth;
@@ -49,14 +47,7 @@ class OrderController extends Controller
         return view('admin.orders')->with([
             'page' => 'orders',
             'counts' => (object) [
-                'unverified' => Order::unverified()->count(),
-                'problem' => Order::problemOrders()->count(),
-                'pickup' => Order::pickup()->count(),
-                'shipping_problem' => Order::whereStatus('Shipping Problem')->count(),
-                'unpaid' => Order::unpaid()->count(),
-                'unshipped' => Order::unshipped()->count(),
-                'held' => Order::held()->count(),
-                'service' => Order::whereIn('status', ['Pending Service', 'Pickup Pending Service'])->count(),
+                // 'unverified' => Order::unverified()->count(),
             ]
         ]);
     }
@@ -82,27 +73,13 @@ class OrderController extends Controller
         $match = $r->search ? Order::find($r->search) : false;
         if($match) 
         {
-            $match->load('customer');
+            $match->load('customer.buyer');
             $match->load('payments');
             $match->load('billing');
             $match->load('draft');
             $match->loadCount('items');
             return response()->json([
                 'orders' => [$match]
-            ]);
-        }
-
-        $shipment = $r->search ?  OrderShipment::where('tracking_number', $r->search)->first() : false;
-        if($shipment)
-        {
-            $order = Order::find($shipment->order_id);
-            $order->load('customer');
-            $order->load('payments');
-            $order->load('billing');
-            $order->load('draft');
-            $order->loadCount('items');
-            return response()->json([
-                'orders' => [$order]
             ]);
         }
 
@@ -130,7 +107,7 @@ class OrderController extends Controller
         $page = $r->page ?? 0;
 
         $orders = Order::orderBy('id', 'DESC')
-            ->with('customer')
+            ->with('customer.buyer')
             ->withCount('items')
             ->with('payments')
             ->with('billing')
@@ -187,9 +164,6 @@ class OrderController extends Controller
         else if($filter == 'Unshipped') {
             Order::unshipped($orders);
         }
-        else if($filter == 'Problem') {
-            $orders->whereStatus('Problem');
-        }
         else if($filter == 'Shipping Problem') {
             $orders->whereStatus('Shipping Problem');
         }
@@ -211,43 +185,22 @@ class OrderController extends Controller
     {
         $order = Order::where('id', $id)
             ->with('customer.addresses')
-            ->with('items.product')
+            ->with('items.product.brand')
+            ->with('items.variant')
             ->with('billing')
-            ->with('shipments.items.item')
             ->with('payments')
-            ->with('verifiedBy')
-            ->with('dealer')
-            ->with('problem')
             ->first();
-
-        $groups = CustomerGroup::orderBy('name')->get();
 
         $order->tags = $order->tagArray();
         $tags = Order::allTags();
-
-        $shippable = RulesService::shippable($order);
-            
-        $noverify = [];
-        if(!$shippable['shippable'])
-        {
-            foreach($shippable['rules'] as $rule)
-            {
-                if($rule->no_verify)
-                    $noverify[] = $rule;
-            }
-        }
 
         foreach($order->items as $item)
             $item->product->getLowestPrice($order->customer->group_id ?? false);
 
         return response()->json([
             'order' => $order,
-            'groups' => $groups,
             'timeline' => $order->timeline(),
-            'shippable' => RulesService::shippable($order),
-            'tags' => [],
-            'problems' => Problem::orderBy('name')->get(),
-            'noverify' => $noverify
+            'tags' => []
         ]);
     }
 
@@ -325,10 +278,18 @@ class OrderController extends Controller
         }
 
         // Add any additional payments.
+        DB::beginTransaction();
+        OrderPayment::where('order_id', $order->id)->delete();
         foreach($fields->payments as $payment)
         {
-            // if(!$payment->id
+            OrderPayment::create([
+                'order_id' => $order->id, 
+                'method' => $payment->method,
+                'amount' => $payment->amount, 
+                'note' => $payment->note
+            ]);
         }
+        DB::commit();
         
         return $this->order($order->id);
     }
@@ -476,8 +437,6 @@ class OrderController extends Controller
             $customer = Customer::where('id', $draft->data->customer->id)
                 ->with('addresses')
                 ->first();
-            
-            $customer->loadDealers();
         }
 
         // Get latest product information.
@@ -742,8 +701,9 @@ class OrderController extends Controller
         $q = $r->q;
         $products = Product::where('search', 'like', "%$q%")
             ->take(25)
-            ->select('id', 'name', 'sku',  'thumbnail', 'available')
+            ->select('id', 'brand_id', 'name', 'sku',  'thumbnail', 'available')
             ->with('variants')
+            ->with('brand')
             ->orderBy('available', 'desc')
             ->get();
 

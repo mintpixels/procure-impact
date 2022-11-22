@@ -161,15 +161,6 @@
           </div>
       </div>
 
-      <div class="section" v-if="dealers.length > 0">
-          <h5>Dealers</h4>
-          <div v-for="dealer in dealers" class="subsection">
-            <a :href="'/admin/dealers/' + dealer.id">${ dealer.name }</a><br>
-            ${ dealer.address1 } ${ dealer.address2 }<br>
-            ${ dealer.city }, ${ dealer.state } ${ dealer.zip }
-          </div>
-      </div>
-
     </div>
 
   </div>

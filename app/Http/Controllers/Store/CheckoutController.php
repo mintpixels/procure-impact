@@ -56,13 +56,12 @@ class CheckoutController extends Controller
             $checkout->save();
         }
 
-        $checkout->customer_id = NULL;
-        // if(Auth::guard('customer')->check())
-        // {
-        //     $customer = Auth::guard('customer')->user();
-        //     $checkout->customer_id = $customer->id;
-        //     $checkout->email = $customer->email;
-        // }
+        if(Auth::guard('customer')->check())
+        {
+            $customer = Auth::guard('customer')->user();
+            $checkout->customer_id = $customer->id;
+            $checkout->email = $customer->email;
+        }
 
         CheckoutItem::where('checkout_id', $checkout->id)->delete();
 
@@ -83,15 +82,6 @@ class CheckoutController extends Controller
         }
         
         $checkout->load('items');
-
-        // $failed = InventoryService::checkHoldAvailability($checkout->items);
-        // if(count($failed) > 0) 
-        // {
-        //     return redirect('/#cart')->with([
-        //         'failed' => $failed
-        //     ]);
-        // }
-
         $checkout->getTax();
         $checkout->getShipments();
         $checkout->save();
@@ -109,35 +99,6 @@ class CheckoutController extends Controller
         $checkout->delete();
 
         return redirect('checkout');
-    }
-
-    /**
-     * Sign out the user in checkout.
-     */
-    public function signout(Checkout $checkout)
-    {
-        Auth::guard('customer')->logout();
-        $checkout->customer_id = NULL;
-        $checkout->save();
-
-        return $this->checkout($checkout);
-    }
-
-    public function signin(Request $r, Checkout $checkout)
-    {
-        $credentials = $r->only('email', 'password');
-        if(Auth::guard('customer')->attempt($credentials)) {
-            $customer = Auth::guard('customer')->user();
-            $checkout->customer_id = $customer->id;
-            $checkout->email = $customer->email;
-            $checkout->save();
-
-            return $this->checkout($checkout);
-        }
-
-        return response()->json([
-            'error' => 'Login Failed'
-        ]);
     }
 
     /**
@@ -167,7 +128,6 @@ class CheckoutController extends Controller
      */
     public function checkout(Checkout $checkout)
     {
-        // $checkout->load('dealer');
         $checkout->load('items.product', 'items.variant');
         $checkout->load('customer');
 
@@ -183,33 +143,6 @@ class CheckoutController extends Controller
     }
 
     /**
-     * Save updates to a customer.
-     */
-    public function saveCustomer(Request $r, Checkout $checkout)
-    {
-        $checkout->email = $r->email;
-        $checkout->customer_id = $r->customer_id;
-        $checkout->save();
-
-        return $this->checkout($checkout);
-    }
-
-    /**
-     * Save updates to pickup status.
-     */
-    public function savePickup(Request $r, Checkout $checkout)
-    {
-        $checkout->is_pickup = $r->is_pickup;
-        if($checkout->is_pickup && $checkout->accepts_insurance) {
-            $checkout->accepts_insurance = false;
-        }
-
-        $checkout->save();
-
-        return $this->checkout($checkout);
-    }
-
-    /**
      * Save updates to use billing status.
      */
     public function saveUseBilling(Request $r, Checkout $checkout)
@@ -221,33 +154,11 @@ class CheckoutController extends Controller
     }
 
     /**
-     * Save updates to insurance status.
-     */
-    public function saveInsurance(Request $r, Checkout $checkout)
-    {
-        $checkout->accepts_insurance = $r->accepts_insurance ? 1 : 0;
-        $checkout->save();
-
-        return $this->checkout($checkout);
-    }
-
-    /**
      * Save updates to tax amount.
      */
     public function saveTax(Request $r, Checkout $checkout)
     {
         $checkout->getTax();
-        $checkout->save();
-
-        return $this->checkout($checkout);
-    }
-
-    /**
-     * Save updates to use billing status.
-     */
-    public function removeDealer(Request $r, Checkout $checkout)
-    {
-        $checkout->dealer_id = NULL;
         $checkout->save();
 
         return $this->checkout($checkout);
@@ -299,7 +210,7 @@ class CheckoutController extends Controller
                 Mail::to($result->order->email)->send(new OrderConfirmation($result->order));
             }
             else {
-                Mail::to('aimtest@ryanas.com')->send(new OrderConfirmation($result->order));
+                Mail::to('procure@ryanas.com')->send(new OrderConfirmation($result->order));
             }
 
             $result->order->saveWithHistory('Order confirmation sent to ' . $result->order->email, false, '', false, true);

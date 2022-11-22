@@ -9,6 +9,7 @@ use App\Http\Controllers\Admin\BuyerController as AdminBuyerController;
 use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
+use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 
 
 use App\Http\Controllers\Store\PageController as StorePageController;
@@ -26,8 +27,20 @@ Route::post('admin/login', [AdminAuthController::class, 'attemptLogin']);
 Route::get('admin/logout', [AdminAuthController::class, 'logout']);
 
 
-Route::group([], function () {
+Route::group(['prefix' => 'account'], function() {
+    Route::get('login', [StoreAccountController::class, 'loginView'])->name('store.login');
+    Route::post('login', [StoreAccountController::class, 'login']);
+    Route::get('logout', [StoreAccountController::class, 'logout'])->name('store.logout');
+    Route::get('forgot', [StoreAccountController::class, 'forgotView']);
+    Route::post('forgot', [StoreAccountController::class, 'sendReset']);
+    Route::get('reset/{code}', [StoreAccountController::class, 'resetView']);
+    Route::post('reset', [StoreAccountController::class, 'reset']);
+    Route::get('register', [StoreAccountController::class, 'registerView']);
+    Route::post('register', [StoreAccountController::class, 'register']);
+});
 
+Route::group(['middleware' => 'auth.customer'], function () 
+{
     Route::get('/', [StorePageController::class, 'homeView']);
     Route::get('data/home', [StorePageController::class, 'home']);
     Route::get('data/common', [StorePageController::class, 'common']);
@@ -84,9 +97,8 @@ Route::group([], function () {
 });
 
 
-Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
-
-
+Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () 
+{
     Route::get('drafts', [AdminOrderController::class, 'draftsView']);
     Route::get('drafts/create', [AdminOrderController::class, 'newDraftView']);
     Route::get('drafts/{draft}', [AdminOrderController::class, 'draftView']);
@@ -146,6 +158,13 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function () {
     Route::get('data/products/properties', [AdminProductController::class, 'properties']);
     Route::get('data/products/{product}', [AdminProductController::class, 'product']);
 
+    Route::get('categories', [AdminCategoryController::class, 'categoriesView']);
+    Route::get('categories/{product}', [AdminCategoryController::class, 'categoryView']);
+    Route::post('categories', [AdminCategoryController::class, 'save']);
+    Route::post('categories/update', [AdminCategoryController::class, 'updateCategories']);
+    Route::get('data/categories', [AdminCategoryController::class, 'categories']);
+    Route::get('data/categories/{id}', [AdminCategoryController::class, 'category']);
+    
     Route::get('customers',  [AdminCustomerController::class, 'list']);
     Route::get('customers/create', [AdminCustomerController::class, 'createCustomerView']);
     Route::get('customer/exists', [AdminCustomerController::class, 'emailExists']);

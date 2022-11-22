@@ -277,6 +277,16 @@
             }
         }
 
+        .variant {
+            color:#777;
+            font-size: 14px;
+        }
+
+        .brand {
+            font-weight: 500;
+            font-size: 13px;
+        }
+
         .serial-number {
             margin-top:10px;
             input {
@@ -544,6 +554,7 @@
                 cursor: pointer;
                 font-size: 13px;
                 font-weight: 500;
+                height: auto;
             }
         }
     }

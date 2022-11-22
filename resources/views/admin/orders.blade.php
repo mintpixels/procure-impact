@@ -22,6 +22,9 @@
       <li :class="{ active: filter == 'Approved' }">
         <a v-on:click="filterOrders('Approved')">Approved</a>
       </li>
+      <li :class="{ active: filter == 'Approved' }">
+        <a v-on:click="filterOrders('Approved')">Approved</a>
+      </li>
     </ul>
   </div>
 
@@ -64,42 +67,26 @@
             <th class="text-right">Total</th>
             <th>Status</th>
             <th class="text-center">Items</th>
-            <th class="text-center">Notes</th>
           </tr>
         </head>
         <tbody>
           <tr class="order-item" v-for="order in orders" :class="{ fraud: order.failed_rule_id }" >
             <td>
-              <a :href="'/admin/orders/' + order.id">${ order.name }</a>
+              <a :href="'/admin/orders/' + order.id">#${ order.name }</a>
             </td>
             <td class="nowrap datetime">
               ${ formatDateTime(order.created_at) }
             </td>
             <td>
-                <a v-if="order.customer" :href="customerLink(order)">${ customerName(order) }</a>
-                <span v-else>${ customerName(order) }</span>
+                <a :href="customerLink(order)">${ customerName(order) }</a>
+                (${ order.customer.buyer.name })
             </td>
             <td class="phone">
               ${ order.billing ? order.billing.phone : '' }
             </td>
-            <td class="zip">
-              ${ order.billing ? order.billing.zip : '' }
-            </td>
             <td class="text-right total">${ formatMoney(order.total) }</td>
             <td class="nowrap">${ order.status }</td>
             <td class="shipping text-center">${ order.items_count }</td>
-            <td>
-              <div v-if="order.source == 'POS'">POS</div>
-              <div v-else>
-                <div v-if="order.draft">Draft</div>
-                <div v-else>Online</div>
-              </div>
-            </td>
-            <td class="text-center">${ order.payments.length > 0 ? order.payments[0].avs : '' }</td>
-            <td class="notes-indicator">
-              <div v-if="order.customer_notes"><i class="fa fa-check" aria-hidden="true"></i> Customer</div>
-              <div v-if="order.staff_notes"><i class="fa fa-check" aria-hidden="true"></i> Staff</div>
-            </div>
           </tr>
         </tbody>
       </table>

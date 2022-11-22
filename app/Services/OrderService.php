@@ -47,8 +47,6 @@ class OrderService
         if($checkout)
         {
             $data = $checkout;
-            $insurance = $data->accepts_insurance ? $data->insurance : 0;
-            $failed = InventoryService::checkoutHold($data->items, $checkout->id);
         }
         else
         {
@@ -57,28 +55,11 @@ class OrderService
 
             if(!isset($data->shipments))
                 $data->shipments = [];
-                
-            $insurance = 0;
-            if(isset($data->acceptInsurance) && $data->acceptInsurance)
-                $insurance = $data->insurance;
-                
-            $failed = InventoryService::draftHold($data->items, $draft->id);
-        }
-
-        // If we were unable to claim the inventory then we can't complete the order.
-        if(count($failed) > 0)
-        {
-            return (object)[
-                'success' => false,
-                'error' => 'There was not enough inventory to complete the order',
-                'products' => $failed
-            ];
         }
 
         DB::beginTransaction();
 
         try {
-            $pickup = (isset($data->is_pickup) && $data->is_pickup) || count($data->shipments) == 0;
             
             // If the customer doesn't exist then create it before continuing.
             if(isset($data->customer->id))
@@ -88,49 +69,19 @@ class OrderService
             else
             {
                 $customer = Customer::where('email', $data->email)->first();
-                if(!$customer)
-                {
-                    if(isset($data->customer))
-                    {
-                        $phone = $data->customer->phone ?? '';
-                        if(!$phone)
-                            $phone = $data->billing->phone ?? '';
-
-                        $customer = Customer::create([
-                            'first_name' => $data->customer->first_name ?? '', 
-                            'last_name' => $data->customer->last_name ?? '', 
-                            'company' => $data->customer->company ?? '', 
-                            'email' => $data->customer->email, 
-                            'phone' => $phone,
-                            'group_id' => $data->customer->group_id ?? NULL,
-                            'notes' => $data->customer->notes ?? NULL
-                        ]);
-                    }
-                    else
-                    {
-                        $customer = Customer::create([
-                            'first_name' => $data->billing->first_name ?? '', 
-                            'last_name' => $data->billing->last_name ?? '', 
-                            'company' => $data->billing->company ?? '', 
-                            'email' => $data->email, 
-                            'phone' => $data->billing->phone ?? '', 
-                        ]);
-                    }
-                }
             }
 
             $order = Order::create([
                 'customer_id' => $customer->id, 
-                'dealer_id' => $data->dealer_id ?? NULL, 
+                'buyer_id' => $customer->buyer_id,
                 'email' => $data->email, 
                 'phone' => $data->billing->phone ?? NULL, 
                 'first_name' => $data->billing->first_name, 
                 'last_name' => $data->billing->last_name,
-                'status' => $pickup ? 'Awaiting Pickup' : 'New',
+                'status' => 'Submitted',
                 'subtotal' => $data->subtotal,
                 'tax' => $data->tax, 
                 'shipping' => $data->shipping, 
-                'insurance' => $insurance,
                 'total' => $data->total, 
                 'discount' => $data->discount ?? 0, 
                 'customer_notes' => $data->customer_notes,
@@ -164,8 +115,10 @@ class OrderService
                     $item->product_id = $item->product->id;
 
                 $orderItem = OrderItem::create([
+                    'brand_id' => $item->product->brand_id,
                     'order_id' => $order->id, 
                     'product_id' => $item->product_id, 
+                    'variant_id' => $item->variant_id, 
                     'sku' => $item->product->sku, 
                     'name' => $item->product->name, 
                     'quantity' => $item->quantity, 
@@ -176,131 +129,68 @@ class OrderService
                 ]);
             }
 
-            if($pickup)
+            if($checkout)
             {
-                // Check if any products require servicing.
-                foreach($order->items as $item)
-                {
-                    if(in_array('Service', $item->product->tagArray()))
-                    {
-                        $order->status = 'Pickup Pending Service';
-                        $order->saveWithHistory();
-                        break;
-                    }
-                }
+                // $api = new AuthorizeApi;
+                // $response = $api->authorizeCreditCard($order, $order->total, $r->token);
+                // if(isset($response->id))
+                // {
+                //     OrderPayment::create([
+                //         'order_id' => $order->id, 
+                //         'method' => 'Authorize.net', 
+                //         'amount' => $order->total, 
+                //         'last_4' => $r->last4,
+                //         'transaction_id' => $response->id,
+                //         'avs' => $response->avs
+                //     ]);
+
+                //     $order->status = 'New';
+                //     $order->save();
+                // }
+                // else {
+                //     Log::info('Credit Card error', (array)$response);
+                //     throw new \Exception("There was an error processing the credit card");
+                // }
             }
-
-            if(!$pickup)
+            else
             {
-                foreach($data->shipments as $shipment)
+                foreach($data->payments as $payment)
                 {
-                    $useDealer = $data->dealer && $shipment->ffl_required;
-                    $address = $useDealer ? $data->dealer : $shipment->address;
-
-                    $ship = OrderShipment::create([
-                        'order_id' => $order->id,
-                        'dealer_id' => $data->dealer && $shipment->ffl_required ? $data->dealer_id : NULL,
-                        'ffl_required' => $shipment->ffl_required,
-                        'first_name' => $useDealer ? '' : $address->first_name,
-                        'last_name' => $useDealer ? '' : $address->last_name,
-                        'company' => $useDealer ? $data->dealer->name : $address->company ?? NULL,
-                        'address1' => $address->address1,
-                        'address2' => $address->address2 ?? NULL,
-                        'city' => $address->city,
-                        'state' => $address->state,
-                        'zip' => $address->zip,
-                        'phone' => $address->phone ?? NULL,
-                        'method' => $shipment->method->carrier . '-' . $shipment->method->service,
-                        'amount' => $shipment->method->price,
-                    ]);
-
-                    // See if the shipping address should be added to the customer
-                    // as well.
-                    if(!$useDealer)
-                        $customer->addUniqueAddress($ship);
-
-                    foreach($shipment->items as $item)
+                    if(isset($payment->accept_token))
                     {
-                        $productId = $item->product_id ?? $data->items[$item->idx]->product_id;
-                        $orderItem = OrderItem::where('order_id', $order->id)
-                            ->where('product_id', $productId)
-                            ->first();
+                        $order->load('billing');
+                        
+                        $api = new AuthorizeApi;
+                        $response = $api->authorizeCreditCard($order, $payment->amount, $payment->accept_token);
 
-                        OrderShipmentItem::create([
-                            'shipment_id' => $ship->id,
-                            'order_id' => $order->id,
-                            'order_item_id' => $orderItem->id,
-                            'quantity' => $item->quantity
-                        ]);
-                    }
-                }
-            }
-
-            if(!$pickup)
-            {
-                if($checkout)
-                {
-                    $api = new AuthorizeApi;
-                    $response = $api->authorizeCreditCard($order, $order->total, $r->token);
-                    if(isset($response->id))
-                    {
-                        OrderPayment::create([
-                            'order_id' => $order->id, 
-                            'method' => 'Authorize.net', 
-                            'amount' => $order->total, 
-                            'last_4' => $r->last4,
-                            'transaction_id' => $response->id,
-                            'avs' => $response->avs
-                        ]);
-
-                        $order->status = 'New';
-                        $order->save();
-                    }
-                    else {
-                        Log::info('Credit Card error', (array)$response);
-                        throw new \Exception("There was an error processing the credit card");
-                    }
-                }
-                else
-                {
-                    foreach($data->payments as $payment)
-                    {
-                        if(isset($payment->accept_token))
+                        if(isset($response->error)) 
                         {
-                            $order->load('billing');
-                            
-                            $api = new AuthorizeApi;
-                            $response = $api->authorizeCreditCard($order, $payment->amount, $payment->accept_token);
-
-                            if(isset($response->error)) 
-                            {
-                                throw new \Exception(
-                                    "There was an error processing the credit card: " .
-                                    $response->error
-                                );
-                            }
-                            else
-                            {
-                                OrderPayment::create([
-                                    'order_id' => $order->id, 
-                                    'method' => 'Authorize.net', 
-                                    'amount' => $payment->amount, 
-                                    'last_4' => $payment->last_4,
-                                    'transaction_id' => $response->id,
-                                    'avs' => $response->avs,
-                                    'note' => $payment->note
-                                ]);
-                            }
+                            throw new \Exception(
+                                "There was an error processing the credit card: " .
+                                $response->error
+                            );
                         }
-                        else 
+                        else
                         {
                             OrderPayment::create([
                                 'order_id' => $order->id, 
-                                'method' => $payment->method,
+                                'method' => 'Authorize.net', 
                                 'amount' => $payment->amount, 
+                                'last_4' => $payment->last_4,
+                                'transaction_id' => $response->id,
+                                'avs' => $response->avs,
                                 'note' => $payment->note
                             ]);
                         }
+                    }
+                    else 
+                    {
+                        OrderPayment::create([
+                            'order_id' => $order->id, 
+                            'method' => $payment->method,
+                            'amount' => $payment->amount, 
+                            'note' => $payment->note
+                        ]);
                     }
                 }
             }
@@ -310,16 +200,6 @@ class OrderService
                 $checkout->order_id = $order->id;
                 $checkout->completed_at = date('Y-m-d H:i:s');
                 $checkout->save();
-
-                // Check if the customer completed the order after coming
-                // from an abandoned cart.
-                $cutoff = date("Y-m-d H:i:s", strtotime('-2 hours'));
-                if($checkout->cart->recovered_at > $cutoff) 
-                {
-                    $order->source = 'Abandoned Cart';
-                    $order->saveWithHistory();
-                }
-
                 $checkout->cart->delete();
             }
             else
@@ -330,20 +210,6 @@ class OrderService
             }
             
             DB::commit();
-
-            if($checkout)
-            {
-                InventoryService::clearCheckoutHold($checkout->id);
-            }
-            else
-            {
-                InventoryService::clearDraftHold($draft->id);
-            }
-
-            if(!$pickup)
-            {
-                OrderService::autoVerify($order);
-            }
 
             return (object)[
                 'success' => true,
@@ -417,19 +283,6 @@ class OrderService
 
         try 
         {
-            $failed = InventoryService::claimInventory($items);
-
-            // If we were unable to claim the inventory then we can't complete the updated.
-            if(count($failed) > 0)
-            {
-                DB::rollback();
-                return (object)[
-                    'success' => false,
-                    'error' => 'There was not enough inventory to complete the order',
-                    'products' => $failed
-                ];
-            }
-
             // Get the items that have been removed.
             $toDelete = [];
             foreach($order->items as $item)
@@ -443,10 +296,6 @@ class OrderService
 
                 if(!$found) 
                 {
-                    // Add inventory back for the product.
-                    InventoryService::updateInventory($item->product_id, $item->quantity);
-                    
-                    // Track items to delete.
                     $toDelete[] = $item->id;
                 }
             }
@@ -473,6 +322,7 @@ class OrderService
                     // Add new items.
                     OrderItem::create([
                         'order_id' => $order->id, 
+                        'brand_id' => $item->brand_id,
                         'product_id' => $item->product->id, 
                         'sku' => $item->sku, 
                         'name' => $item->name, 
@@ -484,51 +334,7 @@ class OrderService
                 }
             }
 
-              // Replace the order shipments.
-              if($data && isset($data->shippingUpdated) && $data->shippingUpdated)
-              {
-                  OrderShipment::where('order_id', $order->id)->delete();
-                  OrderShipmentItem::where('order_id', $order->id)->delete();
-                  foreach($data->shipments as $shipment)
-                  {
-                      $useDealer = $data->dealer && $shipment->ffl_required;
-                      $address = $useDealer ? $data->dealer : $shipment->address;
-  
-                      $ship = OrderShipment::create([
-                          'order_id' => $order->id,
-                          'dealer_id' => $data->dealer && $shipment->ffl_required ? $data->dealer_id : NULL,
-                          'ffl_required' => $shipment->ffl_required,
-                          'first_name' => $useDealer ? '' : $address->first_name,
-                          'last_name' => $useDealer ? '' : $address->last_name,
-                          'company' => $useDealer ? $data->dealer->name : $address->company ?? NULL,
-                          'address1' => $address->address1,
-                          'address2' => $address->address2 ?? NULL,
-                          'city' => $address->city,
-                          'state' => $address->state,
-                          'zip' => $address->zip,
-                          'phone' => $address->phone ?? NULL,
-                          'method' => $shipment->method ? $shipment->method->carrier . '-' . $shipment->method->service : '',
-                          'amount' => $shipment->method ? $shipment->method->price : ''
-                      ]);
-  
-                      foreach($shipment->items as $item)
-                      {
-                          
-                          $productId = $item->product_id ?? $data->items[$item->idx]->product->id;
-                          $orderItem = OrderItem::where('order_id', $order->id)
-                              ->where('product_id', $productId)
-                              ->first();
-  
-                          OrderShipmentItem::create([
-                              'shipment_id' => $ship->id,
-                              'order_id' => $order->id,
-                              'order_item_id' => $orderItem->id,
-                              'quantity' => $item->quantity
-                          ]);
-                      }
-                  }
-              }
-
+            
             DB::commit();
 
             return (object)[

@@ -18,12 +18,12 @@ class Customer extends Authenticatable
     
     protected $fillable = [
         'first_name', 'last_name', 'company', 'email', 'phone', 'group_id',
-        'notes', 'taxable', 'pay_later', 'accepts_emails', 'disabled', 'password'
+        'notes', 'taxable', 'accepts_emails', 'disabled', 'password'
     ];
 
     public $syncFields = [
         'first_name', 'last_name', 'company', 'email', 'phone', 'notes', 'group_id',
-        'taxable', 'accepts_emails', 'pay_later', 'disabled'
+        'taxable', 'accepts_emails', 'disabled'
     ];
 
     protected $withCount = ['orders'];
@@ -121,18 +121,6 @@ class Customer extends Authenticatable
     }
 
     //--------------------------------------------------------------------------
-
-    public function loadDealers()
-    {
-        return [];
-        $dealerIds = Order::where('customer_id', $this->id)
-            ->whereNotNull('dealer_id')
-            ->pluck('dealer_id')->toArray();
-
-        $this->dealers = Dealer::whereIn('id', $dealerIds)->get();
-        return $this->dealers;
-    }
-
 
     public function orderCount()
     {

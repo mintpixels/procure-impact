@@ -19,6 +19,10 @@ body {
     padding-top:75px;
 }
 
+h1, h2, h3, h4, h5, h6 {
+    font-family: $articulat;
+}
+
 .loader {
     height: 25px;
 }
@@ -377,6 +381,8 @@ textarea {
                 background: #fafafa;
                 padding:20px;
             }
+
+            line-height: 1.5em;
         }
 
         &:first-child {
@@ -1131,7 +1137,7 @@ ul.matches {
     margin-bottom: 30px;
   
     .timeline-source {
-      color:#dc6b06;
+      color:$accent;
       font-size:11px;
     }
   
@@ -1154,7 +1160,7 @@ ul.matches {
   
       .timeline-field {
         font-family: monospace;
-        color:#dc6b06;
+        color:$accent;
         display: block;
       }
   
@@ -1218,7 +1224,7 @@ ul.matches {
         -moz-border-radius: 7.5px;
         -webkit-border-radius: 7.5px;
         border-radius: 7.5px;
-        background-color: #dc6b06;
+        background-color: $accent;
         margin-right: 10px;
         opacity: .7;
       }

@@ -325,10 +325,11 @@
             </th> -->
             <th></th>
             <th v-on:click="sortTable('name')" class="clickable">Name</th>
+            <th>Brand</th>
             <th class="clickable text-center" v-on:click="sortTable('category_map_count')">Categories</th>
             <th class="clickable text-center">Variants</th>
             <th class="text-right">Price</th>
-            <th>Status</th>
+            <th class="text-center">Status</th>
           </tr>
         </head>
         <tbody>
@@ -336,17 +337,18 @@
             <!-- <td class="text-center">
               <input type="checkbox" class="product-check" v-model="product.checked" v-on:change="toggleCheck"/>
             </td> -->
-            <td>
+            
+            <td class="image">
               <img v-if="product.thumbnail" :src="product.thumbnail.indexOf('http') == 0 ? product.thumbnail : '{{ env('AWS_CDN_PRODUCTS_PATH') }}' + product.thumbnail" />
             </td>
             <td>
               <a :href="'/admin/products/' + product.id">${ product.name }</a>
             </td>
-           
+            <td>${ product.brand.name }</td>
             <td class="text-center">${ product.category_map_count }</td>
-            <td class="text-right">${ product.variants.length }</td>
+            <td class="text-center">${ product.variants.length }</td>
             <td class="text-right">${ formatMoney(product.variants[0].price) }</td>
-            <td>
+            <td class="text-center">
               <span class="live" v-if="product.published_at">Live</span>
               <span class="draft" v-else>Draft</span>
             </td>
