@@ -33,6 +33,7 @@ class Customer {
                         taxable: 1
                     },
                     groups: [],
+                    buyers: [],
                     metrics: {
                         cancelled: 0,
                         orders: 13,
@@ -148,9 +149,8 @@ class Customer {
         let ctx = this;
         axios.get(`/admin/data/customers/${this.id}`).then(function (response) {
             ctx.loadCustomer(response.data.customer);
-            ctx.vm.groups = response.data.groups;
             ctx.vm.metrics = response.data.metrics;
-            ctx.vm.dealers = response.data.dealers;
+            ctx.vm.buyers = response.data.buyers;
             ctx.vm.loaded = true;
         });
     }
@@ -189,7 +189,9 @@ class Customer {
             pay_later: customer.pay_later,
             disabled: customer.disabled,
             password: customer.password,
-            addresses: customer.addresses
+            addresses: customer.addresses,
+            buyer_id: customer.buyer_id,
+            type: customer.type
         }
     }
 

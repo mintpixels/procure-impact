@@ -80,13 +80,15 @@ class CustomerController extends CrudController
     */
     public function customer(Customer $customer)
     {
-        $groups = []; // CustomerGroup::orderBy('name')->get();
+        $groups = [];
+        $buyers = Buyer::orderBy('name')->get();
 
         $customer->load('addresses');
         $customer->load('recentOrders');
         return response()->json([
             'customer' => $customer,
             'groups' => $groups,
+            'buyers' => $buyers,
             'metrics' => $customer->metrics()
         ]);
     }

@@ -14,13 +14,16 @@
         <a v-on:click="filterOrders('All')">All</a>
       </li>
       <li :class="{ active: filter == 'Submitted' }">
-        <a v-on:click="filterOrders('Submitted')">Submitted</a>
+        <a v-on:click="filterOrders('Submitted')">Submitted ({{ $counts->submitted }})</a>
       </li>
       <li :class="{ active: filter == 'Approved' }">
-        <a v-on:click="filterOrders('Approved')">Approved</a>
+        <a v-on:click="filterOrders('Approved')">Approved ({{ $counts->approved }})</a>
+      </li>
+      <li :class="{ active: filter == 'Awaiting Fulfillment' }">
+        <a v-on:click="filterOrders('Awaiting Fulfillment')">Awaiting Fulfillment ({{ $counts->waiting }})</a>
       </li>
       <li :class="{ active: filter == 'Completed' }">
-        <a v-on:click="filterOrders('Completed')">Completed</a>
+        <a v-on:click="filterOrders('Completed')">Completed ({{ $counts->completed }})</a>
       </li>
     </ul>
   </div>

@@ -74,17 +74,17 @@
         </div>
 
         <div class="field">
-          <label>Buyer</label>
-          <select v-model="customer.group_id">
-            <option v-for="group in groups" :value="group.id">${ group.name }</option>
+          <label>Purchaser</label>
+          <select v-model="customer.buyer_id">
+            <option v-for="buyer in buyers" :value="buyer.id">${ buyer.name }</option>
           </select>
         </div>
 
         <div class="field">
             <label for="name">Type</label>
-            <select name="type" required>
-                <option @if($customer && $customer->type == 'Wholesale') selected @endif>Wholesale</option>
-                <option @if($customer && $customer->type == 'Retail') selected @endif>Retail</option>
+            <select name="type" required v-model="customer.type">
+                <option>Wholesale</option>
+                <option>Retail</option>
             </select>
         </div>
 

@@ -84,6 +84,13 @@ class Order extends WithHistory
         return $query->whereIn('status', ['Completed']);
     }
 
+    public static function waiting($query = false)
+    {
+        if(!$query) $query = Order::query();
+
+        return $query->whereIn('status', ['Awaiting Fulfillment']);
+    }
+
 
     /**
      * Get a list of all order tags.

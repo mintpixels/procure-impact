@@ -49,7 +49,8 @@ class OrderController extends Controller
             'counts' => (object) [
                 'submitted' => Order::submitted()->count(),
                 'approved' => Order::approved()->count(),
-                'completed' => Order::completed()->count()
+                'completed' => Order::completed()->count(),
+                'waiting' => Order::waiting()->count()
             ]
         ]);
     }
@@ -174,6 +175,9 @@ class OrderController extends Controller
         }
         else if($filter == 'Completed') {
             Order::completed($orders);
+        }
+        else if($filter == 'Awaiting Fulfillment') {
+            Order::waiting($orders);
         }
     }
 

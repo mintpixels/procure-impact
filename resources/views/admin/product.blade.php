@@ -105,7 +105,7 @@
         <h5>
           Images / Video
           <a class="small" v-on:click="showModal('add-image')">+ Images</a>
-          <a class="small" v-on:click="showModal('add-video')">+ Video</a>
+          <!-- <a class="small" v-on:click="showModal('add-video')">+ Video</a> -->
         </h5>
         <div class="images product-images" v-if="product.images">
           <draggable v-model="product.images" item-key="master" @end="imagesSorted">

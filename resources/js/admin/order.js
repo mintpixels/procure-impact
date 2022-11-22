@@ -430,7 +430,7 @@ class Order {
                 
                     // Must be a customer assigned.
                     return this.order.customer && this.order.customer.email && // Customer is set
-                        this.order.taxCalculated && // Tax is calculated
+                        // this.order.taxCalculated && // Tax is calculated
                         this.order.items.length > 0 && // At least one item
                         this.addressComplete(this.order.billing);
                 },

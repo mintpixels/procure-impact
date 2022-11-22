@@ -17,13 +17,13 @@ class Customer extends Authenticatable
     protected $hidden = ['password'];
     
     protected $fillable = [
-        'first_name', 'last_name', 'company', 'email', 'phone', 'group_id',
-        'notes', 'taxable', 'accepts_emails', 'disabled', 'password'
+        'first_name', 'last_name', 'company', 'email', 'phone',
+        'notes', 'taxable', 'accepts_emails', 'disabled', 'password', 'type'
     ];
 
     public $syncFields = [
-        'first_name', 'last_name', 'company', 'email', 'phone', 'notes', 'group_id',
-        'taxable', 'accepts_emails', 'disabled'
+        'first_name', 'last_name', 'company', 'email', 'phone', 'notes',
+        'taxable', 'accepts_emails', 'disabled', 'buyer_id', 'type'
     ];
 
     protected $withCount = ['orders'];
