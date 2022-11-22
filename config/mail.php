@@ -2,6 +2,15 @@
 
 return [
 
+    'username' => env('POSTMARK_TOKEN'),
+    'password' => env('POSTMARK_TOKEN'),
+    
+    'host' => env('MAIL_HOST', 'smtp.postmarkapp.com'),
+    'driver' => env('MAIL_DRIVER', 'smtp'), 
+    
+    'port' => env('MAIL_PORT', 587),
+    'encryption' => env('MAIL_ENCRYPTION', 'tls'),
+
     /*
     |--------------------------------------------------------------------------
     | Default Mailer

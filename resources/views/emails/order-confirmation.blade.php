@@ -18,9 +18,13 @@ Your order contains the following items:
                     {{ $item->quantity }}
                 </td>
                 <td style="padding:20px;">
-                    <a href="https://aimsurplus.com/{{ $item->product->handle }}/">{{ $item->product->name }}</a>
+                    <a href="{{ url('/products/' . $item->product->handle) }}/">{{ $item->product->name }}</a>
                     <br>
-                    {{ strtoupper($item->product->sku) }}
+                    @if($item->variant->name)
+                        {{ $item->variant->name }}
+                        <br>
+                    @endif
+                    {{ $item->brand->name }}
                     <br>
                     
                     @if($item->properties && count($item->properties) > 0)
@@ -44,18 +48,7 @@ Your order contains the following items:
             <td>Subtotal</td>
             <td style="text-align:right">${{ $order->subtotal }}</td>
         </tr>
-        @if($order->shipping > 0)
-        <tr>
-            <td>Shipping</td>
-            <td style="text-align:right">${{ $order->shipping }}</td>
-        </tr>
-        @endif
-        @if($order->insurance  > 0)
-        <tr>
-            <td>Insurance</td>
-            <td style="text-align:right">${{ $order->insurance }}</td>
-        </tr>
-        @endif
+     
         @if($order->tax > 0)
         <tr>
             <td>Tax</td>
@@ -70,24 +63,5 @@ Your order contains the following items:
 </table>
 
 <div style="clear:both"></div>
-
-<?php $laser = false; ?>
-@foreach($order->items as $item)
-    @if(in_array('Laser', $item->product->tagArray()))
-        <?php $laser = true; ?>
-    @endif
-@endforeach
-
-@if($laser)
-   @include('emails.laser-snippet')
-@endif
-
-<br>
-Thank you for your business and we look forward to serving you in the future!
-<br><br>
-<b>AimSurplus, Llc.</b><br>
-<b>Phone:</b> 888-748-5252<br>
-<b>Email:</b> sales@aimsurplus.com<br>
-<b>Website:</b> www.aimsurplus.com 
 
 @stop

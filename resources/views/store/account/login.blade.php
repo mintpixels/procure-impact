@@ -2,18 +2,19 @@
 
 @section('content')
 
-<div id="login-page" class="padded-content page">
-    <h1>Account Sign In</h1>
+<div id="login-page" class="padded-content page" style="max-width:500px;margin:auto">
+<br><br><br>
+    <h1 style="margin-bottom:40px">Account Sign In</h1>
             
     <form action="/account/login" method="post">
         
         <div class="field">
-            <label>Email</label>
+            <label style="font-size:18px">Email</label>
             <input type="email" name="email" />
         </div>
 
         <div class="field">
-            <label>Password</label>
+            <label style="font-size:18px">Password</label>
             <input type="password" name="password" />
         </div>
 
@@ -25,7 +26,8 @@
 
         <div class="form-actions">
             <button>Sign In</button>
-            <a class="forgot-password" href="/account/forgot">Forgot your password?</a>
+            <!-- &nbsp;&nbsp;
+            <a class="forgot-password" href="/account/forgot">Forgot your password?</a> -->
         </div>
     </form>
 </div>

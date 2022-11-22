@@ -13,9 +13,12 @@
     </head>
     <body class="login">
 
-        <div id="login-box">
+        <div id="login-box" style="max-width:400px;margin:auto">
             <form method="post" action="/admin/login">
                 @csrf
+
+                <img src="/img/logo.svg" style="height:60px">
+                <br><br>
 
                 <div class="field">
                     <label>Email</label>

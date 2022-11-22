@@ -504,7 +504,7 @@ class OrderController extends Controller
                     Mail::to($result->order->email)->send(new OrderConfirmation($result->order));
                 }
                 else {
-                    Mail::to('aimtest@ryanas.com')->send(new OrderConfirmation($result->order));
+                    Mail::to('procure@ryanas.com')->send(new OrderConfirmation($result->order));
                 }
 
                 $result->order->saveWithHistory('Order confirmation sent to ' . $result->order->email, false, '', false, true);

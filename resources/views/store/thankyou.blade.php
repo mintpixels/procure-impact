@@ -6,20 +6,23 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" value="{{ csrf_token() }}">
 
-        <title>AimSurplus, LLC</title>
+        <title>Procure Impact</title>
 
-        <link href="https://fonts.googleapis.com/css?family=Montserrat:400,500,700|Saira:100, 200, 300,400,500,600,700,900|Teko:300,500" rel="stylesheet">
-        <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-oi8o31xSQq8S0RpBcb4FaLB8LJi9AT8oIdmS1QldR8Ui7KUQjNAnDlJjp55Ba8FG" crossorigin="anonymous">
-        <link rel="stylesheet" href="/css/store.css" />
-    
-        <script src="https://cdn.jsdelivr.net/npm/vue@3.2.41/dist/vue.global.min.js"></script>
+        <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,500,600,700" rel="stylesheet">
+        <link href="https://fonts.googleapis.com/css?family=Inter:400,500,600,700" rel="stylesheet">
+        <link rel="stylesheet" href="https://use.typekit.net/shl1pyf.css">
+        <script src="https://kit.fontawesome.com/21e055b1b3.js" crossorigin="anonymous"></script>
+        
+        <link rel="stylesheet" href="{{ mix('/css/store.css') }}" />
+
+        @yield('head')
        
     </head>
     <body class="checkout thankyou">
 
         <header>
             <a href="/">
-                <img src="https://cdn11.bigcommerce.com/s-admq3scrtq/stencil/bb6e2680-7465-0139-0bad-32a6417f3c7a/e/a0fe7ea0-5f2b-0139-4d5e-266e81368fc3/img/store-logo.png">
+                <img src="{{ asset('img/logo.svg') }}" style="width:175px" />
             </a>
         </header>
 
@@ -37,7 +40,7 @@
                         <th>Qty</th>
                         <th></th>
                         <th>Product</th>
-                        <th>Price</th>
+                        <th class="text-right">Price</th>
                     </tr>
                 </thead>
                 <tbody>
@@ -48,10 +51,16 @@
                                 {{ $item->quantity }}
                             </td>
                             <td style="max-width:50px; max-height:50px;" >
-                                <img src="{{ stripos($item->product->thumbnail, 'https') !== FALSE ? $item->product->thumbnail : env('AWS_CDN_PRODUCTS_PATH') . $item->product->thumbnail }}" style="max-width:50px; max-height:50px;" />
+                                <img src="{{ $item->product->thumbnail }}" style="max-width:100px; max-height:100px;" />
                             </td>
                             <td>
-                                <a href="https://aimsurplus.com/{{ $item->product->handle }}/">{{ $item->product->name }}</a>
+                                <a href="{{ url('/products/' . $item->product->handle) }}/">{{ $item->product->name }}</a>
+                                <br>
+                                @if($item->variant->name)
+                                    {{ $item->variant->name }}
+                                    <br>
+                                @endif
+                                {{ $item->brand->name }}
                                 <br>
                                 {{ strtoupper($item->product->sku) }}<br>
                                 @if($item->properties && count($item->properties) > 0)

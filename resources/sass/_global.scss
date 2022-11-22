@@ -123,6 +123,46 @@ h6 {
     }
 }
 
+input[type=text],
+input[type=password],
+input[type=email],
+input[type=number],
+select {
+    width:100%;
+    padding:10px;
+    border:1px solid #ccc;
+    border-radius: 3px;
+    outline: none;
+
+    &.light {
+        border-color: #eee;
+    }
+}
+
+.field {
+    margin-bottom: 20px;
+    position: relative;
+
+    &.collapse {
+        margin-bottom: 5px;
+    }
+    
+    &:last-child {
+        margin-bottom: 0;
+    }
+    
+    label {
+        display: block;
+        margin-bottom: 5px;
+        font-size: 15px;
+    }
+
+    &.checkbox {
+        margin-bottom: 10px;
+    }
+}
+
+
 @media only screen and (max-width: 600px)  {
     
     .columns.layout {
