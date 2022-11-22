@@ -16,14 +16,11 @@
       <li :class="{ active: filter == 'Submitted' }">
         <a v-on:click="filterOrders('Submitted')">Submitted</a>
       </li>
-      <li :class="{ active: filter == 'Reviewed' }">
-        <a v-on:click="filterOrders('Reviewed')">Reviewed</a>
-      </li>
       <li :class="{ active: filter == 'Approved' }">
         <a v-on:click="filterOrders('Approved')">Approved</a>
       </li>
-      <li :class="{ active: filter == 'Approved' }">
-        <a v-on:click="filterOrders('Approved')">Approved</a>
+      <li :class="{ active: filter == 'Completed' }">
+        <a v-on:click="filterOrders('Completed')">Completed</a>
       </li>
     </ul>
   </div>

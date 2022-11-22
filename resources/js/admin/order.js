@@ -36,6 +36,7 @@ class Order {
                     changed: false,
                     readonly: false,
                     submitting: false,
+                    brandId: '',
                     order: {
                         id: '',
                         items: [],
@@ -371,21 +372,15 @@ class Order {
                     })
                 },
 
-                verifyOrder() {
-                    ctx.verifyOrder();
-                },
-
-                unverifyOrder() {
-                    ctx.unverifyOrder();
-                },
-
                 updateStatus(status) {
                     ctx.updateOrderStatus(status);
                     this.showActions = false;
                 },
 
-                holdOrder() {
-                    ctx.updateOrderStatus('Held');
+                approveOrder() {
+                    if(window.confirm('Approve this order?')) {
+                        ctx.updateOrderStatus('Approved');
+                    }
                     this.showActions = false;
                 },
 
@@ -792,6 +787,7 @@ class Order {
     }
 
     setOrder(response) {
+        this.vm.brandId = response.data.brand_id;
         this.vm.order = response.data.order;
         this.vm.loaded = true;
         this.vm.timeline = response.data.timeline;
@@ -916,8 +912,10 @@ class Order {
         let subtotal = 0;
         for(var i = 0; i < this.vm.order.items.length; i++) {
             let item = this.vm.order.items[i];
-            subtotal += parseFloat(item.customPrice) * parseInt(item.quantity);
-            subtotal = Math.round(subtotal * 100) / 100;
+            if(!this.vm.brandId || this.vm.brandId == item.brand_id) {
+                subtotal += parseFloat(item.customPrice) * parseInt(item.quantity);
+                subtotal = Math.round(subtotal * 100) / 100;
+            }
         }
 
         // If the subtotals have changed then we need to recalculate the tax.

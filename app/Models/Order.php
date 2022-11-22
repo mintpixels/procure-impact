@@ -62,65 +62,28 @@ class Order extends WithHistory
         // }
     }
 
-    /**
-     * Get orders that need to be verified.
-     */
-    public static function unverified($query = false)
+
+    public static function submitted($query = false)
     {
         if(!$query) $query = Order::query();
 
-        return $query->whereNull('verified_at')
-            ->whereIn('status', ['New'])
-            ->withCount('shipments')
-            ->having('shipments_count', '>', 0);
+        return $query->whereIn('status', ['Submitted']);
     }
 
-    /**
-     * Get orders that haven't had payment captured.
-     */
-    public static function unpaid($query = false)
+    public static function approved($query = false)
     {
         if(!$query) $query = Order::query();
 
-        return $query->whereNotNull('completed_at')
-            ->where('id', '>', 995000)
-            ->whereHas('payments', function($q){
-                $q->whereNotNull('transaction_id')->whereNull('captured_at');
-            })->get();
+        return $query->whereIn('status', ['Approved']);
     }
 
-    /**
-     * Get orders that haven't shipped.
-     */
-    public static function unshipped($query = false)
+    public static function completed($query = false)
     {
         if(!$query) $query = Order::query();
 
-        return $query->whereNotNull('verified_at')
-            ->whereNull('completed_at')
-            ->where('id', '>', 980000)
-            ->whereNotIn('status', ['Cancelled', 'Refunded', 'Completed']);
+        return $query->whereIn('status', ['Completed']);
     }
 
-    /**
-     * Get orders that are being held.
-     */
-    public static function held($query = false)
-    {
-        if(!$query) $query = Order::query();
-
-        return $query->where('status', 'Held');
-    }
-
-    /**
-     * Get orders that are awaiting pickup.
-     */
-    public static function pickup($query = false)
-    {
-        if(!$query) $query = Order::query();
-
-        return $query->where('status', 'Awaiting Pickup');
-    }
 
     /**
      * Get a list of all order tags.

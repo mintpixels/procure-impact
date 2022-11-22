@@ -106,6 +106,13 @@ class ProductController extends Controller
             ->with('variants')
             ->with('brand')
             ->take(50);
+
+        if(!Auth::user()->isAdmin())
+        {
+            $products->where('brand_id', Auth::user()->brand_id);
+        }
+    
+        
         $filtered = false;
 
         if($search || $r->category || $r->pricerule || $r->tag || $r->property)

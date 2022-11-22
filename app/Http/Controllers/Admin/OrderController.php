@@ -47,7 +47,9 @@ class OrderController extends Controller
         return view('admin.orders')->with([
             'page' => 'orders',
             'counts' => (object) [
-                // 'unverified' => Order::unverified()->count(),
+                'submitted' => Order::submitted()->count(),
+                'approved' => Order::approved()->count(),
+                'completed' => Order::completed()->count()
             ]
         ]);
     }
@@ -83,27 +85,6 @@ class OrderController extends Controller
             ]);
         }
 
-        if($r->search)
-        {
-            $product = Product::where('sku', $r->search)->first();
-            if($product)
-            {
-                $orders = Order::orderBy('id', 'DESC')
-                ->whereHas('items', function($q) use($product) {
-                    $q->where('sku', $product->sku);
-                })->with('customer')
-                ->withCount('items')
-                ->with('payments')
-                ->with('billing')
-                ->with('draft')->get();
-
-                return response()->json([
-                    'orders' => $orders
-                ]);
-
-            }
-        }
-
         $page = $r->page ?? 0;
 
         $orders = Order::orderBy('id', 'DESC')
@@ -114,6 +95,12 @@ class OrderController extends Controller
             ->with('draft')
             ->take(250)
             ->offset(250*$page);
+
+        if(!Auth::user()->isAdmin())
+        {
+            $orderIds = OrderItem::where('brand_id', Auth::user()->brand_id)->pluck('order_id')->toArray();
+            $orders->whereIn('id', $orderIds);
+        }
         
         if($r->search)
             $orders->where('search', 'like', '%'.$r->search.'%');
@@ -138,13 +125,37 @@ class OrderController extends Controller
             $customer = Customer::find($r->customer_id);
         }
 
-        $filter = $r->filter ?? 'Unverified';
+        $filter = $r->filter ?? 'All';
         if($filter) {
             $this->filterOrders($orders, $filter);
         }
 
+        $orders = $orders->get();
+        if(!Auth::user()->isAdmin())
+        {
+            foreach($orders as $order)
+            {
+                $items = [];
+                $itemCount = 0;
+                $itemTotal = 0;
+                foreach($order->items as $item)
+                {
+                    if($item->brand_id == Auth::user()->brand_id)
+                    {
+                        $items[] = $item;
+                        $itemCount += $item->quantity;
+                        $itemTotal += $item->line_price;
+                    }
+                }
+
+                $order->items = $items;
+                $order->total = $itemTotal;
+                $order->items_count = $itemCount;
+            }
+        }
+
         return response()->json([
-            'orders' => $orders->get(),
+            'orders' => $orders,
             'product' => $product,
             'customer' => $customer
         ]);
@@ -155,26 +166,14 @@ class OrderController extends Controller
      */
     private function filterOrders($orders, $filter)
     {
-        if($filter == 'Unverified') {
-            Order::unverified($orders);
+        if($filter == 'Submitted') {
+            Order::submitted($orders);
         }
-        else if($filter == 'Pickup') {
-            Order::pickup($orders);
+        else if($filter == 'Approved') {
+            Order::approved($orders);
         }
-        else if($filter == 'Unshipped') {
-            Order::unshipped($orders);
-        }
-        else if($filter == 'Shipping Problem') {
-            $orders->whereStatus('Shipping Problem');
-        }
-        else if($filter == 'Unpaid') {
-            Order::unpaid($orders);
-        }
-        else if($filter == 'Held') {
-            Order::held($orders);
-        }
-        else if($filter == 'Service') {
-            $orders->whereIn('status', ['Pending Service', 'Pickup Pending Service']);
+        else if($filter == 'Completed') {
+            Order::completed($orders);
         }
     }
 
@@ -200,7 +199,8 @@ class OrderController extends Controller
         return response()->json([
             'order' => $order,
             'timeline' => $order->timeline(),
-            'tags' => []
+            'tags' => [],
+            'brand_id' => Auth::user()->isAdmin() ? '' : Auth::user()->brand_id
         ]);
     }
 
@@ -704,8 +704,14 @@ class OrderController extends Controller
             ->select('id', 'brand_id', 'name', 'sku',  'thumbnail', 'available')
             ->with('variants')
             ->with('brand')
-            ->orderBy('available', 'desc')
-            ->get();
+            ->orderBy('available', 'desc');
+
+        if(!Auth::user()->isAdmin())
+        {
+            $products->where('brand_id', Auth::user()->brand_id);
+        }
+
+        $products = $products->get();
 
         // See if there are any discounted prices for the products.
         foreach($products as $product) 

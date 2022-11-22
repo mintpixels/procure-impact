@@ -21,25 +21,20 @@
         ${ order.status }
       </span>
 
-      <div class="actions" v-if="!changed && ['Cancelled'].indexOf(order.status) < 0">
+      @if(Auth::user()->isAdmin())
+      <div class="actions" v-if="!changed && ['Cancelled', 'Completed'].indexOf(order.status) < 0">
         <span style="font-size:12px" v-on:click="showActions = !showActions">Actions <i class="fa-solid fa-circle-chevron-down"></i></span>
         <div class="action-list">
-          <div v-if="['Held', 'Problem', 'Shipping Problem', 'Pending Service'].indexOf(order.status) >= 0 && ['Awaiting Pickup'].indexOf(order.status) < 0">
-            <span v-on:click="updateStatus('Awaiting Fulfillment')">Send to Picking</span>
-            <span v-on:click="updateStatus('In Shipping')">Send to Shipping</span>
-          </div>
-          <div v-if="['Cancelled', 'Completed', 'Awaiting Pickup'].indexOf(order.status) < 0">
-            <span v-on:click="holdOrder" v-if="['Held', 'Problem'].indexOf(order.status) < 0">Hold Order</span>
-            <span v-on:click="showProblem" v-if="['Problem'].indexOf(order.status) < 0">Mark as Problem</span>
+          <div>
+            <span v-on:click="approveOrder">Approve Order</span>
           </div>
           <div>
             <span v-on:click="completeOrder">Complete Order</span>
           </div>
           <span v-if="['In Shipping'].indexOf(order.status) < 0" v-on:click="showCancelOrder">Cancel Order</span>
-
-          <span v-on:click="printInvoice()">Print Invoice</span>
         </div>
       </div>
+      @endif
   </h1>
   <div class="subtitle">
     ${ formatDate(order.created_at) } 
@@ -233,60 +228,63 @@
 
 
         <div class="line-items">
-          <div class="line-item" v-for="(item, i) in order.items">
+          <template v-for="(item, i) in order.items">
+            ${ order.brand_id }
+            <div class="line-item" v-if="!brandId || brandId == item.brand_id">
 
-            <div class="item-quantity" :class="{ underStocked: item.underStocked }">
-                <input type="text" name="quantity" v-model="item.quantity" v-on:change="itemUpdated(item, i)" min="0" :readonly="readonly" autocomplete="dontdoit" :disabled="readonly" />
-                <div class="qty-warning">max: <span>${ item.min }</span></div>
+              <div class="item-quantity" :class="{ underStocked: item.underStocked }">
+                  <input type="text" name="quantity" v-model="item.quantity" v-on:change="itemUpdated(item, i)" min="0" :readonly="readonly" autocomplete="dontdoit" :disabled="readonly" />
+                  <div class="qty-warning">max: <span>${ item.min }</span></div>
+              </div>
+
+              <div class="item-image">
+                <img v-if="item.product.thumbnail" :src="item.product.thumbnail.indexOf('http') == 0 ? item.product.thumbnail : '{{ env('AWS_CDN_PRODUCTS_PATH') }}' + item.product.thumbnail" />
+              </div>
+
+              <div class="item-info">
+                                  
+                  <div class="item-name">
+                    <a :href="'/admin/products/' + item.product.id">${ item.product.name }</a>
+                    <div class="variant" v-if="item.variant">${ item.variant.name }</div>
+                    <div class="brand">${ item.product.brand.name }</div>
+                  </div>
+
+                  <div class="item-sku">
+                      ${ item.sku }
+                      <br>
+                      <span class="clickable" v-on:click="setItemPrice(item, item.price)">${ formatMoney(item.price) }</span>
+                      <span v-if="item.customPrice && item.price != item.customPrice">
+                          / <b>${ formatMoney(item.customPrice) }</b>
+                      </span>
+                      <div class="item-options" v-if="item.properties && item.properties.length > 0">
+                          <div class="item-option" v-for="prop in item.properties">
+                              <span class="option-name">${ prop.name }:</span>
+                              <span class="option-value">${ prop.value }</span>
+                          </div>
+                      </div>
+                  </div>
+              </div>
+
+              <div class="break"></div>
+
+              <div class="item-price input-with-label">
+                  <span>$</span>
+                  <input type="text" name="price" v-model="item.customPrice" :readonly="readonly" :disabled="readonly" />
+              </div>
+              <div class="item-total-quantity">
+                x ${ item.quantity }
+              </div>
+
+              <div class="item-total">
+                  ${ formatMoney(item.customPrice * item.quantity) }
+              </div>
+
+              <div class="remove-item" v-if="!readonly">
+                  <i class="fal fa-times" v-on:click="removeItem(i)"></i>
+              </div>
+
             </div>
-
-            <div class="item-image">
-              <img v-if="item.product.thumbnail" :src="item.product.thumbnail.indexOf('http') == 0 ? item.product.thumbnail : '{{ env('AWS_CDN_PRODUCTS_PATH') }}' + item.product.thumbnail" />
-            </div>
-
-            <div class="item-info">
-                                
-                <div class="item-name">
-                  <a :href="'/admin/products/' + item.product.id">${ item.product.name }</a>
-                  <div class="variant" v-if="item.variant">${ item.variant.name }</div>
-                  <div class="brand">${ item.product.brand.name }</div>
-                </div>
-
-                <div class="item-sku">
-                    ${ item.sku }
-                    <br>
-                    <span class="clickable" v-on:click="setItemPrice(item, item.price)">${ formatMoney(item.price) }</span>
-                    <span v-if="item.customPrice && item.price != item.customPrice">
-                        / <b>${ formatMoney(item.customPrice) }</b>
-                    </span>
-                    <div class="item-options" v-if="item.properties && item.properties.length > 0">
-                        <div class="item-option" v-for="prop in item.properties">
-                            <span class="option-name">${ prop.name }:</span>
-                            <span class="option-value">${ prop.value }</span>
-                        </div>
-                    </div>
-                </div>
-            </div>
-
-            <div class="break"></div>
-
-            <div class="item-price input-with-label">
-                <span>$</span>
-                <input type="text" name="price" v-model="item.customPrice" :readonly="readonly" :disabled="readonly" />
-            </div>
-            <div class="item-total-quantity">
-              x ${ item.quantity }
-            </div>
-
-            <div class="item-total">
-                ${ formatMoney(item.customPrice * item.quantity) }
-            </div>
-
-            <div class="remove-item" v-if="!readonly">
-                <i class="fal fa-times" v-on:click="removeItem(i)"></i>
-            </div>
-
-          </div>
+          </template>
 
         </div>
       
@@ -304,6 +302,7 @@
         <textarea v-model="order.staff_notes"></textarea>
       </div>
 
+      @if(Auth::user()->isAdmin())
       <div class="section" v-if="timeline.length > 0">
         <h3>Timeline</h3>
         <div class="timeline">
@@ -335,6 +334,8 @@
         </div>
       </div>
 
+      @endif
+
     </div>
 
     <div class="secondary column">
@@ -354,13 +355,6 @@
               <td>Shipping</td>
               <td class="text-right">${ formatMoney(order.shipping) }</td>
             </tr>
-            <tr v-if="order.insurance">
-              <td>Insurance</td>
-              <td class="text-right" >
-                ${ formatMoney(order.insurance) }
-                <span v-if="order.insuranceIncluded">(inc)</span>
-              </td>
-            </tr>
             <!-- <tr v-if="order.taxCalculated">
               <td>Tax</td>
               <td class="text-right">${ formatMoney(order.tax) }</td>
@@ -369,10 +363,12 @@
               <td>Tax</td>
               <td class="text-right"><a v-on:click="getTax">calculate</a></td>
             </tr> -->
+            @if(Auth::user()->isAdmin())
             <tr>
               <td>Tax</td>
               <td class="text-right">${ formatMoney(0) }</td>
             </tr>
+            @endif
             <tr class="total">
               <td>Total</td>
               <td class="text-right">${ formatMoney(order.total) }</td>
@@ -381,6 +377,7 @@
         </table>
       </div>
 
+      @if(Auth::user()->isAdmin())
       <div class="section summary payments">
         <h5>Payments</h5>
         <table>
@@ -412,6 +409,7 @@
           <a v-on:click="setupPayment();showModal('add-payment')">Add Payment</a>
         </div>
       </div>
+      @endif
 
       <!------------------------------------------------------------------------------>
 
@@ -420,14 +418,22 @@
         <h5>Customer</h5>
 
         <div v-if="order.customer">
+          @if(Auth::user()->isAdmin())
           <a v-if="order.customer.id" :href="'/admin/customers/' + order.customer.id">${ customerName(order.customer) }</a>
-          <span v-else>${ customerName(order.customer) }</span>
+          @else
+          <spam>${ customerName(order.customer) }</span>
+          @endif
+          
           <br>
           ${ order.customer.email }<br>
           <div v-if="order.customer.phone">
             ${ order.customer.phone }
           </div>
+
+
+          @if(Auth::user()->isAdmin())
           <a v-on:click="removeCustomer" v-if="!readonly">remove</a>
+          @endif
         </div>
         <div class="relative" v-else>
           <input type="text" class="light" v-model="customerLookup" @keyup="lookupCustomer(customerLookup)" :readonly="readonly" placeholder="Search customers" />
@@ -473,9 +479,11 @@
             ${ order.billing.city }, ${ order.billing.state } ${ order.billing.zip }<br>
             ${ order.billing.phone }
         </div>
+        @if(Auth::user()->isAdmin())
         <div class="field text-right">
-            <a v-on:click="editBillingAddress">Edit Billing</a>
-          </div>
+          <a v-on:click="editBillingAddress">Edit Billing</a>
+        </div>
+        @endif
       </div>
 
       <!------------------------------------------------------------------------------>
