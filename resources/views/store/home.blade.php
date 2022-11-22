@@ -79,7 +79,7 @@
             <div class="section-content">
                 <div class="avatar">
                     <div class="image">
-                        <img :src="getImagePath(section.avatar.path)" />
+                        <img :src="getImagePath(section.avatar.path)" style="border-radius: 50%;max-width: 200px;" />
                     </div>
                 </div>
                 <div class="content">
