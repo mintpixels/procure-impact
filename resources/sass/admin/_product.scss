@@ -116,7 +116,7 @@
             }
 
             &.selected {
-                background-color: $orange;
+                background-color: $blue;
                 color:#fff;
 
                 .path {
@@ -124,6 +124,16 @@
                 }
             }
         }
+    }
+
+    .remove-property {
+        float:right;
+        opacity: .3;
+    }
+
+    li:hover .remove-property {
+        color:red;
+        opacity: 1;
     }
 
     .filter-exclude {

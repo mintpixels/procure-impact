@@ -10,6 +10,7 @@ use App\Http\Controllers\Admin\ProductController as AdminProductController;
 use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
+use App\Http\Controllers\Admin\PropertyController as AdminPropertyController;
 
 
 use App\Http\Controllers\Store\PageController as StorePageController;
@@ -166,6 +167,11 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function ()
     Route::post('categories/update', [AdminCategoryController::class, 'updateCategories']);
     Route::get('data/categories', [AdminCategoryController::class, 'categories']);
     Route::get('data/categories/{id}', [AdminCategoryController::class, 'category']);
+
+    Route::get('properties', [AdminPropertyController::class, 'propertiesView']);
+    Route::post('properties', [AdminPropertyController::class, 'save']);
+    Route::post('properties/{property}/values', [AdminPropertyController::class, 'saveValues']);
+    Route::get('data/properties', [AdminPropertyController::class, 'properties']);
     
     Route::get('customers',  [AdminCustomerController::class, 'list']);
     Route::get('customers/create', [AdminCustomerController::class, 'createCustomerView']);

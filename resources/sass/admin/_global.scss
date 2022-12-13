@@ -471,6 +471,22 @@ input.item-qty {
         padding:10px;
     }
 
+    &.thin {
+        button {
+            height: 30px;
+            padding:5px;
+        }
+
+        .clear-input {
+            height:30px;
+        }
+
+        input[type=text],
+        input[type=number] {
+            height: 30px;
+        }
+    }
+
     &.with-quantity {
         input[type=text] {
             width: calc(100% - 200px);
@@ -507,7 +523,7 @@ input.item-qty {
 .tooltip {
     position: relative;
     i {
-        color:$orange;
+        color:$blue;
         font-size:14px;
         margin:0 10px;
     }
@@ -516,7 +532,7 @@ input.item-qty {
         top: -10px;
         left:40px;
         background-color: #fff;
-        border:1px solid $orange;
+        border:1px solid $blue;
         padding:15px;
         width: 300px;
         opacity: 0;
@@ -939,8 +955,8 @@ input.item-qty {
     top: 10px;
     right: 10px;
     background-color: #fff;
-    color:$orange;
-    border:1px solid $orange;
+    color:$blue;
+    border:1px solid $blue;
     padding:15px;
     max-width: 300px;
     opacity: 0;
@@ -960,7 +976,7 @@ input.item-qty {
     }
 
     &.error {
-        background-color: $orange;
+        background-color: $blue;
         color:#fff;
         text-align: left;
 
@@ -1361,14 +1377,14 @@ ul.rules {
         margin-right: 10px;
 
         &.action {
-            background-color: $orange;
+            background-color: $blue;
             color:#fff;
             cursor: pointer;
 
             &.alt {
                 background-color: #fff;
-                border: 1px solid $orange;
-                color:$orange;
+                border: 1px solid $blue;
+                color:$blue;
             }
         }
 

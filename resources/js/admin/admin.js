@@ -5,6 +5,7 @@ require('../util');
 require('./product');
 require('./products');
 require('./categories');
+require('./properties');
 require('./order');
 require('./orders');
 require('./customer');

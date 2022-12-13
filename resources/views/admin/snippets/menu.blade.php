@@ -11,6 +11,9 @@
             <a href="/admin/categories">Categories</a>
         </span>
         <span>
+            <a href="/admin/properties">Properties</a>
+        </span>
+        <span>
             <a href="/admin/brands">Social Enterprises</a>
         </span>
         <span>
