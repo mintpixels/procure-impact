@@ -21,6 +21,8 @@ class Category extends Model
         $categories = Category::whereNull('parent_id')
             ->orderBy('sort_order')
             ->with('children.children.children')
+            ->with('properties')
+            ->with('propertyValues')
             ->withCount('productMap')
             ->get(); 
             
@@ -47,6 +49,8 @@ class Category extends Model
             'children' => [],
             'breadcrumb' => implode(' / ', $breadcrumb),
             'products' => $category->product_map_count,
+            'properties' => $category->properties,
+            'propertyValues' => $category->propertyValues,
             'nested' => 0,
             'visible' => $category->is_visible ? true : false
         ];
@@ -125,11 +129,23 @@ class Category extends Model
     {
         return $this->hasMany(Category::class, 'parent_id', 'id')
             ->orderBy('sort_order')
+            ->with('properties')
+            ->with('propertyValues')
             ->withCount('productMap');
     }
 
     public function productMap()
     {
         return $this->hasMany(ProductCategory::class);
+    }
+
+    public function properties()
+    {
+        return $this->hasMany(PropertyCategoryValue::class)->select('category_id', 'property_id')->distinct();
+    }
+
+    public function propertyValues()
+    {
+        return $this->hasMany(PropertyCategoryValue::class);
     }
 }

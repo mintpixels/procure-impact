@@ -22,6 +22,7 @@ class Categories {
                     changed: false,
                     error: '',
                     categories: [],
+                    properties: [],
                     saved: [],
                     filter: '',
                     filterText: '',
@@ -29,6 +30,7 @@ class Categories {
                     activeParent: false,
                     activeCategory: false,
                     editCategory: false,
+                    activeProperty: false,
                     filters: []
                 }
             },
@@ -42,7 +44,8 @@ class Categories {
                         nested: 0,
                         visible: false,
                         filterMatch: true,
-                        children: []
+                        children: [],
+                        propertyValues: []
                     }
 
                     if(parent == null) {
@@ -68,6 +71,46 @@ class Categories {
                     this.activeCategory.deleted = true;
                     this.closeModal();
                     this.checkChanged();
+                },
+                showProperties(category) {
+                    this.activeCategory = category;
+                    if(this.properties.length > 0)  {
+                        this.activeProperty = this.properties[0];
+                    
+                        this.properties.map(p => {
+                            p.selected = false;
+                            category.properties.map(prop => {
+                                if(prop.property_id == p.id) {
+                                    p.selected = true;
+                                }
+                            })
+
+                            p.values.map(v => {
+                                category.propertyValues.map(value => {
+                                    if(value.value_id == v.id) {
+                                        v.selected = true;
+                                    }
+                                });
+                            })
+                        });
+
+                        this.showModal('show-properties');
+                    }
+                },
+                selectedValues(property) {
+                    let values = [];
+                    for(var i = 0; i < property.values.length; i++) {
+                        if(property.values[i].selected)
+                            values.push(property.values[i]);
+                    }
+
+                    return values;
+                },
+                togglePropertyValue(value) {
+
+                },
+                selectedProperty() {
+
                 },
                 showFilters(category) {
                     let vm = this;
@@ -180,17 +223,22 @@ class Categories {
         var ctx = this;
         axios.get('/admin/data/categories').then(function (response) {
             vm.categories = response.data.categories;
-            
-            let filters = [];
-            response.data.properties.map(p => {
-                filters.push({
-                    id: p.id,
-                    name: p.name,
-                    position: 10000,
-                    included: false
-                });
+            vm.properties = response.data.properties;
+
+            vm.properties.map(p => {
+                p.selected = false;
             });
-            vm.filters =  Util.clone(filters);
+            
+            // let filters = [];
+            // response.data.properties.map(p => {
+            //     filters.push({
+            //         id: p.id,
+            //         name: p.name,
+            //         position: 10000,
+            //         included: false
+            //     });
+            // });
+            // vm.filters =  Util.clone(filters);
             
 
             ctx.filterCategories(vm.categories, '');

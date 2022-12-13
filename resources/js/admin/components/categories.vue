@@ -20,6 +20,7 @@
           </span>
           <span class="products"><a :href="'/admin/products?categoryId=' + element.id">{{ element.products }}</a></span>
           <span class="products">{{ element.nested }}</span>
+          <span class="products" v-on:click="showProperties(element)"><span class="clickable">{{ element.properties.length }}</span></span>
           <span class="visible" @click="toggleVisible(element)">
             <span class="yes" v-if="element.visible">Yes</span>
             <span class="no" v-else>No</span>
@@ -38,7 +39,8 @@
           @update-category="updateCategory" 
           @add-category="addCategory" 
           @delete-category="showDeleteCategory"
-          @filters="showFilters" />
+          @filters="showFilters"
+          @properties="showProperties" />
       </li>
     </template>
   </draggable>
@@ -79,6 +81,9 @@ export default {
     },
     showFilters(category) {
       this.$emit('filters', category);
+    },
+    showProperties(category) {
+      this.$emit('properties', category);
     }
   },
   name: "nested-draggable"

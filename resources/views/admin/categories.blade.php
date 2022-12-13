@@ -64,6 +64,37 @@
       
     </div>
 
+    <div class="modal-view" v-if="activeCategory" :class="{ show: modalView == 'show-properties' }">
+      
+      <h3>Category Properties</h3>
+      <p>Property values for <b>${ activeCategory.name }</b></p>
+
+      <div class="columns properties">
+        <div class="column">
+          <h5>Property</h5>
+          <ul>
+            <li v-for="property in properties" :class="{ selected: selectedValues(property).length > 0, active: property.id == activeProperty.id }" v-on:click="activeProperty = property;">
+            ${ property.name }
+            </li>
+          </ul>
+        </div>
+        <div class="column">
+          <h5>Values</h5>
+          <ul>
+            <li v-for="v in activeProperty.values" :class="{ selected: v.selected }" v-on:click="v.selected = !v.selected">
+              ${ v.value }
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div class="actions">
+        <button class="primary" v-on:click="saveFilters()">Save</button>
+        <button class="secondary" v-on:click="closeModal()">Cancel</button>
+      </div>
+      
+    </div>
+
   </div>
 
   <h1>
@@ -89,6 +120,7 @@
         <span class="name">Name</span>
         <span class="products"># Products</span>
         <span class="products"># Nested</span>
+        <span class="products"># Properties</span>
         <span class="visible">Visible?</span>
         <span class="actions"></span>
       </div>
@@ -102,7 +134,8 @@
         @update-category="updateCategory"
         @add-category="addCategory"
         @delete-category="showDeleteCategory"
-        @filters="showFilters"  />
+        @filters="showFilters"
+        @properties="showProperties"  />
     </div>
   </div>
 

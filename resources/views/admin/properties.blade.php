@@ -79,7 +79,6 @@
             <th class="text-center">PDP</th>
             <th class="text-center">Values</th>
             <th class="text-center">Products</th>
-            <th class="text-center">Categories</th>
             <th></th>
           </tr>
         </head>
@@ -99,10 +98,6 @@
             </td>
             <td class="text-center">
               <a :href="'/admin/products?property=' + property.id">${ property.products_count }</a>  
-            </td>
-            <td class="text-center">
-              <!-- <a :href="'/admin/products?property=' + property.id">${ property.products_count }</a>   -->
-              0
             </td>
             <td>
               <i class="fa-regular fa-square-minus delete clickable" v-on:click="deleteProperty(property)"></i>

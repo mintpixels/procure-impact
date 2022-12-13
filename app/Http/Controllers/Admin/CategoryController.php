@@ -52,7 +52,7 @@ class CategoryController extends Controller
     public function categories()
     {
         $categories = Category::hierarchy(true);
-        $properties = Property::orderBy('name')->get();
+        $properties = Property::orderBy('name')->with('values')->get();
 
         return response()->json([
             'categories' => $categories,
