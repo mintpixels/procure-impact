@@ -409,6 +409,41 @@
         background:#fafafa;
         padding:10px;
     }
+
+
+    .tab-container {
+        .tabs {
+            span {
+                font-family: $inter;
+                font-weight: 500;
+                font-size: 14px;
+                line-height: 20px;
+                color: #333333;
+                margin-right: 30px;
+                padding:10px;
+                display: inline-block;
+                cursor: pointer;
+                &.active {
+                    border-bottom: 1px solid #C5C1A0;
+                    background-color: #f5f5f5;
+                }
+            }
+        }
+
+        .tab-contents {
+            border-top: 1px solid #E5E7EB;
+            padding-top:20px;
+            text-align: left;
+
+            .tab-content {
+                display: none;
+
+                &.show {
+                    display: block;
+                }
+            }
+        }
+    }
 }
 
 #categories-page,

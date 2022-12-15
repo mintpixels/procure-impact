@@ -30,7 +30,7 @@ class Product extends WithHistory
     protected $historyFields = ['name', 'sku', 'price', 'upc', 'cost', 'location'];
 
     public $syncFields = [
-        'name', 'description', 'sku', 'upc', 'price', 'cost',  'images', 'handle', 'additional'
+        'name', 'description', 'short_desc', 'specs', 'other', 'sku', 'upc', 'price', 'cost',  'images', 'handle', 'additional'
     ];
 
     protected $cloneableRelations = ['tags', 'properties', 'type', 'categoryMap'];

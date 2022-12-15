@@ -149,6 +149,10 @@
 				</div>
 				<div class="column">
 					<button v-on:click="addToCart(product)">Add To Purchase Order</button>
+
+					<div class="min-order" v-if="product.brand.order_min > 0">
+						Minimum total purchase from ${ product.brand.name } is ${ formatMoney(product.brand.order_min) }.
+					</div>
 				</div>
                 
 				<div v-if="error" class="error">

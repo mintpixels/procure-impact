@@ -694,11 +694,16 @@ input.item-qty {
 .status,
 .error,
 .warning {
-  margin-bottom:20px;
-  background-color:#fff;
-  padding:10px;
-  color:#000;
-  text-align: center;
+    background-color: #fff;
+    padding: 10px;
+    color: #000;
+    text-align: center;
+    margin: 20px;
+    border: 1px solid #ddd;
+    box-shadow: 3px 3px 3px #eee;
+    font-weight: 500;
+    background-color: rgba(0, 117, 221, .05);
+    color:$blue;
 }
 
 .error {
@@ -793,6 +798,15 @@ input.item-qty {
     }
 }
 
+.field {
+    .input-with-label {
+        input, span {
+            padding-top: 9px;
+            padding-bottom:10px;
+        }
+    }
+}
+
 .text-left {
     text-align:left;
 }
@@ -857,17 +871,6 @@ input.item-qty {
         &:hover {
             opacity: .8;
         }
-    }
-}
-
-.wysiwyg {
-    background: #fff;
-    line-height: 1.5em;
-    font-size: 14px;
-    font-family: 'Saira';
-
-    &.large {
-        height:300px
     }
 }
 

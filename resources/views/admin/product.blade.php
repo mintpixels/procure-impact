@@ -261,9 +261,26 @@
       </div>
 
       <div class="section">
-        <div class="field">
-          <label>Description</label>
-          <div id="description" class="wysiwyg large">
+        <div class="tab-container">
+          <div class="tabs">
+            <span :class="{ active: tab == 'short' }" v-on:click="showTab('short')">Description</span>
+            <span :class="{ active: tab == 'description' }" v-on:click="showTab('description')">Long Description</span>
+            <span :class="{ active: tab == 'specs' }" v-on:click="showTab('specs')">Specs</span>
+            <span :class="{ active: tab == 'other' }" v-on:click="showTab('other')">Other</span>
+          </div>
+          <div class="tab-contents">
+            <div class="tab-content" :class="{ show: tab == 'short' }">
+              <div id="short_desc" class="wysiwyg large"></div>
+            </div>
+            <div class="tab-content" :class="{ show: tab == 'description' }">
+              <div id="description" class="wysiwyg large"></div>
+            </div>
+            <div class="tab-content" :class="{ show: tab == 'specs' }">
+              <div id="specs" class="wysiwyg large"></div>
+            </div>
+            <div class="tab-content" :class="{ show: tab == 'other' }">
+              <div id="other" class="wysiwyg large"></div>
+            </div>
           </div>
         </div>
       </div>
@@ -304,25 +321,6 @@
         </ul>
 
         <a v-on:click="addProperty">Add Property</a>
-      </div>
-
-      <div class="section">
-        <h5>Additional Settings</h5>
-
-        <div class="columns">
-          <div class="column">
-            <div class="field">
-              <label>Min Qty</label>
-              <input type="text" v-model="product.additional.min_qty" />
-            </div>
-          </div>
-          <div class="column">
-            <div class="field">
-              <label>Max Qty</label>
-              <input type="text" v-model="product.additional.max_qty" />
-            </div>
-          </div>
-        </div>
       </div>
 
       <div class="section">

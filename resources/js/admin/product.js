@@ -5,7 +5,10 @@ import draggable from 'vuedraggable'
 class Product {
 
     constructor() {
-        this.editor = false;
+        this.desc = false;
+        this.short = false;
+        this.specs = false;
+        this.other = false;
     }
     
     init() {
@@ -67,10 +70,14 @@ class Product {
                     activeOptionIndex: 0,
                     optionName: '',
                     optionValues: '',
-                    committed: false
+                    committed: false,
+                    tab: 'short'
                 }
             },
             methods: {
+                showTab(t) {
+                    this.tab = t;
+                },
                 formatNumber(n) {
                     return Util.formatNumber(n);
                 },
@@ -136,6 +143,9 @@ class Product {
                 discard() {
                     this.product = Util.clone(this.saved);
                     $('#description [contenteditable]').html(this.product.description);
+                    $('#short_desc [contenteditable]').html(this.product.short_desc);
+                    $('#specs [contenteditable]').html(this.product.specs);
+                    $('#other [contenteditable]').html(this.product.other);
                     this.changed = false;
                 },
                 removeTag(index) {
@@ -374,6 +384,9 @@ class Product {
             // Set the description manually so the editor doesn't get
             // messed up on an update.
             $('#description').html(response.data.product.description);
+            $('#short_desc').html(response.data.product.short_desc);
+            $('#specs').html(response.data.product.specs);
+            $('#other').html(response.data.product.other);
             ctx.initWysiwg();
         });
 
@@ -427,13 +440,26 @@ class Product {
 
 
     initWysiwg() {
-        this.editor = new Quill('#description', {
-            theme: 'snow'
-        });
+        this.desc = new Quill('#description', { theme: 'snow' });
+        this.short = new Quill('#short_desc', { theme: 'snow' });
+        this.specs = new Quill('#specs', { theme: 'snow' });
+        this.other = new Quill('#other', { theme: 'snow' });
         
         let ctx = this;
-        this.editor.on('text-change', function() {
+        this.desc.on('text-change', function() {
             ctx.vm.product.description = $('#description [contenteditable]').html();
+            ctx.checkChanged();
+        });
+        this.short.on('text-change', function() {
+            ctx.vm.product.short_desc = $('#short_desc [contenteditable]').html();
+            ctx.checkChanged();
+        });
+        this.specs.on('text-change', function() {
+            ctx.vm.product.specs = $('#specs [contenteditable]').html();
+            ctx.checkChanged();
+        });
+        this.other.on('text-change', function() {
+            ctx.vm.product.other = $('#other [contenteditable]').html();
             ctx.checkChanged();
         });
     }
@@ -517,6 +543,9 @@ class Product {
         let params = Util.clone({
             name: product.name,
             description: product.description,
+            short_desc: product.short_desc,
+            specs: product.specs,
+            other: product.other,
             sku: product.sku,
             upc: product.upc,
             type: product.type,
