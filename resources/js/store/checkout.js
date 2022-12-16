@@ -478,10 +478,7 @@ class Checkout {
         axios.post(`/checkout/${this.guid}/complete`).then(function (response) {
             window.location.reload();
         }).catch(function(error) {
-            vm.errorMessage = error.response.data.error;
-            vm.submitting = false;
-            if(error.response.data.products)
-                vm.errorProducts = error.response.data.products;    
+  
         });
     }
 

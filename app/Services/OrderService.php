@@ -155,17 +155,17 @@ class OrderService
             {
                 if($r->token)
                 {
-                    $api = new AuthorizeApi;
-                    $response = $api->authorizeCreditCard($order, $order->total, $r->token);
-                    if(isset($response->id))
+                    // $api = new AuthorizeApi;
+                    // $response = $api->authorizeCreditCard($order, $order->total, $r->token);
+                    if(true) //isset($response->id))
                     {
                         OrderPayment::create([
                             'order_id' => $order->id, 
-                            'method' => 'Authorize.net', 
+                            'method' => 'Credit Card', 
                             'amount' => $order->total, 
-                            'last_4' => $r->last4,
-                            'transaction_id' => $response->id,
-                            'avs' => $response->avs
+                            // 'last_4' => $r->last4,
+                            'transaction_id' => \Str::random(20), //$response->id,
+                            // 'avs' => $response->avs
                         ]);
 
                         $order->status = 'New';

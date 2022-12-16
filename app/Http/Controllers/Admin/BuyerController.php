@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use App\Models\Buyer;
 use \Auth;
@@ -52,6 +53,21 @@ class BuyerController extends Controller
         $buyer->description = $r->description;
         $buyer->type = $r->type;
         $buyer->email = $r->email;
+
+        $document = $r->file('document');
+        if($document)
+        {
+            $filename = $document->getClientOriginalName();
+
+            Storage::disk('public')->putFileAs(
+                'uploads',
+                $document,
+                $filename
+            );
+
+            $buyer->document = $filename;
+        }
+
         $buyer->save();
 
         return redirect("admin/buyers/$buyer->id")->with([

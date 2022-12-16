@@ -95,6 +95,7 @@ Route::group(['middleware' => 'auth.customer'], function ()
     Route::post('checkout/{checkout:guid}/tax', [StoreCheckoutController::class, 'saveTax']);
     Route::post('checkout/{checkout:guid}/complete', [StoreCheckoutController::class, 'completeCheckout']);
     Route::post('checkout/{checkout:guid}/removedealer', [StoreCheckoutController::class, 'removeDealer']);
+    Route::post('checkout/{checkout:guid}/intent',  [StoreCheckoutController::class, 'paymentIntent']);
     Route::get('thankyou/{checkout:guid}', [StoreCheckoutController::class, 'thankYou']);
 });
 

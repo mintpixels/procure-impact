@@ -86,6 +86,30 @@ body.checkout {
         }
     }
 
+    .no-document {
+        padding:20px;
+        background: rgba(255, 0, 0, .1);
+        margin-bottom: 20px;
+    }
+
+    #payment-form {
+        display: none;
+        &.show {
+            display: block;
+        }
+
+        #card-element {
+            margin: 15px 0;
+            border: 1px solid #eee;
+            padding: 10px;
+        }
+
+        #card-errors {
+            color: red;
+            margin-bottom: 15px;
+        }
+    }
+
     .payment-options {
         h5 {
             font-size: 18px;

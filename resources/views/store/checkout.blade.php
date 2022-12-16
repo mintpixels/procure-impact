@@ -211,6 +211,11 @@
 
                             <div class="subsection">
 
+                                <div v-if="checkout.customer && !checkout.customer.buyer.document" class="no-document">
+                                    You do not currently have a compliance documented added to your account. 
+                                    One will need to be provided before your wholesale order can be completed.
+                                </div>
+
                                 <h5>Terms and Conditions</h5>
                                 <p>
                                     <input type="checkbox" class="confirm" v-model="termsAccepted" /> Yes, I agree with the <a target="_blank" href="/pages/terms-conditions">terms and conditions</a>
@@ -231,36 +236,34 @@
                         <div class="section-content" :class="{ show: stepIndex == 4 }">
 
                             <div class="subsection payment-options" v-cloak>
+                                
+                                <h5>Terms and Conditions</h5>
+                                <p>
+                                    <input type="checkbox" class="confirm" v-model="termsAccepted" /> Yes, I agree with the <a target="_blank" href="/pages/terms-conditions">terms and conditions</a>
+                                </p>
 
                                 <div class="cc-inputs">
                                     <h5>
                                         <input type="radio" name="paymentType" value="card" v-model="paymentType"/>
                                         Pay with credit card
                                     </h5>
+                                    
+                                    <form  method="post" id="payment-form" :class="{ show: paymentType == 'card' }">
+                                        <div class="form-row">
+                                            <label for="card-element">
+                                            Credit or debit card
+                                            </label>
+                                            <div id="card-element">
+                                            <!-- A Stripe Element will be inserted here. -->
+                                            </div>
 
-                                    <div v-if="paymentType == 'card'">
-                                        <div class="columns layout padded">
-                                            <div class="column">
-                                                <label>Credit Card Number</label>
-                                                <input type="text" name="ccNumber" v-model="card.number" />
-                                            </div>
-                                            <div class="column space small">
-                                                <label>Expiration</label>
-                                                <input type="text" name="ccExpiry" v-model="card.expiry" @keyup="formatExpiry" placeholder="MM/YY" maxlength="5" />
-                                            </div>
+                                            <!-- Used to display Element errors. -->
+                                            <div id="card-errors" role="alert"></div>
                                         </div>
 
-                                        <div class="columns layout padded">
-                                            <div class="column">
-                                                <label>Name on Card</label>
-                                                <input type="text" name="ccName" v-model="card.name" />
-                                            </div>
-                                            <div class="column space small">
-                                                <label>CVV</label>
-                                                <input type="text" name="ccCvv" v-model="card.cvv" />
-                                            </div>
-                                        </div>
-                                    </div>
+                                        <button :disabled="!termsAccepted">Complete Order</button>
+                                    </form>
+                                   
                                 </div>
 
                                 <h5>
@@ -268,14 +271,7 @@
                                     Pay with purchase order
                                 </h5>
 
-                                <br><br>
-
-                                <div class="subsection">
-
-                                    <h5>Terms and Conditions</h5>
-                                    <p>
-                                        <input type="checkbox" class="confirm" v-model="termsAccepted" /> Yes, I agree with the <a target="_blank" href="/pages/terms-conditions">terms and conditions</a>
-                                    </p>
+                                <div class="subsection" v-if="paymentType === 'po'">
 
                                     <button v-on:click="placeOrder()" :disabled="!canCompleteOrder()">Complete Order</button>
                                     </div>
@@ -364,6 +360,53 @@
     </div>
 
     <script src="{{ mix('js/store.js') }}"></script>
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        var stripe = Stripe('{{ env("STRIPE_PUBLIC_KEY") }}');
+
+        // Fetches a payment intent and captures the client secret
+        async function initialize() {
+            console.log('init');
+            // Custom styling can be passed to options when creating an Element.
+            const style = {
+                base: {
+                    // Add your base input styles here. For example:
+                    fontSize: '16px',
+                    color: '#32325d',
+                },
+                };
+
+            const elements = stripe.elements();
+                        // Create an instance of the card Element.
+            const card = elements.create('card', {style});
+
+            // Add an instance of the card Element into the `card-element` <div>.
+            card.mount('#card-element');
+
+            const form = document.getElementById('payment-form');
+            form.addEventListener('submit', async (event) => {
+                event.preventDefault();
+
+                const {token, error} = await stripe.createToken(card);
+
+                if (error) {
+                   console.log('error', error);
+                } else {
+                    axios.post(`/checkout/{{ $checkout->guid }}/complete`, { token: token.id }).then(function (response) {
+                        window.location.reload();
+                    }).catch(function(error) {
+                        console.log('error', error);
+                    });
+                }
+            });
+        }
+
+        setTimeout(() => {
+            initialize();    
+        }, 1000);
+        
+        
+    </script>
     </body>
 
 </html>

@@ -46,6 +46,15 @@
                 </select>
             </div>
 
+            <div class="field">
+                <label for="name">Compliance Document</label>
+                @if($buyer->document)
+                    <a href="/documents/{{ $buyer->document }}">{{ $buyer->document }}</a>
+                    <br><br>
+                @endif
+                <input type="file" name="document" />
+            </div>
+
             <div class="actions">
                 <button>Save Buyer</button>
 
