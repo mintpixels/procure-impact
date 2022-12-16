@@ -57,6 +57,7 @@ class Checkout {
                         stepIndex: 2,
                         termsAccepted: false,
                         newsletter: true,
+                        paymentType: 'card',
                         card: {
                             number: '',
                             name: '',
@@ -67,6 +68,16 @@ class Checkout {
                     }
                 },
                 methods: {
+                    canCompleteOrder() {
+                        if(!this.termsAccepted) return false;
+
+                        return !this.checkout.approved ||
+                            this.paymentType == 'po' ||
+                            this.cardComplete();
+                    },
+                    cardComplete() {
+                        return false;
+                    },
                     validShippingAddress(shipment) {
                         if(this.shipToDealer(shipment))
                             return true;
@@ -129,8 +140,12 @@ class Checkout {
                         return Util.formatMoney(price);
                     },
                     placeOrder() {
-                        console.log('place order');
-                        ctx.completeCheckout();
+                        if(!this.checkout.approved || this.paymentType == 'po') {
+                            ctx.completeCheckout();
+                        }
+                        else {
+                            ctx.getAuthToken();
+                        }
                     },
                     saveCustomer() {
                         ctx.saveCustomer();

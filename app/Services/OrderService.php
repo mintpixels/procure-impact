@@ -16,6 +16,7 @@ use App\Models\OrderBilling;
 use App\Models\OrderShipment;
 use App\Models\OrderShipmentItem;
 use App\Models\OrderPayment;
+use App\Models\BrandPayment;
 use App\Models\Product;
 use App\Models\Rule;
 use App\Models\FraudCheck;
@@ -62,109 +63,124 @@ class OrderService
 
         try {
             
-            // If the customer doesn't exist then create it before continuing.
-            if(isset($data->customer->id))
+            if($checkout->approved)
             {
-                $customer = Customer::find($data->customer->id);
+                $order = $checkout->order;
             }
             else
             {
-                $customer = Customer::where('email', $data->email)->first();
-            }
+                // If the customer doesn't exist then create it before continuing.
+                if(isset($data->customer->id))
+                {
+                    $customer = Customer::find($data->customer->id);
+                }
+                else
+                {
+                    $customer = Customer::where('email', $data->email)->first();
+                }
 
-            $order = Order::create([
-                'customer_id' => $customer->id, 
-                'buyer_id' => $customer->buyer_id,
-                'email' => $data->email, 
-                'phone' => $data->billing->phone ?? NULL, 
-                'first_name' => $data->billing->first_name, 
-                'last_name' => $data->billing->last_name,
-                'status' => 'Submitted',
-                'subtotal' => $data->subtotal,
-                'tax' => $data->tax, 
-                'shipping' => $data->shipping, 
-                'total' => $data->total, 
-                'discount' => $data->discount ?? 0, 
-                'customer_notes' => $data->customer_notes,
-                'staff_notes' => $data->staff_notes ?? '',
-                'ip_address' => $_SERVER["HTTP_CF_CONNECTING_IP"] ?? ($r ? $r->ip() : NULL)
-            ]);
-
-            $order->name = $order->id;
-            $order->saveWithHistory('Order was created', '', '', false, true);
-
-            $billing = OrderBilling::create([
-                'order_id' => $order->id,
-                'first_name' => $data->billing->first_name,
-                'last_name' => $data->billing->last_name,
-                'company' => $data->billing->company,
-                'address1' => $data->billing->address1,
-                'address2' => $data->billing->address2,
-                'city' => $data->billing->city,
-                'state' => $data->billing->state,
-                'zip' => $data->billing->zip,
-                'phone' => $data->billing->phone,
-            ]);
-
-            // Add the address to the customer if it is not already in 
-            // the address list.
-            $customer->addUniqueAddress($billing);
-
-            $brands = [];
-            foreach($data->items as $item)
-            {
-                if(!isset($item->product_id))
-                    $item->product_id = $item->product->id;
-
-                $brands[] = $item->product->brand_id;
-
-                $orderItem = OrderItem::create([
-                    'brand_id' => $item->product->brand_id,
-                    'order_id' => $order->id, 
-                    'product_id' => $item->product_id, 
-                    'variant_id' => $item->variant_id, 
-                    'sku' => $item->product->sku, 
-                    'name' => $item->product->name, 
-                    'quantity' => $item->quantity, 
-                    'price' => $item->price, 
-                    'line_price' => $item->price * $item->quantity, 
-                    'discount' => $item->discount ?? 0,
-                    'properties' => $item->properties ?? NULL
+                $order = Order::create([
+                    'customer_id' => $customer->id, 
+                    'buyer_id' => $customer->buyer_id,
+                    'email' => $data->email, 
+                    'phone' => $data->billing->phone ?? NULL, 
+                    'first_name' => $data->billing->first_name, 
+                    'last_name' => $data->billing->last_name,
+                    'status' => 'Submitted',
+                    'subtotal' => $data->subtotal,
+                    'tax' => $data->tax, 
+                    'shipping' => $data->shipping, 
+                    'total' => $data->total, 
+                    'discount' => $data->discount ?? 0, 
+                    'customer_notes' => $data->customer_notes,
+                    'staff_notes' => $data->staff_notes ?? '',
+                    'ip_address' => $_SERVER["HTTP_CF_CONNECTING_IP"] ?? ($r ? $r->ip() : NULL)
                 ]);
-            }
 
-            $brands = array_unique($brands);
-            foreach($brands as $brandId)
-            {
-                OrderBrand::create([
+                $order->name = $order->id;
+                $order->saveWithHistory('Order was created', '', '', false, true);
+
+                $billing = OrderBilling::create([
                     'order_id' => $order->id,
-                    'brand_id' => $brandId
+                    'first_name' => $data->billing->first_name,
+                    'last_name' => $data->billing->last_name,
+                    'company' => $data->billing->company,
+                    'address1' => $data->billing->address1,
+                    'address2' => $data->billing->address2,
+                    'city' => $data->billing->city,
+                    'state' => $data->billing->state,
+                    'zip' => $data->billing->zip,
+                    'phone' => $data->billing->phone,
                 ]);
+
+                // Add the address to the customer if it is not already in 
+                // the address list.
+                $customer->addUniqueAddress($billing);
+
+                $brands = [];
+                foreach($data->items as $item)
+                {
+                    if(!isset($item->product_id))
+                        $item->product_id = $item->product->id;
+
+                    $brands[] = $item->product->brand_id;
+
+                    $orderItem = OrderItem::create([
+                        'brand_id' => $item->product->brand_id,
+                        'order_id' => $order->id, 
+                        'product_id' => $item->product_id, 
+                        'variant_id' => $item->variant_id, 
+                        'sku' => $item->product->sku, 
+                        'name' => $item->product->name, 
+                        'quantity' => $item->quantity, 
+                        'price' => $item->price, 
+                        'line_price' => $item->price * $item->quantity, 
+                        'discount' => $item->discount ?? 0,
+                        'properties' => $item->properties ?? NULL
+                    ]);
+                }
+
+                $brands = array_unique($brands);
+                foreach($brands as $brandId)
+                {
+                    OrderBrand::create([
+                        'order_id' => $order->id,
+                        'brand_id' => $brandId
+                    ]);
+                }
             }
 
 
             if($checkout)
             {
-                // $api = new AuthorizeApi;
-                // $response = $api->authorizeCreditCard($order, $order->total, $r->token);
-                // if(isset($response->id))
-                // {
-                //     OrderPayment::create([
-                //         'order_id' => $order->id, 
-                //         'method' => 'Authorize.net', 
-                //         'amount' => $order->total, 
-                //         'last_4' => $r->last4,
-                //         'transaction_id' => $response->id,
-                //         'avs' => $response->avs
-                //     ]);
+                if($r->token)
+                {
+                    $api = new AuthorizeApi;
+                    $response = $api->authorizeCreditCard($order, $order->total, $r->token);
+                    if(isset($response->id))
+                    {
+                        OrderPayment::create([
+                            'order_id' => $order->id, 
+                            'method' => 'Authorize.net', 
+                            'amount' => $order->total, 
+                            'last_4' => $r->last4,
+                            'transaction_id' => $response->id,
+                            'avs' => $response->avs
+                        ]);
 
-                //     $order->status = 'New';
-                //     $order->save();
-                // }
-                // else {
-                //     Log::info('Credit Card error', (array)$response);
-                //     throw new \Exception("There was an error processing the credit card");
-                // }
+                        $order->status = 'New';
+                        $order->save();
+                    }
+                    else {
+                        Log::info('Credit Card error', (array)$response);
+                        throw new \Exception("There was an error processing the credit card");
+                    }
+                }
+                else if($checkout->approved)
+                {
+                    $order->status = 'Awaiting Fulfillment';
+                    $order->saveWithHistory();
+                }
             }
             else
             {
@@ -209,18 +225,48 @@ class OrderService
                 }
             }
 
-            if($checkout)
+            if($checkout->approved)
+            {
+                $checkout->completed_at = date('Y-m-d H:i:s');
+                $checkout->save();
+                $checkout->order->completed_at = date('Y-m-d H:i:s');
+                $checkout->order->save();
+
+                $brandPayments = [];
+                foreach($checkout->order->items as $item)
+                {
+                    if(!array_key_exists($item->brand_id, $brandPayments))
+                    {
+                        $brandPayments[$item->brand_id] = (object) [
+                            'subtotal' => 0,
+                            'shipping' => 0
+                        ];
+                    }
+
+                    $brandPayments[$item->brand_id]->subtotal += $item->line_price;
+                }
+
+                foreach($checkout->order->brands as $brand)
+                    $brandPayments[$brand->brand_id]->shipping = $brand->shipping;
+
+                foreach($brandPayments as $brandId => $payment)
+                {
+                    BrandPayment::create([
+                        'order_id' => $checkout->order_id,
+                        'brand_id' => $brandId,
+                        'subtotal' => $payment->subtotal,
+                        'shipping' => $payment->shipping,
+                        'fee' => 5
+                    ]);
+                }
+
+            }
+            else
             {
                 $checkout->order_id = $order->id;
                 $checkout->completed_at = date('Y-m-d H:i:s');
                 $checkout->save();
                 $checkout->cart->delete();
-            }
-            else
-            {
-                $draft->order_id = $order->id;
-                $draft->completed_at = date('Y-m-d H:i:s');
-                $draft->save();
             }
             
             DB::commit();

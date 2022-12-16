@@ -25,12 +25,12 @@
       <li :class="{ active: filter == 'Completed' }">
         <a v-on:click="filterOrders('Completed')">Completed ({{ $counts->completed }})</a>
       </li>
-      <li :class="{ active: filter == 'Buyer Unpaid' }">
+      <!-- <li :class="{ active: filter == 'Buyer Unpaid' }">
         <a v-on:click="filterOrders('Buyer Unpaid')">Buyer Unpaid ({{ $counts->completed }})</a>
       </li>
       <li :class="{ active: filter == 'Vendor Unpaid' }">
         <a v-on:click="filterOrders('Vendor Unpaid')">Vendor Unpaid ({{ $counts->completed }})</a>
-      </li>
+      </li> -->
     </ul>
   </div>
 
@@ -59,14 +59,15 @@
             <th class="text-right">Total</th>
             <th class="text-center">Items</th>
             <th>Status</th>
-            <th>Buyer Payment</th>
-            <th>Vendor Payment</th>
+            <th class="text-center">Buyer Paid</th>
+            <th class="text-center">Due Date</th>
+            <th class="text-center">Vendors Paid</th>
           </tr>
         </head>
         <tbody>
           <tr class="order-item" v-for="order in orders" :class="{ fraud: order.failed_rule_id }" >
             <td>
-              <a :href="'/admin/orders/' + order.id">#${ order.name }</a>
+              <a :href="'/admin/transactions/' + order.id">#${ order.name }</a>
             </td>
             <td class="nowrap datetime">
               ${ formatDateTime(order.created_at) }
@@ -79,8 +80,13 @@
             <td class="text-right total">${ formatMoney(order.total) }</td>
             <td class="shipping text-center">${ order.items_count }</td>
             <td class="nowrap">${ order.status }</td>
-            <td></td>
-            <td></td>
+            <td class="text-center">${ buyerPaid(order) ? 'Yes' : 'No' }</td>
+            <td class="text-center">
+              <span v-if="order.completed_at && !buyerPaid(order)">
+                ${ formatDate(dueDate(order)) }
+              </span>
+            </td>
+            <td class="text-center">${ vendorsPaid(order) }</td>
           </tr>
         </tbody>
       </table>

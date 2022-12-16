@@ -131,7 +131,10 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function ()
     Route::get('data/orders/{id}', [AdminOrderController::class, 'order']);
 
     Route::get('transactions', [AdminTransactionController::class, 'transactionsView']);
+    Route::get('transactions/{order}', [AdminTransactionController::class, 'orderView']);
+    Route::post('transactions/{order}/pay', [AdminTransactionController::class, 'makePayment']);
     Route::get('data/transactions', [AdminTransactionController::class, 'transactions']);
+    Route::get('data/transactions/{id}', [AdminTransactionController::class, 'order']);
 
     Route::get('brands', [AdminBrandController::class, 'brands']);
     Route::get('brands/{id}', [AdminBrandController::class, 'showBrand']);

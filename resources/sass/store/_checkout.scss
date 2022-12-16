@@ -79,9 +79,16 @@ body.checkout {
 
     .cc-inputs {
         max-width: 440px;
+        margin-bottom: 15px;
         label,
-        input {
+        input[type=text] {
             display: block;
+        }
+    }
+
+    .payment-options {
+        h5 {
+            font-size: 18px;
         }
     }
 

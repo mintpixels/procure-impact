@@ -132,9 +132,9 @@ class Order extends WithHistory
         return $this->belongsTo(Customer::class);
     }
 
-    public function dealer()
+    public function buyer()
     {
-        return $this->belongsTo(Dealer::class);
+        return $this->belongsTo(Buyer::class);
     }
 
     public function items()
@@ -165,6 +165,11 @@ class Order extends WithHistory
     public function payments()
     {
         return $this->hasMany(OrderPayment::class);
+    }
+
+    public function brandPayments()
+    {
+        return $this->hasMany(BrandPayment::class);
     }
 
     public function fulfillment()
