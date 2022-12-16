@@ -228,60 +228,66 @@
 
 
         <div class="line-items">
-          <template v-for="(item, i) in order.items">
-            ${ order.brand_id }
-            <div class="line-item" v-if="!brandId || brandId == item.brand_id">
+          <template v-for="(brandItems) in byBrand">
+            <div class="brand-items" v-if="!brandId || brandId == brandItems.brand.id">
+              <h5>${ brandItems.brand.name }</h5>
 
-              <div class="item-quantity" :class="{ underStocked: item.underStocked }">
-                  <input type="text" name="quantity" v-model="item.quantity" v-on:change="itemUpdated(item, i)" min="0" :readonly="readonly" autocomplete="dontdoit" :disabled="readonly" />
-                  <div class="qty-warning">max: <span>${ item.min }</span></div>
-              </div>
+              <template v-for="(item, i) in brandItems.items">
 
-              <div class="item-image">
-                <img v-if="item.product.thumbnail" :src="item.product.thumbnail.indexOf('http') == 0 ? item.product.thumbnail : '{{ env('AWS_CDN_PRODUCTS_PATH') }}' + item.product.thumbnail" />
-              </div>
-
-              <div class="item-info">
-                                  
-                  <div class="item-name">
-                    <a :href="'/admin/products/' + item.product.id">${ item.product.name }</a>
-                    <div class="variant" v-if="item.variant">${ item.variant.name }</div>
-                    <div class="brand">${ item.product.brand.name }</div>
+                <div class="line-item">
+              
+                  <div class="item-quantity">
+                      <input type="text" name="quantity" v-model="item.item.quantity" v-on:change="itemUpdated(item.item, i)" min="0" :readonly="readonly" autocomplete="dontdoit" :disabled="readonly" />
                   </div>
 
-                  <div class="item-sku">
-                      ${ item.sku }
-                      <br>
-                      <span class="clickable" v-on:click="setItemPrice(item, item.price)">${ formatMoney(item.price) }</span>
-                      <span v-if="item.customPrice && item.price != item.customPrice">
-                          / <b>${ formatMoney(item.customPrice) }</b>
-                      </span>
-                      <div class="item-options" v-if="item.properties && item.properties.length > 0">
-                          <div class="item-option" v-for="prop in item.properties">
-                              <span class="option-name">${ prop.name }:</span>
-                              <span class="option-value">${ prop.value }</span>
+                  <div class="item-image">
+                    <img v-if="item.item.product.thumbnail" :src="item.item.product.thumbnail.indexOf('http') == 0 ? item.item.product.thumbnail : '{{ env('AWS_CDN_PRODUCTS_PATH') }}' + item.item.product.thumbnail" />
+                  </div>
+
+                  <div class="item-info">
+                                      
+                      <div class="item-name">
+                        <a :href="'/admin/products/' + item.item.product.id">${ item.item.product.name }</a>
+                        <div class="variant" v-if="item.item.variant">${ item.item.variant.name }</div>
+                        <div class="brand">${ item.item.product.brand.name }</div>
+                      </div>
+
+                      <div class="item-sku">
+                          ${ item.item.sku }
+                          <br>
+                          <span class="clickable" v-on:click="setItemPrice(item.item, item.item.price)">${ formatMoney(item.item.price) }</span>
+                          <span v-if="item.item.customPrice && item.item.price != item.item.customPrice">
+                              / <b>${ formatMoney(item.item.customPrice) }</b>
+                          </span>
+                          <div class="item-options" v-if="item.item.properties && item.item.properties.length > 0">
+                              <div class="item-option" v-for="prop in item.item.properties">
+                                  <span class="option-name">${ prop.name }:</span>
+                                  <span class="option-value">${ prop.value }</span>
+                              </div>
                           </div>
                       </div>
                   </div>
-              </div>
 
-              <div class="break"></div>
+                  <div class="break"></div>
 
-              <div class="item-price input-with-label">
-                  <span>$</span>
-                  <input type="text" name="price" v-model="item.customPrice" :readonly="readonly" :disabled="readonly" />
-              </div>
-              <div class="item-total-quantity">
-                x ${ item.quantity }
-              </div>
+                  <div class="item-price input-with-label">
+                      <span>$</span>
+                      <input type="text" name="price" v-model="item.item.customPrice" :readonly="readonly" :disabled="readonly" />
+                  </div>
+                  <div class="item-total-quantity">
+                    x ${ item.item.quantity }
+                  </div>
 
-              <div class="item-total">
-                  ${ formatMoney(item.customPrice * item.quantity) }
-              </div>
+                  <div class="item-total">
+                      ${ formatMoney(item.item.customPrice * item.item.quantity) }
+                  </div>
 
-              <div class="remove-item" v-if="!readonly">
-                  <i class="fal fa-times" v-on:click="removeItem(i)"></i>
-              </div>
+                  <div class="remove-item" v-if="!readonly">
+                      <i class="fal fa-times" v-on:click="removeItem(i)"></i>
+                  </div>
+
+                </div>
+              </template>
 
             </div>
           </template>

@@ -53,7 +53,7 @@
                 <h3>${ product.name }</h3>
 
 				<div class="product-price">
-					${ formatMoney(variant.wholesale_price) } WSP | <span class="msrp">${ formatMoney(variant.wholesale_price) } MSRP</span>
+					${ formatMoney(variant.wholesale_price) } WSP
 				</div>
 
 				<div class="location" v-if="product.brand.location">

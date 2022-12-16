@@ -36,6 +36,7 @@ class Order {
                     readonly: false,
                     submitting: false,
                     brandId: '',
+                    byBrand: {},
                     order: {
                         id: '',
                         items: [],
@@ -316,6 +317,7 @@ class Order {
 
                     this.productLookup = '';
                     this.productMatches = [];
+                    ctx.groupByBrand();
                     ctx.checkChanged();
                 },
 
@@ -785,6 +787,31 @@ class Order {
         this.cleanupShipments();
     }
 
+    addItemToBrand(map, item, index) {
+        let brandId = item.product.brand_id;
+        if(!map[brandId]) {
+            map[brandId] = {
+                brand: item.product.brand,
+                items: []
+            };
+        }
+
+        map[brandId].items.push({
+            index: index,
+            item: item
+        });
+    }
+
+    groupByBrand() {
+        let byBrand = {};
+        for(var i = 0;  i < this.vm.order.items.length; i++) {
+            let item = this.vm.order.items[i];
+            this.addItemToBrand(byBrand, item, i);
+        }
+
+        this.vm.byBrand = byBrand;
+    }
+
     setOrder(response) {
         this.vm.brandId = response.data.brand_id;
         this.vm.order = response.data.order;
@@ -800,6 +827,8 @@ class Order {
                 item.customPrice = item.price;
             }
         }
+
+        this.groupByBrand();
 
         this.vm.order.taxCalculated = true;
         this.totals();
