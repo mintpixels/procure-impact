@@ -203,20 +203,20 @@ class CheckoutController extends Controller
             return response()->json($result, 400);
         }
 
-        // try
-        // {
+        try
+        {
             if(env('RC_MODE') == 'live') {
-                // Mail::to($result->order->email)->send(new OrderConfirmation($result->order));
+                Mail::to($result->order->email)->send(new OrderConfirmation($result->order));
             }
             else {
                 Mail::to('pi@ryanas.com')->send(new OrderConfirmation($result->order));
             }
 
             $result->order->saveWithHistory('Order confirmation sent to ' . $result->order->email, false, '', false, true);
-        // }
-        // catch(\Exception $e) {
-        //     Log::info('Error sending email: ' . $e->getMessage());
-        // }
+        }
+        catch(\Exception $e) {
+            Log::info('Error sending email: ' . $e->getMessage());
+        }
 
         return response()->json([
             'order_id' => $result->order->id
