@@ -979,7 +979,9 @@ class Order {
 
         let shipping = 0;
         this.vm.order.brands.forEach(b => {
-            shipping += parseFloat(b.shipping);
+            if(!this.vm.brandId || this.vm.brandId == b.brand_id) {
+                shipping += parseFloat(b.shipping);
+            }
         });
         this.vm.order.shipping = shipping;
 

@@ -22,6 +22,11 @@ class Order extends WithHistory
         'staff_notes', 'buyer_fee', 'brand_fee'
     ];
 
+    public $adminFields = [
+        'customer_id', 'email', 'phone', 'subtotal',
+        'tax', 'total', 'shipping',  'discount', 'paid', 'buyer_fee', 'brand_fee'
+    ];
+
     protected $casts = [
         'is_priority' => 'boolean',
     ];

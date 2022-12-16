@@ -255,10 +255,11 @@ class OrderController extends Controller
     public function saveOrder(Request $r, Order $order) 
     {
         $fields = json_decode(json_encode($r->fields));
-        if(Auth::user()->isAdmin())
+        foreach($fields as $name => $value) 
         {
-            foreach($fields as $name => $value) {
-                if(in_array($name, $order->syncFields))
+            if(in_array($name, $order->syncFields))
+            {
+                if(Auth::user()->isAdmin() || !in_array($name, $order->adminFields))
                     $order->$name = $value;
             }
         }
