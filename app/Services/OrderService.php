@@ -19,6 +19,7 @@ use App\Models\OrderPayment;
 use App\Models\BrandPayment;
 use App\Models\Product;
 use App\Models\Rule;
+use App\Models\Setting;
 use App\Models\FraudCheck;
 use Carbon\Carbon;
 use \DB;
@@ -235,6 +236,8 @@ class OrderService
 
             if($checkout->approved)
             {
+                $settings = Setting::first();
+
                 $checkout->completed_at = date('Y-m-d H:i:s');
                 $checkout->save();
                 $checkout->order->completed_at = date('Y-m-d H:i:s');
@@ -247,7 +250,9 @@ class OrderService
                     {
                         $brandPayments[$item->brand_id] = (object) [
                             'subtotal' => 0,
-                            'shipping' => 0
+                            'shipping' => 0,
+                            'buyer_fee' => $checkout->order->buyer_fee ?: $settings->buyer_fee,
+                            'brand_fee' => $checkout->order->brand_fee ?: $setting->brand_fee
                         ];
                     }
 
@@ -255,7 +260,15 @@ class OrderService
                 }
 
                 foreach($checkout->order->brands as $brand)
+                {
                     $brandPayments[$brand->brand_id]->shipping = $brand->shipping;
+
+                    if($brand->buyer_fee)
+                        $brandPayments[$brand->brand_id]->buyer_fee = $brand->buyer_fee;
+
+                    if($brand->brand_free)
+                        $brandPayments[$brand->brand_id]->brand_fee = $brand->brand_fee;
+                }
 
                 foreach($brandPayments as $brandId => $payment)
                 {
@@ -264,7 +277,7 @@ class OrderService
                         'brand_id' => $brandId,
                         'subtotal' => $payment->subtotal,
                         'shipping' => $payment->shipping,
-                        'fee' => 5
+                        'fee' => $payment->brand_fee
                     ]);
                 }
 
