@@ -168,7 +168,7 @@ class OrderService
                             // 'avs' => $response->avs
                         ]);
 
-                        $order->status = 'New';
+                        $order->status = 'Awaiting Fulfillment';
                         $order->save();
                     }
                     else {
