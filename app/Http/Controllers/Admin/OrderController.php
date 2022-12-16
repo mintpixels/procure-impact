@@ -28,6 +28,8 @@ use App\Models\OrderPayment;
 use App\Models\Product;
 use App\Models\Carrier;
 use App\Models\OrderDraft;
+use App\Models\OrderBrand;
+use App\Models\Setting;
 use \Auth;
 use \DB;
 
@@ -195,7 +197,10 @@ class OrderController extends Controller
             ->with('items.approvedByUser')
             ->with('billing')
             ->with('payments')
+            ->with('brands.brand')
             ->first();
+
+        $settings = Setting::first();
 
         $order->tags = $order->tagArray();
         $tags = Order::allTags();
@@ -207,7 +212,8 @@ class OrderController extends Controller
             'order' => $order,
             'timeline' => $order->timeline(),
             'tags' => [],
-            'brand_id' => Auth::user()->isAdmin() ? '' : Auth::user()->brand_id
+            'brand_id' => Auth::user()->isAdmin() ? '' : Auth::user()->brand_id,
+            'settings' => $settings
         ]);
     }
 
@@ -295,6 +301,18 @@ class OrderController extends Controller
             return response()->json([
                 'error' => $result->error
             ], 400);
+        }
+
+        foreach($data->brands as $b)
+        {
+            $brand = OrderBrand::where('order_id', $order->id)
+                ->where('brand_id', $b->brand_id)
+                ->first();
+
+            $brand->buyer_fee = $b->buyer_fee ? $b->buyer_fee : NULL;
+            $brand->brand_fee = $b->brand_fee ? $b->brand_fee : NULL;
+            $brand->shipping = $b->shipping ? $b->shipping : 0;
+            $brand->save();
         }
 
         // Add any additional payments.

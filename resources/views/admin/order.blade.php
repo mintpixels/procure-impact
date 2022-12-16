@@ -392,6 +392,63 @@
       </div>
 
       @if(Auth::user()->isAdmin())
+      <div class="section summary shipping">
+        <h5>Shipping Fees</h5>
+        <table>
+          <tbody>
+            <tr v-for="brand in order.brands">
+              <td>${ brand.brand.name }</td>
+              <td class="text-right" style="width:100px">
+                <div class="input-with-label">
+                  <span>$</span>
+                  <input type="text" class="currency light" v-model="brand.shipping" v-on:change="calcShipping()" />
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      @endif
+
+      @if(Auth::user()->isAdmin())
+      <div class="section summary fees">
+        <h5>Procure Impact Fees</h5>
+        <table>
+          <tbody>
+            <tr>
+              <td></td>
+              <td class="text-right"><b>Buyer</b></td>
+              <td class="text-right"><b>Vendor</b></td>
+            </tr>
+            <tr>
+              <td><i>Default</i></td>
+              <td class="text-right">${ settings.buyer_fee }%</td>
+              <td class="text-right">${ settings.brand_fee }%</td>
+            </tr>
+            <tr>
+              <td><i>Order</i></td>
+              <td class="text-right">
+                <input type="text" class="currency light" v-model="order.buyer_fee" v-on:change="checkChanged" />%
+              </td>
+              <td class="text-right">
+                <input type="text" class="currency light" v-model="order.brand_fee" v-on:change="checkChanged" />%
+              </td>
+            </tr>
+            <tr v-for="brand in order.brands">
+              <td>${ brand.brand.name }</td>
+              <td class="text-right">
+                <input type="text" class="currency light" v-model="brand.buyer_fee" v-on:change="checkChanged" />%
+              </td>
+              <td class="text-right">
+                <input type="text" class="currency light" v-model="brand.brand_fee" v-on:change="checkChanged" />%
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      @endif
+
+      @if(Auth::user()->isAdmin())
       <div class="section summary payments">
         <h5>Payments</h5>
         <table>

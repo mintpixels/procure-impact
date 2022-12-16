@@ -447,6 +447,15 @@
         }
     }
 
+    .fees,
+    .shipping {
+        input[type=text] {
+            width:50px;
+            text-align: right;
+            padding:5px;
+        }
+    }
+
     .payments {
         .fa-times {
             cursor: pointer;

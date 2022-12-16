@@ -109,10 +109,13 @@ class OrderService
             // the address list.
             $customer->addUniqueAddress($billing);
 
+            $brands = [];
             foreach($data->items as $item)
             {
                 if(!isset($item->product_id))
                     $item->product_id = $item->product->id;
+
+                $brands[] = $item->product->brand_id;
 
                 $orderItem = OrderItem::create([
                     'brand_id' => $item->product->brand_id,
@@ -128,6 +131,16 @@ class OrderService
                     'properties' => $item->properties ?? NULL
                 ]);
             }
+
+            $brands = array_unique($brands);
+            foreach($brands as $brandId)
+            {
+                OrderBrand::create([
+                    'order_id' => $order->id,
+                    'brand_id' => $brandId
+                ]);
+            }
+
 
             if($checkout)
             {

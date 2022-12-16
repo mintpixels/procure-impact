@@ -19,7 +19,7 @@ class Order extends WithHistory
     public $syncFields = [
         'customer_id', 'email', 'phone', 'subtotal',
         'tax', 'total', 'shipping',  'discount', 'paid', 'customer_notes',
-        'staff_notes'
+        'staff_notes', 'buyer_fee', 'brand_fee'
     ];
 
     protected $casts = [
@@ -135,6 +135,11 @@ class Order extends WithHistory
     public function items()
     {
         return $this->hasMany(OrderItem::class)->where('product_id', '>', 0);
+    }
+
+    public function brands()
+    {
+        return $this->hasMany(OrderBrand::class);
     }
 
     public function billing()

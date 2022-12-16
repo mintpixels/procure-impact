@@ -61,6 +61,7 @@ class Order {
                         shipments: [ctx.emptyShipment()],
                         holdInventory: false,
                     },
+                    settings: {},
                     verification: false,
                     timeline: [],
                     ready: false,
@@ -105,6 +106,12 @@ class Order {
                 }
             },
             methods: {
+                calcShipping() {
+                    ctx.totals();
+                },
+                checkChanged() {
+                    ctx.checkChanged();
+                },
                 canApproveOrder() {
                     for(var i = 0; i < this.order.items.length; i++) {
                         if(!this.order.items[i].approved_at)
@@ -835,6 +842,7 @@ class Order {
         this.vm.order = response.data.order;
         this.vm.loaded = true;
         this.vm.timeline = response.data.timeline;
+        this.vm.settings = response.data.settings;
 
         // Format shipping data to match expected format.
         const ctx = this;
@@ -919,7 +927,10 @@ class Order {
             tax: order.tax,
             taxCalculated: order.taxCalculated,
             total: order.total,
-            payments: order.payments
+            payments: order.payments,
+            buyer_fee: order.buyer_fee,
+            brand_fee: order.brand_fee,
+            brands: order.brands
         });
     }
 
@@ -966,8 +977,14 @@ class Order {
             this.vm.order.taxCalculated = false;
         }
 
+        let shipping = 0;
+        this.vm.order.brands.forEach(b => {
+            shipping += parseFloat(b.shipping);
+        });
+        this.vm.order.shipping = shipping;
+
         this.vm.order.subtotal = subtotal;
-        this.vm.order.total = subtotal + parseFloat(this.vm.order.tax);
+        this.vm.order.total = subtotal + parseFloat(this.vm.order.tax) + shipping;
         
         if(this.vm.order.total == 0) {
             this.vm.order.taxCalculated = true;
