@@ -31,23 +31,14 @@ use App\Models\OrderDraft;
 use \Auth;
 use \DB;
 
-class OrderController extends Controller
+class TransactionController extends Controller
 {
     /**
-     * Indicate the active section.
+     * Show the main transactions screen.
      */
-    public function __construct()
+    public function transactionsView()
     {
-        View::share('section', 'orders');
-    }
-
-    /**
-     * Show the main orders screen.
-     */
-    public function ordersView()
-    {
-        return view('admin.orders')->with([
-            'page' => 'orders',
+        return view('admin.transactions')->with([
             'counts' => (object) [
                 'submitted' => Order::submitted()->count(),
                 'approved' => Order::approved()->count(),
@@ -72,7 +63,7 @@ class OrderController extends Controller
     /**
      * Get the matching list of orders.
      */
-    public function orders(Request $r)
+    public function transactions(Request $r)
     {
         // See if there is a direct match based on order number.
         $match = $r->search ? Order::find($r->search) : false;
@@ -99,34 +90,9 @@ class OrderController extends Controller
             ->take(250)
             ->offset(250*$page);
 
-        if(!Auth::user()->isAdmin())
-        {
-            $orderIds = OrderItem::where('brand_id', Auth::user()->brand_id)->pluck('order_id')->toArray();
-            $orders->whereIn('id', $orderIds);
-        }
-        
         if($r->search)
             $orders->where('search', 'like', '%'.$r->search.'%');
 
-        $product = false;
-        if($r->product_id)
-        {
-            $filter = 'All';
-            $orderIds = OrderItem::where('product_id', $r->product_id)->pluck('order_id')->toArray();
-            $orders->whereIn('id', $orderIds);
-            $orders->whereNotIn('status', ['Completed', 'Cancelled', 'Incomplete']);
-            $orders->take(2000);
-            $product = Product::find($r->product_id);
-        }
-
-        $customer = false;
-        if($r->customer_id)
-        {
-            $filter = 'All';
-            $orders->where('customer_id', $r->customer_id);
-            $orders->take(2000);
-            $customer = Customer::find($r->customer_id);
-        }
 
         $filter = $r->filter ?? 'All';
         if($filter) {
@@ -158,9 +124,7 @@ class OrderController extends Controller
         }
 
         return response()->json([
-            'orders' => $orders,
-            'product' => $product,
-            'customer' => $customer
+            'orders' => $orders
         ]);
     }
 
@@ -192,7 +156,6 @@ class OrderController extends Controller
             ->with('customer.addresses')
             ->with('items.product.brand')
             ->with('items.variant')
-            ->with('items.approvedByUser')
             ->with('billing')
             ->with('payments')
             ->first();
@@ -275,18 +238,8 @@ class OrderController extends Controller
         ]);
 
         $updatedItems = json_decode(json_encode($fields->items));
-        foreach($updatedItems as $item) 
-        {
+        foreach($updatedItems as $item)
             $item->price = $item->customPrice;
-            if($item->approved_at)
-            {
-                if(!$item->approved_by)
-                {
-                    $item->approved_at = date('Y-m-d H:i:s');
-                    $item->approved_by = Auth::user()->id;
-                }
-            }
-        }
 
         $data = json_decode(json_encode($fields));
         $result = OrderService::updateOrderItems($order, $updatedItems, $data);
@@ -405,7 +358,6 @@ class OrderController extends Controller
             $checkout->load('items');
             
             $checkout->save();
-            $order->approved_at = date('Y-m-d H:i:s');
             $order->saveWithHistory('Order was approved'); 
         }
         else

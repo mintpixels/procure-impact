@@ -10,6 +10,7 @@ require('./order');
 require('./orders');
 require('./customer');
 require('./customers');
+require('./transactions');
 
 $('body').on('click', '.toggle-changes', function() {
     $(this).closest('.timeline-item').toggleClass('show-changes');

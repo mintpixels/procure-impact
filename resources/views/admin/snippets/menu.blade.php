@@ -8,16 +8,19 @@
     </span>
     @if(Auth::user()->isAdmin())
         <span>
+            <a href="/admin/transactions">Transactions</a>
+        </span>
+        <span>
             <a href="/admin/categories">Categories</a>
         </span>
         <span>
             <a href="/admin/properties">Properties</a>
         </span>
         <span>
-            <a href="/admin/brands">Social Enterprises</a>
+            <a href="/admin/brands">Vendors</a>
         </span>
         <span>
-            <a href="/admin/buyers">Purchasers</a>
+            <a href="/admin/buyers">Buyers</a>
         </span>
         <span>
             <a href="/admin/customers">Customers</a>

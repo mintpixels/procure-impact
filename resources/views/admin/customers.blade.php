@@ -25,7 +25,7 @@
                 <tr>
                     <th>Name</th>
                     <th>Email</th>
-                    <th>Purchaser</th>
+                    <th>Buyer</th>
                     <th>Type</th>
                     <th>Phone</th>
                     <th>Orders</th>

@@ -6,7 +6,7 @@
 
     <div class="section">
         <div class="breadcrumb">
-            <a href="/admin/buyers">Purchaser</a> / {{ $buyer->name }}
+            <a href="/admin/buyers">Buyer</a> / {{ $buyer->name }}
         </div>
 
 
@@ -47,7 +47,7 @@
             </div>
 
             <div class="actions">
-                <button>Save Purchaser</button>
+                <button>Save Buyer</button>
 
                 @if($buyer->id)
                     <!-- <a class="delete" data-entity="{{ $buyer->id }}" data-route="admin/buyer" data-type="buyer">Delete Buyer</a> -->

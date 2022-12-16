@@ -74,7 +74,7 @@
         </div>
 
         <div class="field">
-          <label>Purchaser</label>
+          <label>Buyer</label>
           <select v-model="customer.buyer_id">
             <option v-for="buyer in buyers" :value="buyer.id">${ buyer.name }</option>
           </select>

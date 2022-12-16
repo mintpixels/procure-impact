@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\OrderController as AdminOrderController;
 use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\PropertyController as AdminPropertyController;
+use App\Http\Controllers\Admin\TransactionController as AdminTransactionController;
 
 
 use App\Http\Controllers\Store\PageController as StorePageController;
@@ -128,7 +129,9 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function ()
     Route::get('data/orders', [AdminOrderController::class, 'orders']);
     Route::get('data/orders/products', [AdminOrderController::class, 'productLookup']);
     Route::get('data/orders/{id}', [AdminOrderController::class, 'order']);
-    Route::post('data/orders/rates', [AdminOrderController::class, 'getShippingRates']);
+
+    Route::get('transactions', [AdminTransactionController::class, 'transactionsView']);
+    Route::get('data/transactions', [AdminTransactionController::class, 'transactions']);
 
     Route::get('brands', [AdminBrandController::class, 'brands']);
     Route::get('brands/{id}', [AdminBrandController::class, 'showBrand']);

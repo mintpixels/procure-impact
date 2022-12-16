@@ -25,8 +25,8 @@
       <div class="actions" v-if="!changed && ['Cancelled', 'Completed'].indexOf(order.status) < 0">
         <span style="font-size:12px" v-on:click="showActions = !showActions">Actions <i class="fa-solid fa-circle-chevron-down"></i></span>
         <div class="action-list">
-          <div>
-            <span v-on:click="approveOrder">Approve Order</span>
+          <div v-if="order.status == 'Submitted'">
+            <span v-on:click="approveOrder" :disabled="!canApproveOrder()">Approve Order</span>
           </div>
           <div>
             <span v-on:click="completeOrder">Complete Order</span>
@@ -234,10 +234,10 @@
 
               <template v-for="(item, i) in brandItems.items">
 
-                <div class="line-item">
+                <div class="line-item" :class="{ approved: item.item.approved_by }">
               
                   <div class="item-quantity">
-                      <input type="text" name="quantity" v-model="item.item.quantity" v-on:change="itemUpdated(item.item, i)" min="0" :readonly="readonly" autocomplete="dontdoit" :disabled="readonly" />
+                      <input :disabled="!itemEditable(item.item)" :readonly="!itemEditable(item.item)" type="text" name="quantity" v-model="item.item.quantity" v-on:change="itemUpdated(item.item, i)" min="0" :readonly="readonly" autocomplete="dontdoit" :disabled="readonly" />
                   </div>
 
                   <div class="item-image">
@@ -266,13 +266,21 @@
                               </div>
                           </div>
                       </div>
+
+                      <div class="approve-item" v-if="brandId && !order.approved_at && !item.item.approved_by">
+                        <input type="checkbox" v-model="item.item.approved_at" /> Approve this item
+                      </div>
+
+                      <div class="approved-by" v-if="item.item.approved_by">
+                        Approved by <b>${ item.item.approved_by_user.name }</b> <a v-on:click="removeApproval(item.item)">Remove</a>
+                      </div> 
                   </div>
 
                   <div class="break"></div>
 
                   <div class="item-price input-with-label">
                       <span>$</span>
-                      <input type="text" name="price" v-model="item.item.customPrice" :readonly="readonly" :disabled="readonly" />
+                      <input :readonly="!itemEditable(item.item)" type="text" name="price" v-model="item.item.customPrice" :readonly="readonly" :disabled="readonly" />
                   </div>
                   <div class="item-total-quantity">
                     x ${ item.item.quantity }
@@ -283,7 +291,7 @@
                   </div>
 
                   <div class="remove-item" v-if="!readonly">
-                      <i class="fal fa-times" v-on:click="removeItem(i)"></i>
+                      <i class="fal fa-times" v-on:click="removeItem(item.index)" v-if="itemEditable(item.item)"></i>
                   </div>
 
                 </div>
@@ -427,7 +435,7 @@
           @if(Auth::user()->isAdmin())
           <a v-if="order.customer.id" :href="'/admin/customers/' + order.customer.id">${ customerName(order.customer) }</a>
           @else
-          <spam>${ customerName(order.customer) }</span>
+          <span>${ customerName(order.customer) }</span>
           @endif
           
           <br>

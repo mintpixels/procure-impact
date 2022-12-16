@@ -5,15 +5,15 @@
 <div id="buyers-page" class="padded-content crud">
 
   <h1>
-    Purchasers
+    Buyers
     <div class="actions">
-      <a href="/admin/buyers/create" class="button small">Create Purchaser</a>
+      <a href="/admin/buyers/create" class="button small">Create Buyer</a>
     </div>
   </h1>
 
   <div class="filter-bar">
     <form method="get" action="/admin/buyers">
-        <input type="text" name="search" value="{{ isset($_GET['search']) ? $_GET['search'] : '' }}" placeholder="Search purchasers..." />
+        <input type="text" name="search" value="{{ isset($_GET['search']) ? $_GET['search'] : '' }}" placeholder="Search buyers..." />
     </form>
   </div>
 

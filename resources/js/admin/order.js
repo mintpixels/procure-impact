@@ -105,6 +105,22 @@ class Order {
                 }
             },
             methods: {
+                canApproveOrder() {
+                    for(var i = 0; i < this.order.items.length; i++) {
+                        if(!this.order.items[i].approved_at)
+                            return false;
+                    }
+
+                    return true;
+                },
+                itemEditable(item) {
+                    return !(item.approved_at || order.approved_at)
+                },
+                removeApproval(item) {
+                    item.approved_at = null;
+                    item.approved_by = null;
+                    ctx.checkChanged();
+                },
                 setupPayment() {
                     this.paymentMethod = 'Credit Card'; 
                     this.paymentAmount = this.due;
@@ -379,10 +395,12 @@ class Order {
                 },
 
                 approveOrder() {
-                    if(window.confirm('Approve this order?')) {
-                        ctx.updateOrderStatus('Approved');
+                    if(this.canApproveOrder()) {
+                        if(window.confirm('Approve this order?')) {
+                            ctx.updateOrderStatus('Approved');
+                        }
+                        this.showActions = false;
                     }
-                    this.showActions = false;
                 },
 
                 completeOrder() {
@@ -836,10 +854,6 @@ class Order {
         this.vm.saved = Util.clone(this.vm.order);
         this.vm.changed = false;
         this.vm.readonly = ['Completed', 'In Shipping', 'Awaiting Fulfillment', 'Cancelled'].indexOf(this.vm.order.status) >= 0;
-
-        // Allow editing completed pickup orders.
-        if(this.vm.order.status == 'Completed' && this.vm.order.shipments.length == 0)
-            this.vm.readonly = false;
     }
 
     resetShippingMethods(shipment) {

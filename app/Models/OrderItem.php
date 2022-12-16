@@ -10,7 +10,11 @@ class OrderItem extends Model
     use SoftDeletes;
 
     protected $table = 'order_item';
-    protected $fillable = ['order_id', 'brand_id', 'product_id', 'variant_id', 'sku', 'name', 'quantity', 'price', 'line_price', 'discount', 'properties'];
+    protected $fillable = [
+        'order_id', 'brand_id', 'product_id', 'variant_id', 'sku', 'name', 'quantity', 
+        'price', 'line_price', 'discount', 'properties', 'approved_at', 'approved_by'
+    ];
+
     protected $casts = ['properties' => 'array'];
 
     public function order()
@@ -31,5 +35,10 @@ class OrderItem extends Model
     public function brand()
     {
         return $this->belongsTo(Brand::class);
+    }
+
+    public function approvedByUser()
+    {
+        return $this->belongsTo(User::class, 'approved_by', 'id');
     }
 }

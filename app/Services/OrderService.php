@@ -315,6 +315,8 @@ class OrderService
                         'quantity' => $item->quantity, 
                         'price' => $item->price, 
                         'line_price' => $item->price * $item->quantity,
+                        'approved_at' => $item->approved_at,
+                        'approved_by' => $item->approved_by
                     ]);
                 }
                 else

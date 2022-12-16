@@ -27,6 +27,9 @@
 
 #order-page {
 
+    span[disabled] {
+        opacity: .5;
+    }
     // opacity: 0;
     // transition: .2s opacity ease-in-out;
     // &.loaded {
@@ -194,6 +197,36 @@
         &:last-child {
             padding-bottom: 0;
             border-bottom: 0;
+        }
+
+        &.approved {
+            background: rgba(0, 128, 0, .05);
+            border: 1px solid rgba(0, 128, 0, .2);
+        }
+
+
+        .approve-item,
+        .approved-by {
+            margin-top: 15px;
+            font-size: 12px;
+
+            input[type=checkbox] {
+                display: block;
+                float: left;
+                margin-right: 5px;
+            }
+        }
+
+        .approved-by {
+            color:green;
+            font-weight: 400;
+            b {
+                font-weight: 600;
+            }
+            a {
+                display: inline-block;
+                margin-left:5px;
+            }
         }
 
         .item-quantity {

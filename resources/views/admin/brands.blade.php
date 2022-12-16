@@ -5,15 +5,15 @@
 <div id="brands-page" class="padded-content crud">
 
   <h1>
-    Social Enterprises
+    Vendors
     <div class="actions">
-      <a href="/admin/brands/create" class="button small">Create Social Enterprise</a>
+      <a href="/admin/brands/create" class="button small">Create Vendor</a>
     </div>
   </h1>
 
   <div class="filter-bar">
     <form method="get" action="/admin/brands">
-        <input type="text" name="search" value="{{ isset($_GET['search']) ? $_GET['search'] : '' }}" placeholder="Search social enterprises..." />
+        <input type="text" name="search" value="{{ isset($_GET['search']) ? $_GET['search'] : '' }}" placeholder="Search vendors..." />
     </form>
   </div>
 
