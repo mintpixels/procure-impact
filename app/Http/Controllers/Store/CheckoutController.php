@@ -82,8 +82,7 @@ class CheckoutController extends Controller
         }
         
         $checkout->load('items');
-        $checkout->getTax();
-        $checkout->getShipments();
+        
         $checkout->save();
 
         DB::commit();
@@ -129,7 +128,7 @@ class CheckoutController extends Controller
     public function checkout(Checkout $checkout)
     {
         $checkout->load('items.product', 'items.variant');
-        $checkout->load('customer');
+        $checkout->load('customer.buyer');
 
         $checkout->addresses = [];
         if($checkout->customer)
@@ -192,7 +191,7 @@ class CheckoutController extends Controller
      */
     public function completeCheckout(Request $r, Checkout $checkout)
     {
-        if($checkout->order_id)
+        if($checkout->order_id && !$checkout->approved)
         {
             return response()->json([
                 'error' => 'Duplicate checkout id'
@@ -204,20 +203,20 @@ class CheckoutController extends Controller
             return response()->json($result, 400);
         }
 
-        try
-        {
+        // try
+        // {
             if(env('RC_MODE') == 'live') {
-                Mail::to($result->order->email)->send(new OrderConfirmation($result->order));
+                // Mail::to($result->order->email)->send(new OrderConfirmation($result->order));
             }
             else {
-                Mail::to('procure@ryanas.com')->send(new OrderConfirmation($result->order));
+                Mail::to('pi@ryanas.com')->send(new OrderConfirmation($result->order));
             }
 
             $result->order->saveWithHistory('Order confirmation sent to ' . $result->order->email, false, '', false, true);
-        }
-        catch(\Exception $e) {
-            Log::info('Error sending email: ' . $e->getMessage());
-        }
+        // }
+        // catch(\Exception $e) {
+        //     Log::info('Error sending email: ' . $e->getMessage());
+        // }
 
         return response()->json([
             'order_id' => $result->order->id
@@ -377,5 +376,26 @@ class CheckoutController extends Controller
         $checkout->shipments = $shipments;
         $checkout->getShippingPrice();
         $checkout->save();
+    }
+
+    public function paymentIntent(Checkout $checkout)
+    {
+        try {
+            \Stripe\Stripe::setApiKey( env('STRIPE_SECRET_KEY'));
+
+            // Create a PaymentIntent with amount and currency
+            $paymentIntent = \Stripe\PaymentIntent::create([
+                'amount' => $checkout->total * 100,
+                'currency' => 'usd'
+            ]);
+        
+            $output = [
+                'clientSecret' =>$paymentIntent->client_secret
+            ];
+        
+            return response()->json($output);
+        } catch (Error $e) {
+            return response()->json(['error' => $e->getMessage()], 500);
+        }
     }
 }
