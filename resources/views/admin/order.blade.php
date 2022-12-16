@@ -391,24 +391,24 @@
         </table>
       </div>
 
-      @if(Auth::user()->isAdmin())
       <div class="section summary shipping">
         <h5>Shipping Fees</h5>
         <table>
           <tbody>
-            <tr v-for="brand in order.brands">
-              <td>${ brand.brand.name }</td>
-              <td class="text-right" style="width:100px">
-                <div class="input-with-label">
-                  <span>$</span>
-                  <input type="text" class="currency light" v-model="brand.shipping" v-on:change="calcShipping()" />
-                </div>
-              </td>
-            </tr>
+            <template v-for="brand in order.brands">
+              <tr v-if="!brandId || brandId == brand.brand_id">
+                <td>${ brandId ? 'Shipping' : brand.brand.name }</td>
+                <td class="text-right" style="width:100px">
+                  <div class="input-with-label">
+                    <span>$</span>
+                    <input type="text" class="currency light" v-model="brand.shipping" v-on:change="calcShipping()" />
+                  </div>
+                </td>
+              </tr>
+            </template>
           </tbody>
         </table>
       </div>
-      @endif
 
       @if(Auth::user()->isAdmin())
       <div class="section summary fees">
