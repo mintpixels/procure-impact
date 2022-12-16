@@ -113,10 +113,10 @@
                         <h3>
                             <span class="number">2</span> 
                             Shipping 
-                            <a v-on:click="step = 'shipping';stepIndex = 3;" v-if="stepIndex > 3">Edit</a></h3>
+                            <a v-on:click="step = 'shipping';stepIndex = 3" v-if="stepIndex > 3">Edit</a></h3>
                         </h3>
                         <div class="shipping-section section-content" :class="{ show: stepIndex > 3 }">
-                            <div class="shipment-details" v-for="(shipment, i) in checkout.shipments">
+                            <div class="shipment-details">
                                  
                                     <div>
                                         <h5>Shipping Address</h5>
@@ -130,13 +130,13 @@
                                             ${ checkout.billing.zip }<br>
                                         </div>
                                         <div v-else>
-                                            ${ shipment.address.first_name }
-                                            ${ shipment.address.last_name }<br>
-                                            ${ shipment.address.address1 }
-                                            ${ shipment.address.address2 }<br>
-                                            ${ shipment.address.city },
-                                            ${ shipment.address.state }
-                                            ${ shipment.address.zip }<br>
+                                            ${ checkout.shipping.first_name }
+                                            ${ checkout.shipping.last_name }<br>
+                                            ${ checkout.shipping.address1 }
+                                            ${ checkout.shipping.address2 }<br>
+                                            ${ checkout.shipping.city },
+                                            ${ checkout.shipping.state }
+                                            ${ checkout.shipping.zip }<br>
                                         </div>
                                     </div>
 
@@ -149,49 +149,16 @@
                                 <label for="use-billing">Use Billing Address</label>
                             </div>
 
-                          
-                            <div class="shipments" v-if="!checkout.is_pickup">
-
-                                <div v-for="(shipment, index) in checkout.shipments" :index="index" class="shipment">
-
-
-                                    <h5>Shipping Address</h5>
-                              
-                                    <div class="shipping-address">
-                                    
-                                        <div v-if="shipToDealer(shipment)">
-                                            ${ checkout.dealer.address1 }
-                                            ${ checkout.dealer.address2 }<br>
-                                            ${ checkout.dealer.city },
-                                            ${ checkout.dealer.state }
-                                            ${ checkout.dealer.zip }
-                                        </div>
-                                        <div v-else>
-                                            <div v-if="checkout.use_billing">
-                                                ${ checkout.billing.first_name }
-                                                ${ checkout.billing.last_name }<br>
-                                                ${ checkout.billing.address1 }
-                                                ${ checkout.billing.address2 }<br>
-                                                ${ checkout.billing.city },
-                                                ${ checkout.billing.state }
-                                                ${ checkout.billing.zip }<br>
-                                            </div>
-                                            <div v-else>
-                                                <select v-model="checkout.shipments[index].address.id" v-on:change="selectShippingAddress(index)"  v-if="checkout.addresses.length > 0">
-                                                    <option value="">New Address</option>
-                                                    <option v-for="address in checkout.addresses" :value="address.id">
-                                                        ${ address.first_name } ${ address.last_name },
-                                                        ${ address.address1 } ${ address.address2 },
-                                                        ${ address.city }, ${ address.state } ${ address.zip }
-                                                    </option>
-                                                </select>
-                                                <div v-if="checkout.shipments[index].address.id == '' || checkout.addresses.length == 0">
-                                                    @include('store.snippets.address', ['address' => 'checkout.shipments[index].address', 'shipment' => 'index', 'onChange' => 'addressChanged'])
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
+                            <div v-if="!checkout.use_billing" class="shipping-address">
+                                <!-- <select v-model="checkout.shipping.id" v-on:change="selectShippingAddress" v-if="checkout.addresses.length > 0">
+                                    <option value="">New Address</option>
+                                    <option v-for="(address, i) in checkout.addresses" :value="address.id">
+                                        ${ address.first_name } ${ address.last_name },
+                                        ${ address.address1 } ${ address.address2 },
+                                        ${ address.city }, ${ address.state } ${ address.zip }
+                                    </option>
+                                </select> -->
+                                @include('store.snippets.address', ['address' => 'checkout.shipping', 'shipment' => '{}', 'onChange' => ''])
                             </div>
                             <br>
                             <button v-on:click="saveShipping" :disabled="!validShipping()">Continue</button>

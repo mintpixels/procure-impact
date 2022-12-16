@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use App\Mail\PasswordReset;
 use App\Mail\ReturnCreated;
@@ -94,7 +95,7 @@ class AccountController extends Controller
                 Mail::to($customer->email)->send(new PasswordReset($customer->reset_token));
             }
             else {
-                Mail::to('aimtest@ryanas.com')->send(new PasswordReset($customer->reset_token));
+                Mail::to('pi@ryanas.com')->send(new PasswordReset($customer->reset_token));
             }
 
             return redirect()->back()->with([
@@ -384,6 +385,22 @@ class AccountController extends Controller
         if($r->password)
             $customer->password = Hash::make($r->password);
 
+        $document = $r->file('document');
+        if($document)
+        {
+            $filename = $document->getClientOriginalName();
+
+            Storage::disk('public')->putFileAs(
+                'uploads',
+                $document,
+                $filename
+            );
+
+            $customer->buyer->document = $filename;
+            $customer->buyer->save();
+        }
+    
+
         $customer->save();
 
    
@@ -460,11 +477,6 @@ class AccountController extends Controller
             // Check for products that can't be returned.
             $tags = $item->product->tagArray();
             if(in_array('NORETURN', $tags))
-                continue;
-
-            // Don't allow returns for items older that 45 days old.
-            // Unless it's an AIM product.
-            if($order->created_at < $cutoff && stripos($item->product->sku, 'XAIM') === FALSE)
                 continue;
 
             // Remove any items that have already had a return

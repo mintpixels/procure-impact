@@ -30,6 +30,7 @@ Route::get('admin/logout', [AdminAuthController::class, 'logout']);
 
 
 Route::group(['prefix' => 'account'], function() {
+
     Route::get('login', [StoreAccountController::class, 'loginView'])->name('store.login');
     Route::post('login', [StoreAccountController::class, 'login']);
     Route::get('logout', [StoreAccountController::class, 'logout'])->name('store.logout');
@@ -43,6 +44,19 @@ Route::group(['prefix' => 'account'], function() {
 
 Route::group(['middleware' => 'auth.customer'], function () 
 {
+
+    Route::group(['prefix' => 'account'], function() {
+        Route::get('/', [StoreAccountController::class, 'ordersView']);
+        Route::get('orders', [StoreAccountController::class, 'ordersView']);
+        Route::get('orders/{order}', [StoreAccountController::class, 'orderView']);
+
+        Route::get('data/orders', [StoreAccountController::class, 'orders']);
+        Route::get('data/orders/{order}', [StoreAccountController::class, 'order']);
+
+        Route::get('settings', [StoreAccountController::class, 'settingsView']);
+        Route::post('settings', [StoreAccountController::class, 'updateSettings']);
+    });
+
     Route::get('/', [StorePageController::class, 'homeView']);
     Route::get('data/home', [StorePageController::class, 'home']);
     Route::get('data/common', [StorePageController::class, 'common']);

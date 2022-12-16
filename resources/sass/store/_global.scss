@@ -273,6 +273,21 @@ p {
     }
 }
 
+.status,
+.error,
+.warning {
+    background-color: #fff;
+    padding: 10px;
+    color: #000;
+    text-align: center;
+    margin-bottom: 20px;
+    margin-top: 20px;
+    border: 1px solid #ddd;
+    box-shadow: 3px 3px 3px #eee;
+    font-weight: 500;
+    background-color: #f5f5f5
+}
+
 .stats {
     padding:50px;
     background-color: $blue;

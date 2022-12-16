@@ -9,3 +9,4 @@ require('./pdp');
 require('./brand');
 require('./cart');
 require('./checkout');
+require('./account');

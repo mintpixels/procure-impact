@@ -51,7 +51,7 @@
                         <img src="{{ asset('img/cart.svg') }}" class="side-cart-trigger"/>
                         <span class="cart-item-count"></span>
                     </span>
-                    <img src="{{ asset('img/account.svg') }}" />
+                    <a href="/account"><img src="{{ asset('img/account.svg') }}" /></a>
                 </div>
             </div>
 
@@ -65,6 +65,7 @@
         @include('store.snippets.footer')
         @include('store.snippets.side-cart')
 
+        <script src="https://unpkg.com/dayjs@1.8.21/dayjs.min.js"></script>
         <script src="{{ mix('js/store.js') }}"></script>
     </body>
 </html>

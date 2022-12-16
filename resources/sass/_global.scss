@@ -7,6 +7,7 @@
 
 body { 
     font-size: 16px;
+    font-family: $inter;
 
     &.no-scroll {
         overflow-y: hidden;
