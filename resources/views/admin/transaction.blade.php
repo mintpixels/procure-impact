@@ -49,6 +49,9 @@
                 <td class="text-center">
                   <span v-if="payment.paid_at">
                     ${ formatDate(payment.paid_at) }
+                    <div class="transaction-id">
+                      ${ payment.transaction_id }
+                    </div>
                   </span>
                   <span v-else>
                     <button class="button small" v-if="!payment.paid_at" v-on:click="makePayment(payment)">Pay</button>

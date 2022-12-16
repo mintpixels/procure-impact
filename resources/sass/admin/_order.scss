@@ -28,6 +28,11 @@
 #order-page,
 #transaction-page {
 
+    .transaction-id {
+        margin-top: 5px;
+        color: #888;
+    }
+    
     span[disabled=true] {
         opacity: .5;
     }

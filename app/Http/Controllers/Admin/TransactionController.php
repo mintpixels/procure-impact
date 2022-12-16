@@ -179,6 +179,7 @@ class TransactionController extends Controller
         $payment->paid = $r->net;
         $payment->fee = $r->fee;
         $payment->paid_at = date('Y-m-d H:i:s');
+        $payment->transaction_id = \Str::random(10);
         $payment->save();
     }
 }
