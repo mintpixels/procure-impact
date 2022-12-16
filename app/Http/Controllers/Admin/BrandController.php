@@ -11,21 +11,14 @@ use \Auth;
 class BrandController extends Controller
 {
     /**
-     * Indicate the active section.
+     * Get a list of brands.
      */
-    public function __construct()
-    {
-        View::share('section', 'users');
-        View::share('page', 'users');
-    }
-
     public function brands(Request $r)
     {
         $brands = Brand::orderBy('name');
-
         if($r->search)
         {
-        $brands->where('name', 'like', '%'.$r->search.'%');
+            $brands->where('name', 'like', '%'.$r->search.'%');
         }
 
         return view('admin.brands')->with([
@@ -33,6 +26,9 @@ class BrandController extends Controller
         ]);
     }
 
+    /**
+     * Show the view for a specific brand.
+     */
     public function showBrand($id = false)
     {
         $brand = Brand::find($id);
@@ -43,6 +39,9 @@ class BrandController extends Controller
         ]);
     }
 
+    /**
+     * Save changes to a brand.
+     */
     public function saveBrand(Request $r, $id)
     {
         $brand = Brand::find($id);
@@ -50,13 +49,15 @@ class BrandController extends Controller
 
         $brand->name = $r->name;
         $brand->description = $r->description;
-        $brand->location = $r->location;
-        $brand->email = $r->email;
+        $brand->order_min = floatval($r->order_min);
+        $brand->contact_email = $r->contact_email;
         $brand->contact_name = $r->contact_name;
+        $brand->bill_id = $r->bill_id;
+        $brand->is_active = $r->is_active ? 1 : 0;
         $brand->save();
 
         return redirect("admin/brands/$brand->id")->with([
-            'status' => 'The brand has been saved'
+            'status' => 'The vendor has been saved'
         ]);
     }
 

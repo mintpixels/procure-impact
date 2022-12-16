@@ -17,6 +17,26 @@
                 ${ error }
             </div>
 
+            <div class="minimums" v-if="minimums.length > 0">
+                <p>You haven't met the suggested minimums set by the following merchants.</p>
+                <table>
+                    <thead>
+                    <tr>
+                        <th>Merchant</th>
+                        <th class="text-right">Total $</th>
+                        <th class="text-right">Minimum $</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr v-for="min in minimums">
+                        <td>${ min.brand.name }</td>
+                        <td class="text-right">${ formatMoney(min.total) }</td>
+                        <td class="text-right">${ formatMoney(min.min) }</td>
+                    </tr>
+                    </tbody>
+                </table>
+            </div>
+
             <div class="line-items">
 
                 <div class="item columns" v-for="item in cart.items">

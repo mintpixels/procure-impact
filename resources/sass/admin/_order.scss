@@ -27,7 +27,7 @@
 
 #order-page {
 
-    span[disabled] {
+    span[disabled=true] {
         opacity: .5;
     }
     // opacity: 0;

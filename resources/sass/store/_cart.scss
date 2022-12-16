@@ -177,6 +177,30 @@
         }
     }
 
+    .minimums {
+        padding:20px;
+        background: rgba(255, 0, 0, .1);
+
+        p {
+            margin-bottom: 10px;
+            font-weight: 600;
+        }
+
+        table {
+            width:100%;
+            font-size: 14px;
+            
+            th {
+                text-align: left;
+                font-weight: 600;
+
+                &.text-right {
+                    text-align: right;
+                }
+            }
+        }
+    }
+
     .footer {
         position: absolute;
         bottom:0;

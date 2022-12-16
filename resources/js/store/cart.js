@@ -12,7 +12,8 @@ class Cart {
                     return {
                         view: 'cart',
                         cart: { items: [], subtotal: 0, total: 0, ffl_required: false },
-                        error: ''
+                        error: '',
+                        minimums: []
                     }
                 },
                 methods: {
@@ -45,15 +46,39 @@ class Cart {
 
     get(callback) {
         console.log('get');
-        var self = this;
+        var ctx = this;
         this.vm.error = '';
         axios.get('/cart/json').then(function (response) {
-            self.vm.cart = response.data.cart;
-            self.vm.suggested = response.data.suggested;
-            console.log('items', self.vm.cart.items);
-            self.setItemCount(self.vm.cart.items.length);
-            if(callback) callback(self.vm.cart);
+            ctx.vm.cart = response.data.cart;
+            ctx.vm.suggested = response.data.suggested;
+            ctx.setItemCount(ctx.vm.cart.items.length);
+
+            ctx.checkMinimums(ctx.vm.cart.items);
+
+            if(callback) callback(ctx.vm.cart);
         });
+    }
+
+    checkMinimums(items) {
+        
+        let totals = {};
+        items.forEach(i => {
+            if(!totals[i.product.brand.id]) {
+                totals[i.product.brand.id] = {
+                    brand: i.product.brand,
+                    min: parseFloat(i.product.brand.order_min),
+                    total: 0
+                };
+            }
+
+            totals[i.product.brand.id].total += parseFloat(i.price) * i.quantity;
+        });
+
+        let minimums = [];
+        for([i, t] of Object.entries(totals)) {
+            if(t.min > t.total) minimums.push(t);
+        }
+        this.vm.minimums = minimums;
     }
 
     addVariants(variants, errorHandler) {
