@@ -109,6 +109,7 @@ class Order {
                 sendPO() {
                     axios.post(`/admin/orders/${ctx.id}/sendpo`).then(function(response) {
                         ctx.vm.timeline = response.data.timeline;
+                        alert('Email has been sent!');
                     });
                 },
                 calcShipping() {
