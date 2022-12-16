@@ -157,14 +157,22 @@ class OrderService
                 {
                     // $api = new AuthorizeApi;
                     // $response = $api->authorizeCreditCard($order, $order->total, $r->token);
-                    if(true) //isset($response->id))
+                    \Stripe\Stripe::setApiKey( env('STRIPE_SECRET_KEY'));
+                    $charge = \Stripe\Charge::create([
+                        'amount' => $order->total * 100,
+                        'currency' => 'usd',
+                        'description' => '#' . $order->name,
+                        'source' => $r->token,
+                      ]);
+
+                    if($charge->id) //isset($response->id))
                     {
                         OrderPayment::create([
                             'order_id' => $order->id, 
                             'method' => 'Credit Card', 
                             'amount' => $order->total, 
                             // 'last_4' => $r->last4,
-                            'transaction_id' => \Str::random(20), //$response->id,
+                            'transaction_id' => $charge->id,
                             // 'avs' => $response->avs
                         ]);
 
