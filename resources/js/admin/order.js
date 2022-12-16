@@ -246,6 +246,7 @@ class Order {
                 removeItem(index) {
                     const idx = parseInt(index);
                     this.order.items.splice(idx, 1);
+                    ctx.groupByBrand();
                     ctx.checkChanged();
                 },
 

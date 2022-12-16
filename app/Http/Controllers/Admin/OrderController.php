@@ -285,7 +285,7 @@ class OrderController extends Controller
         foreach($updatedItems as $item) 
         {
             $item->price = $item->customPrice;
-            if($item->approved_at)
+            if($item->approved_at ?? false)
             {
                 if(!$item->approved_by)
                 {
