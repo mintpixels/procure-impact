@@ -30,6 +30,19 @@
         }
     }
 
+    .properties {
+        margin-bottom: 20px;
+        span {
+            background-color: #7768A5;
+            color:#fff;
+            padding:5px 10px;
+            border-radius: 8px;
+            margin-right: 10px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+    }
+
     .seller-info {
         padding: 10px;
         display: flex;
@@ -165,6 +178,14 @@
             padding-top:30px;
             text-align: left;
             padding-right: 40%;
+
+            .tab-content {
+                display: none;
+
+                &.show {
+                    display: block;
+                }
+            }
         }
     }
 

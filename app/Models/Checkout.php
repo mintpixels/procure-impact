@@ -21,16 +21,16 @@ class Checkout extends Model
 
     public function getShippingPrice()
     {
-        $price = 0;
-        if(!$this->is_pickup)
-        {
-            foreach($this->shipments as $shipment)
-            {
-                if(isset($shipment->method) && $shipment->method)
-                    $price += $shipment->method->price;
-            }
-        }
-        $this->shipping = $price;
+        // $price = 0;
+        // if(!$this->is_pickup)
+        // {
+        //     foreach($this->shipments as $shipment)
+        //     {
+        //         if(isset($shipment->method) && $shipment->method)
+        //             $price += $shipment->method->price;
+        //     }
+        // }
+        // $this->shipping = $price;
     }
 
     /**

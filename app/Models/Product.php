@@ -300,6 +300,9 @@ class Product extends WithHistory
         $clean = new \stdClass;
         $clean->brand = $this->brand;
         $clean->description = $this->description;
+        $clean->short_desc = $this->short_desc;
+        $clean->specs = $this->specs;
+        $clean->other = $this->other;
         $clean->handle = $this->handle;
         $clean->id = $this->id;
         $clean->images = $this->images;

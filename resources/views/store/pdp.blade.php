@@ -50,6 +50,12 @@
 
             <div class="product-details column">
 
+				<div class="properties">
+					<span v-for="prop in product.properties">
+						${ prop.value}
+					</span>
+				</div>
+				
                 <h3>${ product.name }</h3>
 
 				<div class="product-price">
@@ -60,7 +66,7 @@
 					Ships from ${ product.brand.location }
 				</div>
 
-				<div class="product-description" v-html="getShortDesc(product.description)"></div>
+				<div class="product-description" v-html="product.short_desc"></div>
 
 				<div class="seller-info">
 					<div class="seller-logo">
@@ -169,12 +175,20 @@
 
 	<div class="tab-container padded-content">
 		<div class="tabs">
-			<span :class="{ active: tab == 'description' }" v-on:click="showTab('description')">Description</span>
-			<span :class="{ active: tab == 'dimensions' }" v-on:click="showTab('dimensions')">Dimensions</span>
-			<span :class="{ active: tab == 'lorem' }" v-on:click="showTab('lorem')">Lorem Ipsum</span>
+			<span :class="{ active: tab == 'description' }" v-on:click="tab ='description';">Description</span>
+			<span :class="{ active: tab == 'specs' }" v-on:click="tab = 'specs'">Specifications</span>
+			<span :class="{ active: tab == 'other' }" v-on:click="tab ='other'">Other</span>
 		</div>
 		<div class="tab-contents">
-			<div v-if="tab == 'description'" v-html="product.description"></div>
+			<div class="tab-content" :class="{ show: tab == 'description' }">
+				<div v-html="product.description"></div>
+			</div>
+			<div class="tab-content" :class="{ show: tab == 'specs' }">
+				<div v-html="product.specs"></div>
+			</div>
+			<div class="tab-content" :class="{ show: tab == 'other' }">
+				<div v-html="product.other"></div>
+			</div>
 		</div>
 	</div>
 

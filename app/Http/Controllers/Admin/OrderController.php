@@ -399,6 +399,7 @@ class OrderController extends Controller
                 $checkout->payment = new \stdClass;
                 $checkout->customer_id = $order->customer->id;
                 $checkout->email = $order->customer->email;
+                $checkout->shipping = $order->shipping;
                 $checkout->shipments = [];
                 $checkout->save();
             }
