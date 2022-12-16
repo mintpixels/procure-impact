@@ -106,6 +106,11 @@ class Order {
                 }
             },
             methods: {
+                sendPO() {
+                    axios.post(`/admin/orders/${ctx.id}/sendpo`).then(function(response) {
+                        ctx.vm.timeline = response.data.timeline;
+                    });
+                },
                 calcShipping() {
                     ctx.totals();
                 },

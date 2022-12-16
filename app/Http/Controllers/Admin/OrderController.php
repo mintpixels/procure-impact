@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\View;
 use App\Mail\OrderConfirmation;
+use App\Mail\CompletePO;
 use Illuminate\Support\Facades\Mail;
 use App\Http\Controllers\Controller;
 use App\Jobs\VerifyOrder;
@@ -333,6 +334,19 @@ class OrderController extends Controller
         return $this->order($order->id);
     }
 
+    public function sendPO(Order $order)
+    {
+        Mail::to($order->email)->send(
+            new CompletePO($order)
+        );
+
+        $order->saveWithHistory("Checkout email sent to $order->email", '', '', false, true);
+
+        return response([
+            'timeline' => $order->timeline()
+        ]);
+    }
+
     /** 
      * Save the problem with an order.
      * */
@@ -578,6 +592,8 @@ class OrderController extends Controller
         {
             try
             {
+                $settings = Setting::first();
+
                 if(env('RC_MODE') == 'live') {
                     Mail::to($result->order->email)->send(new OrderConfirmation($result->order));
                 }
@@ -586,6 +602,17 @@ class OrderController extends Controller
                 }
 
                 $result->order->saveWithHistory('Order confirmation sent to ' . $result->order->email, false, '', false, true);
+
+                if(env('RC_MODE') == 'live') {
+                    Mail::to($settings->order_email)->send(new OrderConfirmation($result->order, true));
+                }
+                else {
+                    Mail::to('procure@ryanas.com')->send(new OrderConfirmation($result->order, true));
+                }
+
+                $result->order->saveWithHistory('Order confirmation sent to ' . settings->order_email, false, '', false, true);
+
+
             }
             catch(\Exception $e) {
                 Log::info('Error sending email: ' . $e->getMessage());

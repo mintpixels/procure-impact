@@ -25,6 +25,7 @@ use App\Models\OrderBilling;
 use App\Models\OrderPayment;
 use App\Models\OrderShipment;
 use App\Models\OrderShipmentItem;
+use App\Models\Setting;
 use \Exception;
 use \Auth;
 use \DB;
@@ -205,14 +206,25 @@ class CheckoutController extends Controller
 
         try
         {
+            $settings = Setting::first();
+
             if(env('RC_MODE') == 'live') {
                 Mail::to($result->order->email)->send(new OrderConfirmation($result->order));
             }
             else {
-                Mail::to('pi@ryanas.com')->send(new OrderConfirmation($result->order));
+                Mail::to('procure@ryanas.com')->send(new OrderConfirmation($result->order));
             }
 
             $result->order->saveWithHistory('Order confirmation sent to ' . $result->order->email, false, '', false, true);
+
+            if(env('RC_MODE') == 'live') {
+                Mail::to($settings->order_email)->send(new OrderConfirmation($result->order, true));
+            }
+            else {
+                Mail::to('procure@ryanas.com')->send(new OrderConfirmation($result->order, true));
+            }
+
+            $result->order->saveWithHistory('Order confirmation sent to ' . $settings->order_email, false, '', false, true);
         }
         catch(\Exception $e) {
             Log::info('Error sending email: ' . $e->getMessage());

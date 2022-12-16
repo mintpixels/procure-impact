@@ -28,6 +28,9 @@
           <div v-if="order.status == 'Submitted'">
             <span v-on:click="approveOrder" :disabled="!canApproveOrder()">Approve Order</span>
           </div>
+          <div v-if="order.status == 'Approved'">
+            <span v-on:click="sendPO">Email Purchase Order</span>
+          </div>
           <div>
             <span v-on:click="completeOrder">Complete Order</span>
           </div>

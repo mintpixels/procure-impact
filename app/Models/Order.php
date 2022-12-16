@@ -127,6 +127,12 @@ class Order extends WithHistory
         return $this->hasOne(Checkout::class);
     }
 
+    public function approvedCheckout()
+    {
+        return $this->hasOne(Checkout::class)->where('approved', 1);
+    }
+
+
     public function customer()
     {
         return $this->belongsTo(Customer::class);

@@ -28,6 +28,9 @@
         <span>
             <a href="/admin/users">Users</a>
         </span>
+        <span>
+            <a href="/admin/settings">Settings</a>
+        </span>
     @endif
 
     <span>

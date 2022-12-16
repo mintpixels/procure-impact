@@ -12,7 +12,7 @@ use App\Http\Controllers\Admin\CustomerController as AdminCustomerController;
 use App\Http\Controllers\Admin\CategoryController as AdminCategoryController;
 use App\Http\Controllers\Admin\PropertyController as AdminPropertyController;
 use App\Http\Controllers\Admin\TransactionController as AdminTransactionController;
-
+use App\Http\Controllers\Admin\SettingsController as AdminSettingsController;
 
 use App\Http\Controllers\Store\PageController as StorePageController;
 use App\Http\Controllers\Store\DataController as StoreDataController;
@@ -126,6 +126,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function ()
     Route::post('orders/{order}/unverify', [AdminOrderController::class, 'unverifyOrder']);
     Route::post('orders/{order}/status', [AdminOrderController::class, 'updateOrderStatus']);
     Route::post('orders/{order}/problem', [AdminOrderController::class, 'saveProblem']);
+    Route::post('orders/{order}/sendpo', [AdminOrderController::class, 'sendPO']);
     Route::post('orders/{order}/payments/{id}/capture', [AdminOrderController::class, 'capturePayment']);
     Route::get('data/orders', [AdminOrderController::class, 'orders']);
     Route::get('data/orders/products', [AdminOrderController::class, 'productLookup']);
@@ -141,6 +142,9 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function ()
     Route::get('brands/{id}', [AdminBrandController::class, 'showBrand']);
     Route::post('brands/{id}', [AdminBrandController::class, 'saveBrand']);
     Route::post('brands/{id}/delete', [AdminBrandController::class, 'deleteBrand']);
+
+    Route::get('settings', [AdminSettingsController::class, 'showSettings']);
+    Route::post('settings', [AdminSettingsController::class, 'saveSettings']);
 
     Route::get('buyers', [AdminBuyerController::class, 'buyers']);
     Route::get('buyers/{id}', [AdminBuyerController::class, 'showBuyer']);
