@@ -127,7 +127,8 @@
           'rules' => 'product.rules',
           'price' => 'product.price',
           'prices' => 'product.prices',
-          'cost' => 'product.cost'
+          'cost' => 'product.cost',
+          'variant' => 'product.variants[0]'
         ])
 
       </div>

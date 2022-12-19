@@ -1,19 +1,19 @@
 <div class="columns">
     <div class="column">
     <div class="field">
-        <label>Price</label>
+        <label>Retail Price</label>
         <div class="input-with-label">
         <span>$</span>
-        <input type="text" v-model="{{ $price }}" class="currency light" />
+        <input type="text" v-model="{{ $variant }}.price" class="currency light" />
         </div>
     </div>
     </div>
     <div class="column">
     <div class="field">
-        <label>Sale Price</label>
+        <label>Wholesale Price</label>
         <div class="input-with-label">
         <span>$</span>
-        <input type="text" v-model="{{ $prices }}.sale" class="currency light" />
+        <input type="text" v-model="{{ $variant }}.wholesale_price" class="currency light" />
         </div>
     </div>
     </div>

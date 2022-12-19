@@ -237,6 +237,7 @@ class ProductController extends Controller
         // Load additional fields for the product.
         $product->load('type');
         $product->load('related.product');
+        $product->load('variants');
         // $product->load('addons.product');
         // $product->load('priceRules.priceRule');
         $product->load('properties.property');

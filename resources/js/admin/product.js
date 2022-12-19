@@ -490,7 +490,8 @@ class Product {
             properties: [], 
             shipping: { require_signature: false },
             additional: { min_qty: 1, max_qty: '', notify_qty: 5, sort_order: 5, price_in_cart: false },
-            options:[] 
+            options:[],
+            variants: [{}]
         }
     }
 
