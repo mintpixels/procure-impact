@@ -45,7 +45,8 @@ class Categories {
                         visible: false,
                         filterMatch: true,
                         children: [],
-                        propertyValues: []
+                        propertyValues: [],
+                        properties: []
                     }
 
                     if(parent == null) {
