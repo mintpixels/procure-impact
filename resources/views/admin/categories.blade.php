@@ -92,7 +92,7 @@
       </div>
 
       <div class="actions">
-        <button class="primary" v-on:click="saveFilters()">Save</button>
+        <button class="primary" v-on:click="saveProperties()">Save</button>
         <button class="secondary" v-on:click="closeModal()">Cancel</button>
       </div>
       

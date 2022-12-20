@@ -9,6 +9,7 @@ use App\Services\EasyPostApi;
 use App\Models\InventoryLocation;
 use App\Models\Category;
 use App\Models\ProductCategory;
+use App\Models\PropertyCategoryValue;
 use App\Models\PriceRule;
 use App\Models\PriceRuleApplication;
 use App\Models\Property;
@@ -193,6 +194,16 @@ class CategoryController extends Controller
             }
             else {
                 $c->save();
+            }
+
+            PropertyCategoryValue::where('category_id', $category->id)->delete();
+            foreach($category->propertyValues as $v) 
+            {
+                PropertyCategoryValue::create([
+                    'category_id' => $category->id,
+                    'property_id' => $v->property_id,
+                    'value_id' => $v->value_id
+                ]);
             }
 
             $this->updateHierarchy($category->children, $c->id, $parentId);

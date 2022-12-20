@@ -74,6 +74,7 @@ class Categories {
                     this.checkChanged();
                 },
                 showProperties(category) {
+                    console.log('sp', category);
                     this.activeCategory = category;
                     if(this.properties.length > 0)  {
                         this.activeProperty = this.properties[0];
@@ -97,6 +98,28 @@ class Categories {
 
                         this.showModal('show-properties');
                     }
+                },
+                saveProperties() {
+
+                    let properties = [];
+                    let values = [];
+
+                    this.properties.map(p => {
+                        
+                        p.values.map(v => {
+                            if(v.selected) {
+                                values.push({
+                                    property_id: p.id,
+                                    value_id: v.id
+                                });
+                            }
+                            v.selected = false;
+                        })
+                    });
+
+                    this.activeCategory.propertyValues = values;
+                    ctx.checkChanged();
+                    this.closeModal();
                 },
                 selectedValues(property) {
                     let values = [];
