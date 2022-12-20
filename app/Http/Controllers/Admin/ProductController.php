@@ -19,6 +19,7 @@ use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\ProductProperty;
 use App\Models\ProductAddon;
+use App\Models\ProductVariant;
 use App\Models\ProductRelated;
 use App\Models\EntityTag;
 use App\Models\PriceRule;
@@ -516,9 +517,20 @@ class ProductController extends Controller
             $product->published_at = NULL;
         else if(!$product->published_at)
             $product->published_at = date("Y-m-d H:i:s");
-        
+
         // Save additional product fields.
         DB::beginTransaction();
+
+        // Variants
+        foreach($r->fields['variants'] as $v)
+        {
+            $variant = ProductVariant::find($v['id']);
+            $variant->price = floatval($v['price']);
+            $variant->wholesale_price = floatval($v['wholesale_price']);
+            $variant->msrp = floatval($v['msrp']);
+            $variant->case_quantity = intval($v['case_quantity']);
+            $variant->save();
+        }
 
         // Save the product type. Adding it if necessary.
         $product->setType(

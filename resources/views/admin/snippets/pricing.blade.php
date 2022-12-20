@@ -22,11 +22,20 @@
         <label>MSRP</label>
         <div class="input-with-label">
         <span>$</span>
-        <input type="text" v-model="{{ $prices }}.msrp" class="currency light" />
+        <input type="text" v-model="{{ $variant }}.msrp" class="currency light" />
         </div>
     </div>
     </div>
     <div class="column">
+    <div class="field">
+        <label>Per Case Quantity</label>
+        <div class="input-with-label">
+            <input type="text" v-model="{{ $variant }}.case_quantity" class="currency light text-right" />
+            <span>cnt</span>
+        </div>
+    </div>
+    </div>
+    <!-- <div class="column">
     <div class="field">
         <label>Cost</label>
         <div class="input-with-label">
@@ -34,7 +43,7 @@
         <input type="text" v-model="{{ $cost }}" class="currency light" />
         </div>
     </div>
-    </div>
+    </div> -->
 </div>
 
 <!-- <a v-on:click="showDiscounts = !showDiscounts">

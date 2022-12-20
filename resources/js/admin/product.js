@@ -569,15 +569,16 @@ class Product {
             images: product.images,
             handle: product.handle,
             related: product.related,
-            addons: product.addons
+            addons: product.addons,
+            variants: product.variants
         });
 
-        // Format currency fields.
-        params.prices.sale = this.formatCurrency(params.prices.sale);
-        params.prices.msrp = this.formatCurrency(params.prices.msrp);
-        for(let i = 0; i < params.prices.additional.length; i++)
-            params.prices.additional[i].price = this.formatCurrency(params.prices.additional[i].price);
-
+        // // Format currency fields.
+        // params.prices.sale = this.formatCurrency(params.prices.sale);
+        // params.prices.msrp = this.formatCurrency(params.prices.msrp);
+        // for(let i = 0; i < params.prices.additional.length; i++)
+        //     params.prices.additional[i].price = this.formatCurrency(params.prices.additional[i].price);
+        
         return params;
     }
 

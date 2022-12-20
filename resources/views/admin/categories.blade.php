@@ -12,6 +12,9 @@
 
       <h3 v-if="editCategory.id">Update Category</h3>
       <h3 v-else>Add Category</h3>
+      <div v-if="editCategory.id" class="category-path">
+        <a target="_blank" :href="'/categories/' + editCategory.path"><i class="fal fa-external-link"></i> ${ editCategory.path }</a>
+      </div>
       <div class="field">
         <label>Name</label>
         <input type="text" v-model="editCategory.name" />
