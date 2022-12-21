@@ -17,7 +17,7 @@
                         </div>
                     </div>
 
-                    <div class="column image" v-if="nav.featuredImage">
+                    <div class="column image" v-if="nav.featuredImage && nav.featuredImage.length > 0">
                         <img :src="getImagePath(nav.featuredImage[0].path)" />
                     </div>
                 </div>
