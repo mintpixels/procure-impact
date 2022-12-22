@@ -28,6 +28,7 @@ use App\Models\ProductType;
 use App\Models\Property;
 use App\Models\History;
 use App\Models\Tag;
+use App\Models\Brand;
 use \Auth;
 use \DB;
 
@@ -192,6 +193,11 @@ class ProductController extends Controller
             }
         }
 
+        if($r->brand)
+        {
+            $products->where('brand_id', $r->brand);
+        }
+
         $products = $products->get();
 
         $allTags = EntityTag::where('entity_type', 'product')
@@ -225,6 +231,7 @@ class ProductController extends Controller
             // 'rules' => PriceRule::orderBy('name')->get(),
             'properties' => Property::orderBy('name')->get(),
             'tags' => array_unique($tags),
+            'brands' => Brand::orderBy('name')->get(),
             'allTags' => $allTags,
             'property' => $property
         ]);

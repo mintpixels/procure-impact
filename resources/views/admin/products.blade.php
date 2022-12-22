@@ -84,6 +84,18 @@
       </div>
     </div>
 
+    <div class="modal-view" :class="{ show: modalView == 'select-brand' }">
+      <div class="field">
+        <label>Filter by brand</label>
+        <ul class="tags overflow">
+          <li v-for="brand in brands" class="clickable" v-on:click="filterBrand(brand)">${ brand.name }</li>
+        </ul>
+        <div class="actions">
+          <button class="secondary" v-on:click="closeModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
+
     <div class="modal-view" :class="{ show: modalView == 'add-tags' }">
       <div class="field">
         <label>
@@ -292,14 +304,22 @@
         All Properties
       </span> -->
 
-      <span class="filter" v-if="tag">
+      <span class="filter" v-if="brand">
+        Brand: <b>${ brand.name }</b>
+        <span class="remove" v-on:click="removeBrand()">x</span>
+      </span>
+      <span class="filter clickable" v-else v-on:click="showModal('select-brand')">
+        All Brands
+      </span>
+
+      <!-- <span class="filter" v-if="tag">
         Tag: <b>${ tag }</b>
         <span v-if="filterExclude"> (does not have)</span>
         <span class="remove" v-on:click="removeTag">x</span>
       </span>
       <span class="filter clickable" v-else v-on:click="filterExclude = false; showModal('select-tag')">
         All Tags
-      </span>
+      </span> -->
 
       <span class="filter" v-if="activeSearch">
         Search: <b>${ activeSearch }</b>

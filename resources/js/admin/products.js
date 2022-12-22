@@ -49,6 +49,8 @@ class Products {
                     allTags: [],
                     filteredTags: [],
                     tag: '',
+                    brand: '',
+                    brands: [],
                     tagEditList: [],
                     propertyValue: '',
                     propertyEditList: [],
@@ -207,6 +209,15 @@ class Products {
                         });
                     }
                 },
+                filterBrand(brand) {
+                    this.brand = brand;
+                    ctx.getProducts();
+                    this.closeModal();
+                },
+                removeBrand() {
+                    this.brand = '';
+                    ctx.getProducts();
+                },
                 filterTag(tag) {
                     this.tag = tag;
                     ctx.getProducts();
@@ -321,6 +332,7 @@ class Products {
             sortBy: vm.sortBy,
             sortDir: vm.sortDir,
             tag: vm.tag,
+            brand: vm.brand.id,
             property: vm.propertyId,
             exclude: vm.filterExclude ? true : '',
             values: vm.values,
@@ -338,6 +350,7 @@ class Products {
             vm.categoryList = response.data.categoryList;
             vm.filteredCategories = response.data.categoryList;
             vm.tags = response.data.tags;
+            vm.brands = response.data.brands;
             vm.allTags = response.data.allTags;
             vm.rules = response.data.rules;
             vm.properties = response.data.properties;
