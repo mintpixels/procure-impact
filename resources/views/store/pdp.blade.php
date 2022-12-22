@@ -68,14 +68,14 @@
 
 				<div class="product-description" v-html="product.short_desc"></div>
 
-				<div class="seller-info">
+				<div class="seller-info" v-if="brand">
 					<div class="seller-logo">
-						<img src="/img/unshattered.svg">
+						<img :src="getImagePath(brand.logo.path)" />
 					</div>
 					<div class="info">
-						<div class="seller-name">Unshattered</div>
+						<div class="seller-name" style="margin-bottom:10px"><b>${ brand.merchantName }</b></div>
 						<div class="seller-desc">
-							We make products that support eget ullamcorper ac ut vulputate fames nec mattis pellentesque elementum. Viverra tempor id mus.
+							${ brand.missionStatement }
 						</div>
 					</div>
 				</div>
@@ -175,35 +175,35 @@
 
 	<div class="tab-container padded-content">
 		<div class="tabs">
-			<span :class="{ active: tab == 'description' }" v-on:click="tab ='description';">Description</span>
-			<span :class="{ active: tab == 'specs' }" v-on:click="tab = 'specs'">Specifications</span>
-			<span :class="{ active: tab == 'other' }" v-on:click="tab ='other'">Other</span>
+			<span :class="{ active: tab == 'description' }" v-on:click="tab ='description';" v-if="!emptyValue(product.description)">Description</span>
+			<span :class="{ active: tab == 'specs' }" v-on:click="tab = 'specs'" v-if="product.specs">Specifications</span>
+			<span :class="{ active: tab == 'other' }" v-on:click="tab ='other'" v-if="product.other">Other</span>
 		</div>
 		<div class="tab-contents">
-			<div class="tab-content" :class="{ show: tab == 'description' }">
+			<div class="tab-content" :class="{ show: tab == 'description' }" v-if="product.description">
 				<div v-html="product.description"></div>
 			</div>
-			<div class="tab-content" :class="{ show: tab == 'specs' }">
+			<div class="tab-content" :class="{ show: tab == 'specs' }" v-if="product.specs">
 				<div v-html="product.specs"></div>
 			</div>
-			<div class="tab-content" :class="{ show: tab == 'other' }">
+			<div class="tab-content" :class="{ show: tab == 'other' }" v-if="product.other">
 				<div v-html="product.other"></div>
 			</div>
 		</div>
 	</div>
 
 	<div class="brand-products columns">
-		<div class="column brand-info">
+		<div class="column brand-info" v-if="brand">
 
-					<div class="seller-logo">
-						<img src="/img/unshattered.svg">
-					</div>
-					<div class="info">
-						<div class="seller-name" style="margin-bottom:10px"><b>Unshattered</b></div>
-						<div class="seller-desc">
-							We make products that support eget ullamcorper ac ut vulputate fames nec mattis pellentesque elementum. Viverra tempor id mus.
-						</div>
-					</div>
+			<div class="seller-logo">
+				<img :src="getImagePath(brand.logo.path)" />
+			</div>
+			<div class="info">
+				<div class="seller-name" style="margin-bottom:10px"><b>${ brand.merchantName }</b></div>
+				<div class="seller-desc">
+					${ brand.missionStatement }
+				</div>
+			</div>
 
 		</div>
 

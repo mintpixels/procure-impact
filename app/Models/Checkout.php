@@ -272,6 +272,9 @@ class Checkout extends Model
         if($this->insurance < .99)
             $this->insurance = .99;
 
+        $this->fee = $this->subtotal * .05;
+        $this->fee = round(100*$this->fee)/100;
+
         $this->total = $this->subtotal;
         $this->total = round(100*$this->total)/100;
         $this->total += $this->shipping;
@@ -279,6 +282,8 @@ class Checkout extends Model
         $this->total += $this->accepts_insurance ? $this->insurance : 0;
         $this->total = round(100*$this->total)/100;
         $this->total += $this->tax;
+        $this->total = round(100*$this->total)/100;
+        $this->total += $this->fee;
         $this->total = round(100*$this->total)/100;
     }
 

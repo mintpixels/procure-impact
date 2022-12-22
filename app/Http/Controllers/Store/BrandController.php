@@ -41,6 +41,9 @@ class BrandController extends Controller
         }
         return response()->json([
             'handle' => $handle,
+            'logo' => $data->logo,
+            'merchantName' => $data->merchantName,
+            'missionStatement' => $data->missionStatement,
             'sections' => $data->sections
         ]);
     }

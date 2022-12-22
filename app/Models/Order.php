@@ -13,7 +13,7 @@ class Order extends WithHistory
 
     protected $fillable = [
         'checkout_id', 'buyer_id', 'customer_id', 'email', 'phone', 'first_name', 'last_name', 'status',
-        'subtotal', 'tax', 'shipping', 'total', 'discount', 'customer_notes', 'staff_notes', 'ip_address'
+        'subtotal', 'tax', 'shipping', 'fee', 'total', 'discount', 'customer_notes', 'staff_notes', 'ip_address'
     ];
 
     public $syncFields = [

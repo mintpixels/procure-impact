@@ -54,6 +54,7 @@ class PDP {
             data() {
                 return {
                     loaded: false,
+                    brand: false,
                     product: { price: 0, properties: [], prices: [], tags: [], brand: {} },
                     variant: {},
                     quantity: 1,
@@ -108,6 +109,12 @@ class PDP {
                 }
             },
             methods: {
+                emptyValue(val) {
+                    if(!val) return true;
+                    if(val.trim().length == 0) return true;
+                    let stripped = val.replace(/(<([^>]+)>)/gi, "");
+                    return stripped.length == 0;
+                },
                 setActiveImage(image, i) {
                     this.activeImage = image;
                     this.activeImageIndex = i;
@@ -117,6 +124,9 @@ class PDP {
                 },
                 showTab(t) {
                     this.tab = t;
+                },
+                getImagePath(path) {
+                    return `https://images.takeshape.io/${path}`;
                 },
                 addToCart(product, quantity) {
                     
@@ -294,6 +304,7 @@ class PDP {
 
     getProduct() {
         let vm = this.vm;
+        let ctx = this;
         axios.get(`/data/products/${this.id}`).then(function (response) {
             vm.product = response.data.product;
             vm.variant = vm.product.variants[0];
@@ -309,6 +320,15 @@ class PDP {
                 vm.activeImage = vm.product.images[0];
                 vm.activeImageIndex = 0;
             }
+
+            ctx.loadBrand();
+        });
+    }
+
+    loadBrand() {
+        const vm = this.vm;
+        axios.get(`/data/brands/${vm.product.brand.handle}`).then(function (response) {
+            vm.brand = response.data;
         });
     }
 

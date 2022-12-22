@@ -279,6 +279,11 @@ class TakeShapeApi
         getMerchantBrandPagesList {
           items {
             _id
+            logo {
+              path
+            }
+            merchantName
+            missionStatement
             sections {
               __typename
               ... on FrequentlyAskedQuestions {

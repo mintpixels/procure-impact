@@ -992,8 +992,21 @@ class Order {
         });
         this.vm.order.shipping = shipping;
 
+        
         this.vm.order.subtotal = subtotal;
         this.vm.order.total = subtotal + parseFloat(this.vm.order.tax) + shipping;
+
+        let fee = 0;
+        if(!this.vm.brandId) {
+            fee = parseFloat(this.vm.order.fee);
+            console.log('fee', fee);
+            this.vm.order.total += fee;
+        }
+        else {
+            fee = -1 * .05 * subtotal;
+            this.vm.order.fee = fee;
+            this.vm.order.total += fee;
+        }
         
         if(this.vm.order.total == 0) {
             this.vm.order.taxCalculated = true;

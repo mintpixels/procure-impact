@@ -368,6 +368,10 @@
               <td>Subtotal</td>
               <td class="text-right">${ formatMoney(order.subtotal) }</td>
             </tr>
+            <tr v-if="order.fee != 0">
+              <td>Platform Fee</td>
+              <td class="text-right">${ formatMoney(order.fee) }</td>
+            </tr>
             <tr v-if="order.shipping > 0">
               <td>Shipping</td>
               <td class="text-right">${ formatMoney(order.shipping) }</td>
@@ -420,28 +424,28 @@
           <tbody>
             <tr>
               <td></td>
-              <td class="text-right"><b>Buyer</b></td>
+              <!-- <td class="text-right"><b>Buyer</b></td> -->
               <td class="text-right"><b>Vendor</b></td>
             </tr>
             <tr>
               <td><i>Default</i></td>
-              <td class="text-right">${ settings.buyer_fee }%</td>
+              <!-- <td class="text-right">${ settings.buyer_fee }%</td> -->
               <td class="text-right">${ settings.brand_fee }%</td>
             </tr>
             <tr>
               <td><i>Order</i></td>
-              <td class="text-right">
+              <!-- <td class="text-right">
                 <input type="text" class="currency light" v-model="order.buyer_fee" v-on:change="checkChanged" />%
-              </td>
+              </td> -->
               <td class="text-right">
                 <input type="text" class="currency light" v-model="order.brand_fee" v-on:change="checkChanged" />%
               </td>
             </tr>
             <tr v-for="brand in order.brands">
               <td>${ brand.brand.name }</td>
-              <td class="text-right">
+              <!-- <td class="text-right">
                 <input type="text" class="currency light" v-model="brand.buyer_fee" v-on:change="checkChanged" />%
-              </td>
+              </td> -->
               <td class="text-right">
                 <input type="text" class="currency light" v-model="brand.brand_fee" v-on:change="checkChanged" />%
               </td>
@@ -466,6 +470,7 @@
                 </div>
                 <div class="payment-notes" v-if="payment.last_4">x${payment.last_4}</div>
                 <div class="payment-notes">${ payment.note }</div>
+                <div class="payment-notes" v-if="payment.transaction_id">${ payment.transaction_id }</div>
  
               </td>
               <td class="text-right">

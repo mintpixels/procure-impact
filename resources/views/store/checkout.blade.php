@@ -109,13 +109,13 @@
 
                     </div>
 
-                    <div class="section" data-section="shipping">
+                    <div class="section" data-section="shipping" >
                         <h3>
                             <span class="number">2</span> 
                             Shipping 
-                            <a v-on:click="step = 'shipping';stepIndex = 3" v-if="stepIndex > 3">Edit</a></h3>
+                            <a v-on:click="step = 'shipping';stepIndex = 3" v-if="stepIndex > 3 && !checkout.approved">Edit</a></h3>
                         </h3>
-                        <div class="shipping-section section-content" :class="{ show: stepIndex > 3 }">
+                        <div class="shipping-section section-content" :class="{ show: stepIndex > 3 || checkout.approved }">
                             <div class="shipment-details">
                                  
                                     <div>
@@ -144,12 +144,12 @@
                         </div>
                         <div class="shipping-section section-content" :class="{ show: step == 'shipping' }">
 
-                            <div class="use-billing"  v-if="!checkout.is_pickup">
+                            <div class="use-billing"  v-if="!checkout.is_pickup && !checkout.approved">
                                 <input id="use-billing" type="checkbox" v-model="checkout.use_billing" @change="saveUseBilling" :disabled="!shippingCanBeDifferent()" /> 
                                 <label for="use-billing">Use Billing Address</label>
                             </div>
 
-                            <div v-if="!checkout.use_billing" class="shipping-address">
+                            <div v-if="!checkout.use_billing && !checkout.approved" class="shipping-address">
                                 <!-- <select v-model="checkout.shipping.id" v-on:change="selectShippingAddress" v-if="checkout.addresses.length > 0">
                                     <option value="">New Address</option>
                                     <option v-for="(address, i) in checkout.addresses" :value="address.id">
@@ -265,7 +265,8 @@
 
                         <div class="item columns" v-for="item in checkout.items">
                             <div class="column image">
-                                <img v-if="item.product.thumbnail" :src="item.product.thumbnail.indexOf('http') == 0 ? item.product.thumbnail : '{{ env('AWS_CDN_PRODUCTS_PATH') }}' + item.product.thumbnail"/>
+                                <img v-if="item.variant.image != NULL" :src="item.product.images[item.variant.image]" />
+                                <img v-else src="/img/no-image.jpg" />
                             </div>
 
                             <div class="column">
@@ -301,7 +302,12 @@
 
                         <div class="columns row">
                             <label class="column">Shipping</label>
-                            <span class="column">${ formatMoney(checkout.shipping) }</span>
+                            <span class="column">TBD</span>
+                        </div>
+
+                        <div class="columns row">
+                            <label class="column">Platform Fee</label>
+                            <span class="column">${ formatMoney(checkout.fee) }</span>
                         </div>
 
                         <div class="columns row">

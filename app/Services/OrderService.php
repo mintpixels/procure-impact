@@ -91,6 +91,7 @@ class OrderService
                     'subtotal' => $data->subtotal,
                     'tax' => $data->tax, 
                     'shipping' => $data->shipping, 
+                    'fee' => $data->fee, 
                     'total' => $data->total, 
                     'discount' => $data->discount ?? 0, 
                     'customer_notes' => $data->customer_notes,
@@ -252,7 +253,7 @@ class OrderService
                             'subtotal' => 0,
                             'shipping' => 0,
                             'buyer_fee' => $checkout->order->buyer_fee ?: $settings->buyer_fee,
-                            'brand_fee' => $checkout->order->brand_fee ?: $setting->brand_fee
+                            'brand_fee' => $checkout->order->brand_fee ?: $settings->brand_fee
                         ];
                     }
 
