@@ -302,24 +302,41 @@
               <td>
                 <span v-if="property.id">${ property.property.name }</span>
                 <span v-else>
-                  <input type="text" v-model="property.property.name" class="light" @keyup="matchProperties(property)" />
+                  <div class="item-price input-with-label">
+                      <span class="clickable" v-on:click="matchProperties(property, true)"><i class="fa-solid fa-caret-down"></i></span>
+                      <input type="text" v-model="property.property.name" class="light" @keyup="matchProperties(property)" />
+                  </div>
                 </span>
               </td>
               <td>
-                <input type="text" v-model="property.value" class="light" />
+                <div class="item-price input-with-label">
+                    <span class="clickable" v-on:click="matchValues(property)"><i class="fa-solid fa-caret-down"></i></span>
+                    <input type="text" v-model="property.value" class="light" />
+                </div>
+                
               </td>
               <td class="text-center">
                   <span class="remove" v-on:click="removeProperty(i)">x</span>
                 </td>
             </tr>
+            <tr>
+              <td>
+                  <ul class="matches properties" v-if="propertyMatches.length > 0">
+                  <li v-for="property in propertyMatches" v-on:click="selectProperty(property)">
+                    <div class="name">${ property.name }</div>
+                  </li>
+                </ul>
+              </td>
+              <td>
+              <ul class="matches properties values" v-if="propertyValues.length > 0">
+                <li v-for="value in propertyValues" v-on:click="selectValue(value.value)">
+                  <div class="name">${ value.value }</div>
+                </li>
+              </ul>
+              </td>
+            </tr>
           </tbody>
         </table>
-
-        <ul class="matches properties" v-if="propertyMatches.length > 0">
-          <li v-for="property in propertyMatches" v-on:click="selectProperty(property)">
-            <div class="name">${ property.name }</div>
-          </li>
-        </ul>
 
         <a v-on:click="addProperty">Add Property</a>
       </div>

@@ -586,7 +586,7 @@ class ProductController extends Controller
     public function properties(Request $r)
     {
         $q = $r->q;
-        $properties = Property::orderBy('name')->get();
+        $properties = Property::with('values')->orderBy('name')->get();
 
         return response()->json([
             'properties' => $properties

@@ -63,6 +63,7 @@ class Product {
                     addonMatches: [],
                     addons: [],
                     propertyMatches: [],
+                    propertyValues: [],
                     properties: [],
                     productType: '',
                     productTypes: [],
@@ -220,18 +221,43 @@ class Product {
                     });
                 },
 
-                matchProperties(property) {
+                matchProperties(property, showAll) {
                     let search = property.property.name.toLowerCase();
                     this.propertyMatches = [];
 
-                    if(search.length == 0)
-                        return;
-
                     this.activeProperty = property;
                     this.properties.forEach(p => {
-                        if(p.name.toLowerCase().indexOf(search) >= 0)
+                        if(showAll || p.name.toLowerCase().indexOf(search) >= 0)
                             this.propertyMatches.push(p);
                     });
+                },
+
+                matchValues(property) {
+                    console.log('prop', property);
+                    console.log('properties', this.properties);
+                    let search = property.value.toLowerCase();
+                    let name = property.property.name.toLowerCase();
+                    let values = [];
+                    this.properties.forEach(p => {
+                        if(p.name.toLowerCase() == name) {
+                            ctx.vm.activeProperty = p;
+                            values = p.values;
+                        }
+                    });
+
+                    this.propertyValues = [];
+
+                    this.activeProperty = property;
+                    values.forEach(v => {
+                        this.propertyValues.push(v);
+                    });
+                },
+
+                selectValue(value) {
+                    console.log('ap', this.activeProperty);
+                    console.log('value', value);
+                    this.activeProperty.value = value;
+                    this.propertyValues = [];
                 },
 
                 selectProperty(property) {
