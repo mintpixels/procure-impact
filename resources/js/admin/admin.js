@@ -11,6 +11,7 @@ require('./orders');
 require('./customer');
 require('./customers');
 require('./transactions');
+require('./settings');
 
 $('body').on('click', '.toggle-changes', function() {
     $(this).closest('.timeline-item').toggleClass('show-changes');

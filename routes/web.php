@@ -159,6 +159,7 @@ Route::group(['prefix' => 'admin', 'middleware' => 'auth'], function ()
 
     Route::get('settings', [AdminSettingsController::class, 'showSettings']);
     Route::post('settings', [AdminSettingsController::class, 'saveSettings']);
+    Route::post('settings/content', [AdminSettingsController::class, 'saveContent']);
 
     Route::get('buyers', [AdminBuyerController::class, 'buyers']);
     Route::get('buyers/{id}', [AdminBuyerController::class, 'showBuyer']);

@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use App\Http\Controllers\Controller;
 use App\Models\Setting;
+use App\Models\Content;
 use \Auth;
 
 class SettingsController extends Controller
@@ -16,9 +17,11 @@ class SettingsController extends Controller
     public function showSettings()
     {
         $settings = Setting::first();
+        $content = Content::orderBy('position')->orderBy('name')->get();
 
         return view('admin.settings')->with([
-            'settings' => $settings
+            'settings' => $settings,
+            'content' => $content
         ]);
     }
 
@@ -32,6 +35,20 @@ class SettingsController extends Controller
 
         return redirect()->back()->with([
             'status' => 'The settings have been saved'
+        ]);
+    }
+
+    public function saveContent(Request $r)
+    {
+        foreach($r->all() as $handle => $field)
+        {
+            Content::where('handle', $handle)->update([
+                'content' => $field
+            ]);
+        }
+        
+        return redirect()->back()->with([
+            'status' => 'The content updates have been saved'
         ]);
     }
 
