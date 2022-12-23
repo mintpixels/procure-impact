@@ -36,9 +36,13 @@ class PageController extends Controller
      */
     public function viewPage($handle)
     {
-        if(!$page->published_at && !Auth::user())
-            abort(404);
+        $ts = new TakeShapeApi;
+        $response = $ts->getPage($handle);
 
+        if(count($response->data->getPageList->items) != 1)
+            abort(404);
+            
+        $page = $response->data->getPageList->items[0];
         return view('store.page')->with([
             'page' => $page
         ]);

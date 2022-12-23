@@ -488,6 +488,21 @@ class TakeShapeApi
       ");
     }
 
+    public function getPage($handle) 
+    {
+      return $this->post("{
+        getPageList(where: {slug: {eq: \"$handle\"}}) {
+          items {
+            _id
+            content
+            slug
+            title
+          }
+          total
+        }
+      }");
+    }
+
     /*
      * Perform GET operation.
      */
