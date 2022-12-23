@@ -178,7 +178,6 @@ class SearchController extends Controller
         $results = [];
         $productIds = [];
         $productArray = [];
-        // print_r($facetFilters);
         foreach($products as $p)
         {
             if(count($facetFilters) > 0 && $p->properties)
@@ -190,7 +189,7 @@ class SearchController extends Controller
                         // echo $prop->property->name ." : $prop->value\n";
                         $val = strtolower(trim($prop->value));
                         if(!in_array($val, $facetFilters[$prop->property->name]))
-                            continue 2;
+                            continue;
                     }
                 }
 
@@ -213,7 +212,6 @@ class SearchController extends Controller
             $productArray[] = $p;
         }
         
-
         foreach($products as $p) {
             $productIds[] = $p->id;
         }
@@ -364,6 +362,7 @@ class SearchController extends Controller
         {
             if(!in_array($pf->product_id, $facetedProductIds) && !array_key_exists($pf->name, $facetFilters))
                 continue;
+
                 
             $name = trim($pf->name);
             if(!array_key_exists($name, $facetTotals)) {
