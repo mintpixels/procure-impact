@@ -143,7 +143,7 @@
 						</span>
 						<span>
 							${ v.name } 
-							<div v-if="v.case_quantity > 1" style="color:#888;font-size:12px">Case of ${v.case_quantity}</div>
+							<div v-if="v.case_quantity > 1" style="color:#888;font-size:12px">Sold in quantities of ${v.case_quantity}</div>
 						</span>
 						<span class="quantity">
 							<img src="/img/minus.svg" v-on:click="v.quantity = v.quantity == 0 ? 0 : v.quantity - 1"  />
