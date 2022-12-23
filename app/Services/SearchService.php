@@ -24,7 +24,6 @@ class SearchService
         SearchService::add(strip_tags($product->description), $product->id, NULL, 10, 'Description' ,false);
 
         SearchFacetProduct::where('product_id', $product->id)->delete();
-
         if($product->published_at)
         {
             foreach($product->properties as $p)
@@ -207,10 +206,6 @@ class SearchService
                 'display_name' => $name
             ]);
         }
-
-        SearchFacetProduct::where('product_id', $productId)
-            ->where('name', $name)
-            ->delete();
 
         SearchFacetProduct::create([
             'name' => $name,
