@@ -61,8 +61,8 @@ class ProductController extends Controller
         $clean = $product->clean();
         $clean->in_stock = $product->available ? true : false;
 
-        $brandProducts = Product::where('id', '!=', $product->id)->with('variants')->with('brand')->take(6)->get();
-        $related =  Product::where('id', '!=', $product->id)->with('variants')->with('brand')->take(4)->get();
+        $brandProducts = Product::where('id', '!=', $product->id)->where('brand_id', $product->brand_id)->with('variants')->with('brand')->take(6)->get();
+        $related =  Product::where('id', '!=', $product->id)->where('brand_id', $product->brand_id)->with('variants')->with('brand')->take(4)->get();
         
         return response()->json([
             'product' => $clean,
