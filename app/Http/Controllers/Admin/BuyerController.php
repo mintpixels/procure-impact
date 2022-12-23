@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\View;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Controllers\Controller;
 use App\Models\Buyer;
+use App\Models\BuyerDocument;
 use \Auth;
 
 class BuyerController extends Controller
@@ -53,6 +54,7 @@ class BuyerController extends Controller
         $buyer->description = $r->description;
         $buyer->type = $r->type;
         $buyer->email = $r->email;
+        $buyer->save();
 
         $document = $r->file('document');
         if($document)
@@ -64,11 +66,19 @@ class BuyerController extends Controller
                 $document,
                 $filename
             );
-
-            $buyer->document = $filename;
+            
+            BuyerDocument::create([
+                'buyer_id' => $buyer->id,
+                'name' => $filename,
+                'path' => $filename,
+                'state' => $r->state
+            ]);
         }
 
-        $buyer->save();
+        if(is_array($r->delete))
+        {
+            BuyerDocument::whereIn('id', $r->delete)->delete(0);
+        }
 
         return redirect("admin/buyers/$buyer->id")->with([
             'status' => 'The buyer has been saved'

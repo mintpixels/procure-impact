@@ -47,11 +47,38 @@
             </div>
 
             <div class="field">
-                <label for="name">Compliance Document</label>
-                @if($buyer->document)
-                    <a href="/documents/{{ $buyer->document }}">{{ $buyer->document }}</a>
-                    <br><br>
+                <label>Compliance Documents</label>
+                @if(count($buyer->documents) > 0)
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Document</th>
+                            <th>State</th>
+                            <th class="text-center">Delete?</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach($buyer->documents as $document)
+                        <tr>
+                            <td>
+                            <a href="/documents/{{ $document->path }}">{{ $document->path }}</a>
+                            </td>
+                            <td>{{ $document->state }}</td>
+                            <td class="text-center"><input type="checkbox" name="delete[]" value="{{ $document->id }}" /></td>
+                        </tr>
+                        @endforeach
+                    </tbody>
+                </table>
+
                 @endif
+            </div>
+
+            <div class="field">
+                <label for="name">Add Document</label>
+                <select name="state">
+                    @include('store.snippets.states')
+                </select>
+                <br><br>
                 <input type="file" name="document" />
             </div>
 

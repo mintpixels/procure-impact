@@ -12,4 +12,8 @@ class Buyer extends Model
     protected $table = 'buyer';
     protected $fillable = ['name'];
 
+    public function documents()
+    {
+        return $this->hasMany(BuyerDocument::class);
+    }
 }
