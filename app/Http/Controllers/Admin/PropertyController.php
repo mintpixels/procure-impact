@@ -93,7 +93,7 @@ class PropertyController extends Controller
         $values = is_array($r->values) ? $r->values : [$r->values];
         
         // Find the values that have been deleted.
-        PropertyValue::where('property_id', $property->id)->delete();
+        PropertyValue::where('property_id', $property->id)->whereNotIn('value', $values)->delete();
 
         // Add new values.
         $existing = PropertyValue::where('property_id', $property->id)->pluck('value')->toArray();
