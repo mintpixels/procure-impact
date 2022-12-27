@@ -120,146 +120,10 @@
         </div>
       </div>
 
-      <div class="section">
-        <h5>Pricing</h5>
-
-        @include('admin.snippets.pricing', [
-          'rules' => 'product.rules',
-          'price' => 'product.price',
-          'prices' => 'product.prices',
-          'cost' => 'product.cost',
-          'variant' => 'product.variants[0]'
-        ])
-
-      </div>
-
+      
       <!-- <div class="variant-toggle"><input type="checkbox" v-model="hasVariants"> This product has multiple variants</div> -->
 
-      
-
-      <div class="variant-section" v-if="hasVariants">
-
-        <div class="variants">
-
-          <ul>
-            <li>FDE / 7" / M-lok</li>
-            <li>FDE / 7" / Keymod</li>
-            <li>FDE / 10" / M-lok</li>
-            <li>FDE / 10" / Keymod</li>
-            <li>FDE / 12" / M-lok</li>
-            <li>FDE / 12" / Keymod</li>
-            <!-- <li>FDE / 15" / M-lok</li>
-            <li>FDE / 15" / Keymod</li>
-            <li>Black / 7" / M-lok</li>
-            <li class="active">Black / 7" / Keymod</li>
-            <li>Black / 10" / M-lok</li>
-            <li>Black / 10" / Keymod</li>
-            <li>Black / 12" / M-lok</li>
-            <li>Black / 12" / Keymod</li>
-            <li>Black / 15" / M-lok</li>
-            <li>Black / 15" / Keymod</li>
-             -->
-          </ul>
-          <a>Add Variant</a>
-        </div>
-
-        <div class="variant-options">
-
-          <div class="selected-variant">
-            Black / 7" / Keymod 
-            <a>edit</a>
-          </div>
-          
-          <div class="section">
-            <h5>Inventory</h5>
-
-            <div class="columns">
-              <div class="column">
-                <div class="field">
-                  <label>SKU</label>
-                  <input type="text" v-model="product.sku" />
-                </div>
-              </div>
-              <div class="column">
-                <div class="field">
-                  <label>UPC</label>
-                  <input type="text" v-model="product.upc" />
-                </div>
-              </div>
-            </div>
-
-
-            <table class="collapsed hidden" :class="{ show: showInventory }">
-              <thead>
-                <tr>
-                  <th>Location</th>
-                  <th>Codes</th>
-                  <th class="number text-center">Qty</th>
-                  <th class="number text-center">Adjust</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr>
-                  <td>Warehouse</td>
-                  <td>
-                    <input type="text" v-model="product.location" class="light" />
-                  </td>
-                  <td class="number">
-                    <input type="text" v-model="product.inventory.warehouse" class="text-center light" />
-                  </td>
-                  <td class="number">
-                    <input type="text" v-model="product.adjust.warehouse" class="text-center light" />
-                  </td>
-                </tr>
-                <tr>
-                  <td>Showroom</td>
-                  <td></td>
-                  <td class="number">
-                    <input type="text" v-model="product.inventory.showroom" class="text-center light" />
-                  </td>
-                  <td class="number">
-                    <input type="text" v-model="product.adjust.showroom"  class="text-center light" />
-                  </td>
-                </tr>
-                <tr>
-                  <td><a :href="'/admin/inventory/hold/' + product.id">Held</a> (8)</td>
-                  <td></td>
-                  <td class="number">
-                    <input type="text" v-model="product.inventory.hold" class="text-center light" />
-                  </td>
-                  <td class="number">
-                    <input type="text" v-model="product.adjust.hold"  class="text-center light" />
-                  </td>
-                </tr>
-                <tr>
-                  <td><a :href="'/admin/inventory/incoming/' + product.id">Incoming</a></td>
-                  <td></td>
-                  <td class="number text-center">
-                    100
-                  </td>
-                  <td class="number">
-                    
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          
-          </div>
-
-          <div class="section">
-            <h5>Pricing</h5>
-
-            <input type="checkbox" v-model="inheritPricing" /> Inherit product pricing
-
-            <div class="variant-pricing" :class="{ hidden: inheritPricing }">
-              
-            </div>
-
-          </div>
-
-        </div>
-
-      </div>
+    
 
       <div class="section">
         <div class="tab-container">
@@ -284,6 +148,68 @@
             </div>
           </div>
         </div>
+      </div>
+
+      <div class="section">
+        <h5>Variants</h5>
+
+        <div class="variants" v-for="variant in product.variants">
+
+          <div class="columns">
+              <div class="column">
+                  <div class="field">
+                  <label>Name</label>
+                  <input type="text" v-model="variant.name" class="currency light" />
+                </div>
+              </div>
+              <div class="column">
+                <div class="field">
+                    <label>SKU</label>
+                    <input type="text" v-model="variant.sku" class="currency light" />
+                </div>
+              </div>
+          </div>
+
+          <div class="columns">
+              <div class="column">
+                <div class="field">
+                    <label>Retail Price</label>
+                    <div class="input-with-label">
+                      <span>$</span>
+                      <input type="text" v-model="variant.price" class="currency light" />
+                    </div>
+                </div>
+              </div>
+              <div class="column">
+                <div class="field">
+                    <label>Wholesale Price</label>
+                    <div class="input-with-label">
+                      <span>$</span>
+                      <input type="text" v-model="variant.wholesale_price" class="currency light" />
+                    </div>
+                </div>
+              </div>
+              <div class="column">
+                  <div class="field">
+                      <label>MSRP</label>
+                      <div class="input-with-label">
+                        <span>$</span>
+                        <input type="text" v-model="variant.msrp" class="currency light" />
+                      </div>
+                  </div>
+              </div>
+              <div class="column">
+                <div class="field">
+                    <label>Per Case Quantity</label>
+                    <div class="input-with-label">
+                        <input type="text" v-model="variant.case_quantity" class="currency light text-right" />
+                        <span>cnt</span>
+                    </div>
+                </div>
+              </div>
+          </div>
+        </div>
+
       </div>
 
       <div class="section properties">

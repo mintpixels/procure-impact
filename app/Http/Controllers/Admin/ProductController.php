@@ -290,6 +290,138 @@ class ProductController extends Controller
         ]);
     }
 
+    public function export(Request $r)
+    {
+        $fileName = 'products.csv';
+        $products = Product::with('properties.property')->orderBy('brand_id')->orderBy('name')->get();
+    
+        $headers = array(
+            "Content-type"        => "text/csv",
+            "Content-Disposition" => "attachment; filename=$fileName",
+            "Pragma"              => "no-cache",
+            "Cache-Control"       => "must-revalidate, post-check=0, pre-check=0",
+            "Expires"             => "0"
+        );
+
+        $columns = [
+            'Handle', 'Title', 'Brand', 'Description', 'Long Description', 'Specifications', 'Other', 
+            'Type', 'Tags',
+            'Category 1', 'Category 2', 'Category 3', 'Category 4', 'Category 5',
+            'Property 1', 'Property 2', 'Property 3', 'Property 4', 'Property 5',
+            'Variant Name', 'Price', 'Wholesale Price', 'SKU', 'Qty Interval',
+        ];
+        $callback = function() use($products, $columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+            
+            foreach($products as $product)
+            {
+                $categories = [];
+                foreach($product->categoryMap as $c)
+                {
+                    if($c->category) {
+                        $c->category->getBreadcrumb(true);
+                        $categories[] = $c->category;
+                    }
+                }
+
+                
+
+                $properties = [];
+                foreach($product->properties as $p)
+                {
+                    $name = $p->property->name;
+                    if(!array_key_exists($name, $properties))
+                        $properties[$name] = [];
+
+                    $properties[$name][] = $p->value;
+                }
+
+                $values = [];
+                foreach($properties as $name => $vals)
+                {
+                    $values[$name] = implode(';', $vals);
+                }
+                    
+                $row = [
+                    $product->handle,
+                    $product->name,
+                    $product->brand->name,
+                    $product->short_desc,
+                    $product->description,
+                    $product->specs,
+                    $product->other,
+                    $product->type,
+                    implode(',', $product->tagArray()),
+                    count($categories) > 0 ? $categories[0]->breadcrumb : '',
+                    count($categories) > 1 ? $categories[1]->breadcrumb : '',
+                    count($categories) > 2 ? $categories[2]->breadcrumb : '',
+                    count($categories) > 3 ? $categories[3]->breadcrumb : '',
+                    count($categories) > 4 ? $categories[4]->breadcrumb : '',
+                ];
+
+                $i = 0;
+                foreach($properties as $name => $vals)
+                {
+                    if(++$i > 5) break;
+                    $row[] = $name . ':' . implode(';', $vals);
+                }
+
+                while($i < 5) {
+                    $i++;
+                    $row[] = '';
+                }
+
+                foreach($product->variants as $v)
+                {
+                    $row[] = $v->name;
+                    $row[] = $v->price;
+                    $row[] = $v->wholesale_price;
+                    $row[] = $v->sku;
+                    $row[] = $v->case_quantity;
+                    fputcsv($file, $row);
+
+                    $row = [
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        '',
+                        ''
+                    ];
+                }
+
+            }
+            
+            // foreach ($tasks as $task) {
+            //     $row['Title']  = $task->title;
+            //     $row['Assign']    = $task->assign->name;
+            //     $row['Description']    = $task->description;
+            //     $row['Start Date']  = $task->start_at;
+            //     $row['Due Date']  = $task->end_at;
+
+            //     fputcsv($file, array($row['Title'], $row['Assign'], $row['Description'], $row['Start Date'], $row['Due Date']));
+            // }
+
+            fclose($file);
+        };
+        
+           return response()->stream($callback, 200, $headers);
+    }
+
     /**
      * Make bulk updates to products.
      */
@@ -536,6 +668,8 @@ class ProductController extends Controller
             $variant->wholesale_price = floatval($v['wholesale_price']);
             $variant->msrp = floatval($v['msrp']);
             $variant->case_quantity = intval($v['case_quantity']);
+            $variant->name = $v['name'];
+            $variant->sku = $v['sku'];
             $variant->save();
         }
 

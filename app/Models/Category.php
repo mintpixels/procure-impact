@@ -73,9 +73,12 @@ class Category extends Model
      * Get a breadcrumb string back to the original ancestor for
      * the category.
      */
-    public function getBreadcrumb()
+    public function getBreadcrumb($all = false)
     {
         $ancestors = [];
+        if($all)
+            $ancestors[] = $this->name;
+            
         $category = $this;
         while($category->parent)
         {
