@@ -22,6 +22,9 @@ class SearchService
         SearchService::add($product->upc, $product->id, NULL, 50, 'UPC', false);
         SearchService::add($product->name, $product->id, NULL, 30, 'Name', false);
         SearchService::add(strip_tags($product->description), $product->id, NULL, 10, 'Description' ,false);
+        SearchService::add(strip_tags($product->short_desc), $product->id, NULL, 10, 'Description' ,false);
+        SearchService::add(strip_tags($product->other), $product->id, NULL, 10, 'Description' ,false);
+        SearchService::add(strip_tags($product->specs), $product->id, NULL, 10, 'Description' ,false);
 
         SearchFacetProduct::where('product_id', $product->id)->delete();
         if($product->published_at)
