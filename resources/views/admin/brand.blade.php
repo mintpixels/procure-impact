@@ -36,12 +36,12 @@
             <div class="columns field">
                 <div class="field column">
                     <label for="name">Contact Name</label>
-                    <input type="text" name="contact_name" value="{{ $brand->contact_name }}" required/>
+                    <input type="text" name="contact_name" value="{{ $brand->contact_name }}" />
                 </div>
 
                 <div class="field column">
                     <label for="name">Contact Email</label>
-                    <input type="email" name="contact_email" value="{{ $brand->contact_email }}" required/>
+                    <input type="email" name="contact_email" value="{{ $brand->contact_email }}" />
                 </div>
             </div>
 
