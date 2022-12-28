@@ -27,6 +27,10 @@
                     <label for="name">Name</label>
                     <input type="text" name="name" value="{{ $brand->name }}" required/>
                 </div>
+                <div class="field column">
+                    <label for="name">Handle</label>
+                    <input type="text" name="handle" value="{{ $brand->handle }}" required/>
+                </div>
             </div>
 
             <div class="columns field">

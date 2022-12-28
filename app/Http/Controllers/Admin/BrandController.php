@@ -53,6 +53,7 @@ class BrandController extends Controller
         $brand->contact_email = $r->contact_email;
         $brand->contact_name = $r->contact_name;
         $brand->bill_id = $r->bill_id;
+        $brand->handle = $r->handle;
         $brand->is_active = $r->is_active ? 1 : 0;
         $brand->save();
 
