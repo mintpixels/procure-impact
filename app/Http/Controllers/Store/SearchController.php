@@ -11,6 +11,7 @@ use App\Models\Category;
 use App\Models\Product;
 use App\Models\ProductCategory;
 use App\Models\Property;
+use App\Models\Brand;
 use App\Models\SearchFilter;
 use App\Models\SearchFacet;
 use App\Models\SearchFacetProduct;
@@ -140,7 +141,7 @@ class SearchController extends Controller
         return $cached;
     }
 
-    private function buildResults($matches, $products, $categoryId = '', $group = '', $filter = '', $sortBy = '', $page = 1, $pageSize = 24)
+    private function buildResults($matches, $products, $categoryId = '', $group = '', $filter = '', $sortBy = '', $page = 1, $pageSize = 24, $brandId = '')
     {
         $facetFilters = [];
         $featured = false;
@@ -465,6 +466,12 @@ class SearchController extends Controller
 
         }
 
+        $brand = false;
+        if($brandId)
+        {
+            $brand = Brand::find($brandId);
+        }
+
         // Get results per category
         $totals = ProductCategory::whereIn('product_id', $productIds)
             ->select('category_id', DB::raw('count(*) as total'))
@@ -517,7 +524,8 @@ class SearchController extends Controller
                 'parents' => $parents,
                 'name' =>  $category ? $category->name : '',
                 'children' => $filteredChildren
-            ]
+            ],
+            'brand' => $brand
         ];
     }
 
@@ -567,7 +575,7 @@ class SearchController extends Controller
             ->with('variants')
             ->get();
 
-        $results = $this->buildResults(false, $products, $brandId, $group, $filter, $sortBy, $page, $pageSize);
+        $results = $this->buildResults(false, $products, '', $group, $filter, $sortBy, $page, $pageSize, $brandId);
         
         $cached = json_encode($results);
         Cache::put($key, $cached, now()->addMinutes(5));

@@ -53,6 +53,7 @@ class Search {
                     products: [],
                     facets: [],
                     category: [],
+                    brand: {},
                     chosenOptions: [],
                     sortBy: 'best',
                     loading: true,
@@ -170,6 +171,7 @@ class Search {
             self.vm.featured = response.featured;
             self.vm.loading = false;
             self.vm.category = response.category;
+            self.vm.brand = response.brand;
             self.vm.pages = response.pages
 
             if ('scrollRestoration' in history) {

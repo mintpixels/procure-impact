@@ -4,7 +4,10 @@
     <div class="page-content">
 
         <div class="breadcrumb">
-            Home / ${ mode == 'search' ? q : category.name }
+            Home / 
+            <span v-if="mode == 'search'">${ q }</span>
+            <span v-if="mode == 'category'">${ category.name }</span>
+            <span v-if="mode == 'brand'">${ brand.name }</span>
         </div>
 
         <div id="search-content" :class="{ loading: loading }">
@@ -13,8 +16,11 @@
                 <span v-if="mode == 'search'">
                     Results for <b>${ q }</b>
                 </span>
-                <span v-else>
+                <span v-if="mode == 'category'">
                     ${ category.name }
+                </span>
+                <span v-if="mode == 'brand'">
+                    ${ brand.name }
                 </span>
             </h4>
             <p>Discover new products and enjoy free returns on all opening orders.</p>
