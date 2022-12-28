@@ -142,7 +142,8 @@
 							<img v-else src="/img/no-image.jpg" />
 						</span>
 						<span>
-							${ v.name } 
+							<span v-if="v.name">${ v.name }</span>
+							<span v-else>${ product.name }</span>
 							<div v-if="v.case_quantity > 1" style="color:#888;font-size:12px">Sold in quantities of ${v.case_quantity}</div>
 						</span>
 						<span class="quantity">
