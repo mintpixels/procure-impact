@@ -23,13 +23,19 @@ class Search {
             this.vm.q = Util.getParam('qs');
             this.vm.categoryId = Util.getParam('category');
             if($('[data-category-id]').length > 0) {
-                this.vm.mode = 'category';
-                this.vm.categoryId = $('[data-category-id]').attr('data-category-id');
+                let category = $('[data-category-id]').attr('data-category-id');
+                if(category) {
+                    this.vm.mode = 'category';
+                    this.vm.categoryId = $('[data-category-id]').attr('data-category-id');
+                }
             }
 
             if($('[data-brand-id]').length > 0) {
-                this.vm.mode = 'brand';
-                this.vm.brandId = $('[data-brand-id]').attr('data-brand-id');
+                let brand = $('[data-brand-id]').attr('data-brand-id');
+                if(brand) {
+                    this.vm.mode = 'brand';
+                    this.vm.brandId = $('[data-brand-id]').attr('data-brand-id');
+                }
             }
 
             this.search();
