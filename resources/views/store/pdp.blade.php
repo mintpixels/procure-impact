@@ -147,10 +147,15 @@
 							<span v-else>${ product.name }</span>
 							<div v-if="v.case_quantity > 1" style="color:#888;font-size:12px">Sold in quantities of ${v.case_quantity}</div>
 						</span>
-						<span class="quantity">
-							<img src="/img/minus.svg" v-on:click="v.quantity = v.quantity == 0 ? 0 : v.quantity - 1"  />
-							<input min="0" v-model="v.quantity" type="number" v-on:change="qtyChanged(v)" />
-							<img src="/img/plus.svg" v-on:click="v.quantity++" />
+						<span class="text-right">
+							<div class="quantity">
+								<img src="/img/minus.svg" v-on:click="v.quantity = v.quantity == 0 ? 0 : v.quantity - 1"  />
+								<input min="0" v-model="v.quantity" type="number" v-on:change="qtyChanged(v)" />
+								<img src="/img/plus.svg" v-on:click="v.quantity++" />
+							</div>
+							<div style="padding:10px;color: #888;font-weight:600" v-if="v.case_quantity > 1">
+								${ v.case_quantity * v.quantity } Total
+							</div>
 						</span>
 					</div>
 				
