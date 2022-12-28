@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\View;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\Brand;
 
 class CategoryController extends Controller
 {
@@ -15,6 +16,14 @@ class CategoryController extends Controller
      */
     public function view($handle, $part2 = '', $part3 = '', $part4 = '')
     {
+        $brand = Brand::where('handle', $handle)->first();
+        if($brand)
+        {
+            return view('store.category')->with([
+                'brand' => $brand
+            ]);
+        }
+
         $parts = [$handle];
         if($part2) $parts[] = $part2;
         if($part3) $parts[] = $part3;

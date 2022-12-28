@@ -80,6 +80,11 @@ class SearchController extends Controller
             return $this->categoryResults($request->category, $request->g, $request->filter, $request->sort_by, $request->page, $request->pagesize);
         }
 
+        if($request->mode == 'brand')
+        {
+            return $this->brandResults($request->brand, $request->g, $request->filter, $request->sort_by, $request->page, $request->pagesize);
+        }
+
         // Check cache.
         $key = "$request->qs.$request->category.$request->g.$request->filter.$request->sort_by.$request->page,$request->pagesize";
         if(Cache::has($key)) {
@@ -542,6 +547,27 @@ class SearchController extends Controller
             ->get();
 
         $results = $this->buildResults(false, $products, $categoryId, $group, $filter, $sortBy, $page, $pageSize);
+        
+        $cached = json_encode($results);
+        Cache::put($key, $cached, now()->addMinutes(5));
+
+        return $cached;
+    }
+
+    private function brandResults($brandId, $group, $filter, $sortBy, $page, $pageSize)
+    {
+        $key = "$brandId.$group.$filter.$sortBy.$page.$pageSize";
+        if(Cache::has($key)) {
+            // return Cache::get($key);
+        }
+
+        $products = Product::where('brand_id', $brandId)
+            ->whereNotNull('published_at')
+            ->with('properties')
+            ->with('variants')
+            ->get();
+
+        $results = $this->buildResults(false, $products, $brandId, $group, $filter, $sortBy, $page, $pageSize);
         
         $cached = json_encode($results);
         Cache::put($key, $cached, now()->addMinutes(5));

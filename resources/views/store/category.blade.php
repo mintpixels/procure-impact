@@ -3,7 +3,7 @@
 @section('content')
 
 <div class="padded-content">
-    <div data-category-id="{{ $category->id }}">
+    <div data-brand-id="{{ $brand->id ?? '' }}" data-category-id="{{ $category->id ?? '' }}">
         @include('store.snippets.search')
     </div>
 </div>

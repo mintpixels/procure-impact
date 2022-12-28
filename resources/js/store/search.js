@@ -27,6 +27,11 @@ class Search {
                 this.vm.categoryId = $('[data-category-id]').attr('data-category-id');
             }
 
+            if($('[data-brand-id]').length > 0) {
+                this.vm.mode = 'brand';
+                this.vm.brandId = $('[data-brand-id]').attr('data-brand-id');
+            }
+
             this.search();
         }
     }
@@ -44,6 +49,7 @@ class Search {
                     pages: 1,
                     q: '',
                     categoryId: '',
+                    brandId: '',
                     products: [],
                     facets: [],
                     category: [],
@@ -151,7 +157,7 @@ class Search {
         if($('[data-customer-group]').length > 0)
             g = $('[data-customer-group]').attr('data-customer-group');
 
-        var q = '?qs=' + encodeURIComponent(this.vm.q) + '&g=' + g + '&category=' + this.vm.categoryId + '&filter=' + encodeURIComponent(filter) + "&sort_by=" + this.vm.sortBy +  "&pagesize=" + this.vm.pageSize + "&page=" + this.vm.page + '&mode=' + this.vm.mode;
+        var q = '?qs=' + encodeURIComponent(this.vm.q) + '&g=' + g + '&category=' + this.vm.categoryId + '&brand=' + this.vm.brandId + '&filter=' + encodeURIComponent(filter) + "&sort_by=" + this.vm.sortBy +  "&pagesize=" + this.vm.pageSize + "&page=" + this.vm.page + '&mode=' + this.vm.mode;
         
         if(this.vm.mode == 'search')
             window.history.pushState({}, '', q);

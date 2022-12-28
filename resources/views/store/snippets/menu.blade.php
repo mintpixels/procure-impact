@@ -18,7 +18,10 @@
                     </div>
 
                     <div class="column image" v-if="nav.featuredImage && nav.featuredImage.length > 0">
-                        <img :src="getImagePath(nav.featuredImage[0].path)" />
+                        <a v-if="nav.featuredURL" :href="nav.featuredURL">
+                            <img :src="getImagePath(nav.featuredImage[0].path)" />
+                        </a>
+                        <img v-else :src="getImagePath(nav.featuredImage[0].path)" />
                         <div class="text-center" v-if="nav.featuredText">
                             <a v-if="nav.featuredURL" :href="nav.featuredURL">${ nav.featuredText }</a>
                             <span v-else>${ nav.featuredText }</span>
