@@ -1,10 +1,10 @@
 @extends('store.layout')
 
 @section('content')
-<div class="page-content no-max" id="brand-page" data-brand="{{ $handle }}" v-cloak>
+<div class="page-content no-max padded-content" id="brand-page" data-brand="{{ $handle }}" v-cloak>
 
     <div class="breadcrumb max-w">
-        Home / <span>${ brand }</span>
+        Home / <span>${ brand.merchantName }</span>
     </div>
 
     <template v-for="section in sections">
@@ -13,14 +13,16 @@
 
             <div class="image">
                 <img :src="getImagePath(section.desktopImage.path)" />
-                <img class="logo" :src="getImagePath(section.logo.path)" />
+                <div class="logo">
+                    <img :src="getImagePath(section.logo.path)" />
+                </div>
             </div>
 
             <div class="columns">
                 <div class="column" style="flex: 0 0 400px">
                     <div class="headline">${ section.headline }</div>
                     <div class="location">${ section.cityAndState }</div>
-                    <div class="shipping">${ section.shippingCityAndState }</div>
+                    <!-- <div class="shipping">${ section.shippingCityAndState }</div> -->
                     <div class="timeline">${ section.fulfillmentTimeline }</div>
                     <div class="tags">
                         <span class="tag" v-for="tag in section.tags">
@@ -30,7 +32,13 @@
                 </div>
 
                 <div class="column" style="flex: 0 0 250px">
-                    Follow
+                    Follow Us
+
+                    <ul class="follow-us" v-if="section.socialLinks && section.socialLinks.length > 0">
+                        <li v-for="link in section.socialLinks">
+                            <a target="_blank" :href="link.urlLink.url">${ link.urlLink.channelName }</a>
+                        </li>
+                    </ul>
                 </div>
 
                 <div class="column">
@@ -63,7 +71,7 @@
         <div class="gallery max-w" v-if="section.__typename == 'SectionGalleryCarousel'">
 
             <div class="columns centered">
-                <div class="column w-100">
+                <div class="column w-100 absolute" v-if="section.images.length > 1">
                     <img src="/img/arrow-left.svg" />
                 </div>
                 <div class="column">
@@ -71,7 +79,7 @@
                         <img v-for="image in section.images" :src="getImagePath(image.image.path)" />
                     </div>
                 </div>
-                <div class="column w-100">
+                <div class="column w-100 absolute" v-if="section.images.length > 1">
                     <img src="/img/arrow-right.svg" />
                 </div>
             </div>
@@ -80,19 +88,16 @@
 
         <div class="split-video max-w" v-if="section.__typename == 'SectionSplitWithVideo'">
             <div class="columns centered">
-                <div class="column">
-                    <video controls>
-                    <source :src="section.videoUrl">
-                    </video>
+                <div class="column" v-html="section.videoEmbedCode">
                 </div>
-                <div class="column">
+                <div class="column" style="padding:50px;padding-top:50px;">
 
                     <div class="headline">
                         ${ section.headline }
                     </div>
 
                     <div class="statement">
-                        ${ section.statement }
+                        ${ section.content }
                     </div>
                     
                 </div>
@@ -128,6 +133,40 @@
             </div>
         </div>
     </template>
+
+    <div class="brand-products columns">
+		<div class="column brand-info" v-if="brand && brand.logo">
+
+			<div class="seller-logo">
+				<img :src="getImagePath(brand.logo.path)" />
+			</div>
+			<div class="info">
+				<div class="seller-name" style="margin-bottom:10px"><b>${ brand.merchantName }</b></div>
+				<div class="seller-desc">
+					${ brand.missionStatement }
+				</div>
+			</div>
+
+		</div>
+
+		<div class="column products">
+			<div class="brand-product" v-for="p in brand_products">
+				<a :href="'/products/' + p.handle">
+					<div class="thumbnail">
+						<img :src="p.thumbnail" />
+					</div>
+					<div class="product-details">
+						<div class="name">${ p.name }</div>
+						<div class="brand">by ${ p.brand.name }</div>
+						<div class="price">
+							${ formatMoney(p.variants[0].price) }
+						</div>
+					</div>
+					
+				</a>
+			</div>
+		</div>
+	</div>
 
 
 </div>

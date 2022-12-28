@@ -19,6 +19,7 @@ class Brand {
             data() {
                 return {
                     brand: {},
+                    brand_products: [],
                     sections: []
                 }
             },
@@ -37,7 +38,10 @@ class Brand {
                 getButtonText(button) {
                     if(!button) return '';
                     return button.text;
-                }
+                },
+                formatMoney(price) {
+                    return Util.formatMoney(price);
+                },
             }
         }).mount(Brand.page);
     }
@@ -48,8 +52,10 @@ class Brand {
     loadBrand() {
         const vm = this.vm;
         axios.get(`/data/brands/${this.handle}`).then(function (response) {
-            vm.brand = response.data.brand;
+            console.log('response', response.data);
+            vm.brand = response.data;
             vm.sections = response.data.sections;
+            vm.brand_products = response.data.brand_products;
         });
     }
 }

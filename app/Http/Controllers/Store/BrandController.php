@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\View;
 use App\Http\Controllers\Controller;
 use App\Services\TakeShapeApi;
 use App\Models\Brand;
+use App\Models\Product;
 use \Auth;
 
 class BrandController extends Controller
@@ -39,12 +40,17 @@ class BrandController extends Controller
                 $data = $entry;
 
         }
+
+        $brand = Brand::where('handle', $handle)->first();
+        $brandProducts = Product::where('brand_id', $brand->id)->with('variants')->with('brand')->take(6)->get();
+
         return response()->json([
             'handle' => $handle,
             'logo' => $data->logo,
             'merchantName' => $data->merchantName,
             'missionStatement' => $data->missionStatement,
-            'sections' => $data->sections
+            'sections' => $data->sections,
+            'brand_products' => $brandProducts
         ]);
     }
 }

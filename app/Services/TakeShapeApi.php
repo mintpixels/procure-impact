@@ -275,12 +275,22 @@ class TakeShapeApi
 
     public function getBrand($handle) 
     {
-      return $this->post("{
+      return $this->post("
+      {
         getMerchantBrandPagesList {
           items {
             _id
             logo {
+              _id
+              caption
+              credit
+              description
+              filename
+              mimeType
               path
+              sourceUrl
+              title
+              uploadStatus
             }
             merchantName
             missionStatement
@@ -362,6 +372,13 @@ class TakeShapeApi
                 preheadline
                 statement
               }
+              ... on SectionGalleryCarousel {
+                images {
+                  image {
+                    path
+                  }
+                }
+              }
               ... on SectionHero {
                 buttons {
                   button {
@@ -386,14 +403,15 @@ class TakeShapeApi
                 }
                 cityAndState
                 followHeadline
-                followUrl
-                fulfillmentTimeline
                 headline
                 missionHeadline
                 missionStatement
                 shippingCityAndState
                 socialLinks {
-                  link
+                  urlLink {
+                    channelName
+                    url
+                  }
                 }
                 tags {
                   tag
@@ -424,13 +442,6 @@ class TakeShapeApi
                 }
                 headline
               }
-              ... on SectionGalleryCarousel {
-                images {
-                  image{
-                    path
-                  }
-                }
-              }
               ... on SectionProductOrCategoryCarousel {
                 SectionProductOrCategoryCarousel_cards: cards {
                   card {
@@ -441,9 +452,9 @@ class TakeShapeApi
                 headline
               }
               ... on SectionSplitWithVideo {
+                content
                 headline
-                statement
-                videoUrl
+                videoEmbedCode
               }
               ... on SectionStatsSimpleInCard {
                 headline
