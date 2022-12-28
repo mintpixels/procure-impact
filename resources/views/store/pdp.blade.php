@@ -59,7 +59,8 @@
                 <h3>${ product.name }</h3>
 
 				<div class="product-price">
-					${ formatMoney(variant.wholesale_price) } WSP
+					${ formatMoney(variant.wholesale_price) } WSP /
+					${ formatMoney(variant.price) } Retail
 				</div>
 
 				<div class="location" v-if="product.brand.location">
