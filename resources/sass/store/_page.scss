@@ -2,15 +2,20 @@
 
     h1, h2 {
         margin-bottom: 30px;
+        margin-top:30px
     }
     
     p {
         margin-bottom: 25px;
+        font-size: 20px;
+        line-height: 1.7em;
     }
-    ul {
+    ol, ul {
         margin-left:20px;
         li {
             margin-bottom: 15px;
+            font-size: 20px;
+            line-height: 1.7em;
         }
     }
 

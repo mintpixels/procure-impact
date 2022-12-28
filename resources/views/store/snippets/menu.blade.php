@@ -12,7 +12,7 @@
                     </div>
 
                     <div class="column right">
-                        <div v-for="item in nav.rightColumnNavItems">
+                        <div class="item" v-for="item in nav.rightColumnNavItems">
                             <a :href="item.url">${ item.Title }</a>
                         </div>
                     </div>
