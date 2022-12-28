@@ -25,7 +25,8 @@ class ProductController extends Controller
             abort(404);
             
         return view('store.pdp')->with([
-            'product' => $product
+            'product' => $product,
+            'pageTitle' => $product->name
         ]);
     }
 

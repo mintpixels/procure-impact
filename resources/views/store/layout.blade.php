@@ -6,7 +6,13 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" value="{{ csrf_token() }}">
 
-        <title>Procure Impact</title>
+        <title>
+            @if(isset($pageTitle))
+            {{ $pageTitle }} - Procure Impact
+            @else
+            Procure Impact
+            @endif
+        </title>
 
         <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,500,600,700" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Inter:400,500,600,700" rel="stylesheet">

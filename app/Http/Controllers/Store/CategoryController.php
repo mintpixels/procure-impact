@@ -20,7 +20,8 @@ class CategoryController extends Controller
         if($brand)
         {
             return view('store.category')->with([
-                'brand' => $brand
+                'brand' => $brand,
+                'pageTitle' => $brand->name
             ]);
         }
 
@@ -34,7 +35,8 @@ class CategoryController extends Controller
         if($category && $category->is_visible) 
         {
             return view('store.category')->with([
-                'category' => $category
+                'category' => $category,
+                'pageTitle' => $category->name
             ]);
         }
 

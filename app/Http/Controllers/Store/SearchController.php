@@ -20,9 +20,11 @@ use \DB;
 
 class SearchController extends Controller
 {
-    public function home()
+    public function home(Request $request)
     {
-        return view('store.search');
+        return view('store.search')->with([
+            'pageTitle' => "Search Results: $request->qs"
+        ]);
     }
 
     /**

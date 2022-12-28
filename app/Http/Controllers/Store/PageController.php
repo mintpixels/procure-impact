@@ -44,7 +44,8 @@ class PageController extends Controller
             
         $page = $response->data->getPageList->items[0];
         return view('store.page')->with([
-            'page' => $page
+            'page' => $page,
+            'pageTitle' => $page->title
         ]);
     }
 
