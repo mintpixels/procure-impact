@@ -72,6 +72,10 @@ class ProductController extends Controller
         $product->name = "New Product";
         $product->save();
 
+        $variant = new ProductVariant;
+        $variant->product_id = $product->id;
+        $variant->save();
+
         return redirect('/admin/products/' . $product->id);
     }
 
@@ -623,6 +627,10 @@ class ProductController extends Controller
     public function create(Request $r) 
     {
         $product = new Product;
+        $product->save();
+        $variant = new ProductVariant;
+        $variant->product_id = $product->id;
+        $variant->save();
         return $this->save($r, $product);
     }
 
@@ -661,6 +669,7 @@ class ProductController extends Controller
         DB::beginTransaction();
 
         // Variants
+        
         foreach($r->fields['variants'] as $v)
         {
             $variant = ProductVariant::find($v['id']);

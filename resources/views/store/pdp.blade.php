@@ -154,7 +154,7 @@
 								<img src="/img/plus.svg" v-on:click="v.quantity++" />
 							</div>
 							<div style="padding:10px;color: #888;font-weight:600" v-if="v.case_quantity > 1">
-								${ v.case_quantity * v.quantity } Total
+								${ v.case_quantity * v.quantity } Total Units
 							</div>
 						</span>
 					</div>

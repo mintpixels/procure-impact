@@ -23,12 +23,12 @@
             {{ csrf_field() }}
 
             <div class="field">
-                <label for="name">Name</label>
+                <label for="name">Company Name</label>
                 <input type="text" name="name" value="{{ $buyer->name }}" required/>
             </div>
 
             <div class="field">
-                <label for="name">Email</label>
+                <label for="name">Contact Email</label>
                 <input type="text" name="email" value="{{ $buyer->email }}" required/>
             </div>
 
