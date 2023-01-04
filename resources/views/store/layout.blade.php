@@ -8,7 +8,7 @@
 
         <title>
             @if(isset($pageTitle))
-            {{ $pageTitle }} - Procure Impact
+            {{ $pageTitle }} | Procure Impact
             @else
             Procure Impact
             @endif

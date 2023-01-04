@@ -19,9 +19,12 @@ class BrandController extends Controller
     {
         // if(!$product->published_at && !Auth::user())
         //     abort(404);
+
+        $brand = Brand::where('handle', $handle)->first();
             
         return view('store.brand')->with([
-            'handle' => $handle
+            'handle' => $handle,
+            'pageTitle' => $brand->name
         ]);
     }
 
