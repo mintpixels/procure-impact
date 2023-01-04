@@ -31,6 +31,7 @@ class Product {
                     loaded: false,
                     changed: false,
                     uploading: false,
+                    activeVariant: false,
                     error: '',
                     modalView: '',
                     brands: [],
@@ -97,6 +98,27 @@ class Product {
                     console.log('show history');
                 },
                 imagesSorted() {
+                    ctx.checkChanged();
+                },
+                variantImage(variant) {
+                    console.log('v', variant.image);
+                    if(variant.image == undefined) return '/img/missing.gif';
+
+                    let index = parseInt(variant.image);
+                    return this.product.images[index];
+                },
+                showVariantImage(variant) {
+                    this.activeVariant = variant;
+                    this.showModal('variant-image');
+                },
+                assignVariantImage(index) {
+                    this.activeVariant.image = index;
+                    this.closeModal();
+                    ctx.checkChanged();
+                },
+                removeVariantImage() {
+                    this.activeVariant.image = '';
+                    this.closeModal();
                     ctx.checkChanged();
                 },
                 addVideo(code) {

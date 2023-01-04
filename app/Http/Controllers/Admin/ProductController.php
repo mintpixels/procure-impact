@@ -682,6 +682,7 @@ class ProductController extends Controller
             $variant->msrp = floatval($v['msrp']);
             $variant->case_quantity = intval($v['case_quantity']);
             $variant->name = $v['name'];
+            $variant->image = intval($v['image']);
             $variant->sku = $v['sku'];
             $variant->save();
         }

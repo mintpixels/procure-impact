@@ -87,6 +87,23 @@
         </div>
       </div>
     </div>
+
+    <div class="modal-view variant-images" :class="{ show: modalView == 'variant-image' }">
+      <div class="field">
+        <label>Assign variant image</label>
+        <div class="images product-images" v-if="product.images">
+          <div>
+            <div class="image">
+              <img v-for="(image, i) in product.images" :src="image" v-on:click="assignVariantImage(i)" />
+            </div>
+          </div>
+        </div>
+        <div class="actions">
+          <button class="primary" :disabled="uploading" v-if="activeVariant.image" v-on:click="removeVariantImage()">Remove</button>
+          <button class="secondary" v-on:click="closeModal()">Cancel</button>
+        </div>
+      </div>
+    </div>
     
   </div>
 
@@ -156,57 +173,66 @@
         <div class="variants" v-for="variant in product.variants">
 
           <div class="columns">
-              <div class="column">
-                  <div class="field">
-                  <label>Name</label>
-                  <input type="text" v-model="variant.name" class="currency light" />
-                </div>
-              </div>
-              <div class="column">
-                <div class="field">
-                    <label>SKU</label>
-                    <input type="text" v-model="variant.sku" class="currency light" />
-                </div>
-              </div>
-          </div>
+            <div class="column variant-image clickable" v-on:click="showVariantImage(variant)">
+              <img :src="variantImage(variant)" />
+            </div>
 
-          <div class="columns">
-              <div class="column">
-                <div class="field">
-                    <label>Retail Price</label>
-                    <div class="input-with-label">
-                      <span>$</span>
-                      <input type="text" v-model="variant.price" class="currency light" />
+            <div class="column">
+
+              <div class="columns">
+                  <div class="column">
+                      <div class="field">
+                      <label>Name</label>
+                      <input type="text" v-model="variant.name" class="currency light" />
                     </div>
-                </div>
-              </div>
-              <div class="column">
-                <div class="field">
-                    <label>Wholesale Price</label>
-                    <div class="input-with-label">
-                      <span>$</span>
-                      <input type="text" v-model="variant.wholesale_price" class="currency light" />
+                  </div>
+                  <div class="column">
+                    <div class="field">
+                        <label>SKU</label>
+                        <input type="text" v-model="variant.sku" class="currency light" />
                     </div>
-                </div>
-              </div>
-              <div class="column">
-                  <div class="field">
-                      <label>MSRP</label>
-                      <div class="input-with-label">
-                        <span>$</span>
-                        <input type="text" v-model="variant.msrp" class="currency light" />
-                      </div>
                   </div>
               </div>
-              <div class="column">
-                <div class="field">
-                    <label>Per Case Quantity</label>
-                    <div class="input-with-label">
-                        <input type="text" v-model="variant.case_quantity" class="currency light text-right" />
-                        <span>cnt</span>
+
+              <div class="columns">
+                  <div class="column">
+                    <div class="field">
+                        <label>Retail Price</label>
+                        <div class="input-with-label">
+                          <span>$</span>
+                          <input type="text" v-model="variant.price" class="currency light" />
+                        </div>
                     </div>
-                </div>
+                  </div>
+                  <div class="column">
+                    <div class="field">
+                        <label>Wholesale Price</label>
+                        <div class="input-with-label">
+                          <span>$</span>
+                          <input type="text" v-model="variant.wholesale_price" class="currency light" />
+                        </div>
+                    </div>
+                  </div>
+                  <div class="column">
+                      <div class="field">
+                          <label>MSRP</label>
+                          <div class="input-with-label">
+                            <span>$</span>
+                            <input type="text" v-model="variant.msrp" class="currency light" />
+                          </div>
+                      </div>
+                  </div>
+                  <div class="column">
+                    <div class="field">
+                        <label>Per Case Quantity</label>
+                        <div class="input-with-label">
+                            <input type="text" v-model="variant.case_quantity" class="currency light text-right" />
+                            <span>cnt</span>
+                        </div>
+                    </div>
+                  </div>
               </div>
+            </div>
           </div>
         </div>
 

@@ -241,6 +241,16 @@
         margin-bottom: 10px;
     }
 
+    .variant-image {
+        flex: 0 0 150px;
+        width:150px;
+
+        img {
+            max-width: 100%;
+            max-height: 100%;
+        }
+    }
+
     .variant-toggle {
         background: #f5f5f5;
         padding: 10px;
