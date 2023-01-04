@@ -12,6 +12,7 @@
         <link href="https://fonts.googleapis.com/css?family=Inter:400,500,600,700" rel="stylesheet">
         <link rel="stylesheet" href="https://use.typekit.net/shl1pyf.css">
         <link href="https://cdn.quilljs.com/1.3.6/quill.snow.css" rel="stylesheet">
+        <link rel="icon" type="image/x-icon" href="/favicon.png">
         <script src="https://kit.fontawesome.com/b493cac541.js" crossorigin="anonymous"></script>
         
         <link rel="stylesheet" href="{{ mix('/css/admin.css') }}" />

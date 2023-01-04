@@ -17,6 +17,7 @@
         <link href="https://fonts.googleapis.com/css?family=Playfair+Display:400,500,600,700" rel="stylesheet">
         <link href="https://fonts.googleapis.com/css?family=Inter:400,500,600,700" rel="stylesheet">
         <link rel="stylesheet" href="https://use.typekit.net/shl1pyf.css">
+        <link rel="icon" type="image/x-icon" href="/favicon.png">
         <script src="https://kit.fontawesome.com/21e055b1b3.js" crossorigin="anonymous"></script>
         
         <link rel="stylesheet" href="{{ mix('/css/store.css') }}" />
