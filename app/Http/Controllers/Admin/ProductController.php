@@ -580,42 +580,43 @@ class ProductController extends Controller
             // Save the master image.
             $filename = $basename . $ext;
             if(Storage::disk('s3')->putFileAs('products', new File($path), $filename)) {
-                $imageObj['master'] = $filename;
+                // $imageObj['master'] = $filename;
+                $images[] = env('AWS_CDN_PRODUCTS_PATH') . $filename;
             }
 
             // Save the resized images. 
-            $sizes = [1200, 400, 200, 40];
-            foreach($sizes as $size)
-            {
-                $sizePath = $path . '_' . $size;
+            // $sizes = [1200, 400, 200, 40];
+            // foreach($sizes as $size)
+            // {
+            //     $sizePath = $path . '_' . $size;
 
-                if($type == IMAGETYPE_JPEG)
-                {
-                    $image = imagecreatefromjpeg($path);  
-                    $scaled = $width > $size ? imagescale($image, $size) : $image;
-                    imagejpeg($scaled, $sizePath);
-                }
-                else if($type == IMAGETYPE_PNG)
-                {
-                    $image = imagecreatefrompng($path);  
-                    $scaled = $width > $size ? imagescale($image, $size) : $image;
-                    imagepng($scaled, $sizePath);
-                }
-                else if($type == IMAGETYPE_GIF)
-                {
-                    $image = imagecreatefromgif($path);  
-                    $scaled = $width > $size ? imagescale($image, $size) : $image;
-                    imagegif($scaled, $sizePath);
-                }
+            //     if($type == IMAGETYPE_JPEG)
+            //     {
+            //         $image = imagecreatefromjpeg($path);  
+            //         $scaled = $width > $size ? imagescale($image, $size) : $image;
+            //         imagejpeg($scaled, $sizePath);
+            //     }
+            //     else if($type == IMAGETYPE_PNG)
+            //     {
+            //         $image = imagecreatefrompng($path);  
+            //         $scaled = $width > $size ? imagescale($image, $size) : $image;
+            //         imagepng($scaled, $sizePath);
+            //     }
+            //     else if($type == IMAGETYPE_GIF)
+            //     {
+            //         $image = imagecreatefromgif($path);  
+            //         $scaled = $width > $size ? imagescale($image, $size) : $image;
+            //         imagegif($scaled, $sizePath);
+            //     }
 
-                $filename = $basename . '_' . $size . $ext;
-                if(Storage::disk('s3')->putFileAs('products', new File($sizePath), $filename)) {
-                    $imageObj["x$size"] = $filename;
-                }
-                unlink($sizePath);
-            }
+            //     $filename = $basename . '_' . $size . $ext;
+            //     if(Storage::disk('s3')->putFileAs('products', new File($sizePath), $filename)) {
+            //         $imageObj["x$size"] = $filename;
+            //     }
+            //     unlink($sizePath);
+            // }
 
-            $images[] = $imageObj;
+            // $images[] = $imageObj;
             unlink($path);
         }
 
