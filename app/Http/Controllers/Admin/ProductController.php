@@ -768,8 +768,6 @@ class ProductController extends Controller
         ProductCategory::where('product_id', $product->id)->delete();
         ProductRelated::where('product_id', $product->id)->delete();
         ProductRelated::where('related_id', $product->id)->delete();
-        ProductAddon::where('product_id', $product->id)->delete();
-        ProductAddon::where('addon_id', $product->id)->delete();
 
         $product->delete();
 
