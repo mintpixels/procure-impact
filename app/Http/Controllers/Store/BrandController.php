@@ -42,7 +42,7 @@ class BrandController extends Controller
         }
 
         $brand = Brand::where('handle', $handle)->first();
-        $brandProducts = Product::where('brand_id', $brand->id)->with('variants')->with('brand')->take(6)->get();
+        $brandProducts = Product::whereNotNull('published_at')->where('brand_id', $brand->id)->with('variants')->with('brand')->take(6)->get();
 
         return response()->json([
             'handle' => $handle,
