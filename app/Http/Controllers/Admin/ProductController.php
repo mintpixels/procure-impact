@@ -282,8 +282,11 @@ class ProductController extends Controller
         $product->orders_count = $count;
         // $product->rules = $product->allPriceRules();
 
+        $brands = Brand::orderBy('name')->get();
+
         return response()->json([
             'product' => $product,
+            'brands' => $brands,
             'groups' => [],
             'groupsMap' => $mapped,
             'productTypes' => ProductType::orderBy('name')->get(),

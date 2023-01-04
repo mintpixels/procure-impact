@@ -33,6 +33,7 @@ class Product {
                     uploading: false,
                     error: '',
                     modalView: '',
+                    brands: [],
                     previewImage: false,
                     showDiscounts: true,
                     showInventory: true,
@@ -76,6 +77,9 @@ class Product {
                 }
             },
             methods: {
+                checkChanged() {
+                    ctx.checkChanged();
+                },
                 showTab(t) {
                     this.tab = t;
                 },
@@ -403,6 +407,7 @@ class Product {
             ctx.vm.productTypes = response.data.productTypes;
             ctx.vm.committed = response.data.committed;
             ctx.vm.timeline = response.data.timeline;
+            ctx.vm.brands = response.data.brands;
             ctx.vm.adjustments = response.data.adjustments;
             ctx.loadProduct(response.data.product);
 
@@ -569,6 +574,7 @@ class Product {
     getParams(product) {
         let params = Util.clone({
             name: product.name,
+            brand_id: product.brand_id,
             description: product.description,
             short_desc: product.short_desc,
             specs: product.specs,

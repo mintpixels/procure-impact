@@ -283,6 +283,19 @@
     <div class="secondary column">
 
       <div class="section">
+        <h5>Brand</h4>
+        <div class="field">
+          <select v-model="product.brand_id" v-on:change="checkChanged()">
+            <option v-for="brand in brands" :value="brand.id">${ brand.name }</option>
+          </select>
+        </div>
+
+        <!-- <div class="field text-right">
+          <a v-on:click="showHistory()">View History</a>
+        </div> -->
+      </div>
+
+      <div class="section">
         <h5>Product Status</h4>
         <div class="field">
           <select v-model="product.status">
