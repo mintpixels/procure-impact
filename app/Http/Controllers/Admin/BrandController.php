@@ -68,12 +68,15 @@ class BrandController extends Controller
         DB::beginTransaction();
 
         BrandImpact::where('brand_id', $brand->id)->delete();
-        foreach($r->impacts as $impact)
+        if($r->impacts)
         {
-            BrandImpact::create([
-                'brand_id' => $brand->id,
-                'impact' => $impact
-            ]);
+            foreach($r->impacts as $impact)
+            {
+                BrandImpact::create([
+                    'brand_id' => $brand->id,
+                    'impact' => $impact
+                ]);
+            }
         }
 
         DB::commit();
