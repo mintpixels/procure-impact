@@ -669,6 +669,9 @@ class ProductController extends Controller
         else if(!$product->published_at)
             $product->published_at = date("Y-m-d H:i:s");
 
+        if(count($product->images) > 0)
+            $product->thumbnail = $product->images[0];
+
         // Save additional product fields.
         DB::beginTransaction();
 
