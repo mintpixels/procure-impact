@@ -735,6 +735,20 @@ input.item-qty {
         }
     }
 
+    textarea.tall {
+        height:200px;
+    }
+
+    .columns {
+        &.x2 {
+            li.column {
+                padding:0;
+                margin:0;
+                margin-bottom: 5px;
+            }
+        }
+    }
+
     h3 {
         margin-bottom: 15px;
     }

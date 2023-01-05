@@ -24,34 +24,34 @@
 
             <div class="columns field">
                 <div class="field column">
-                    <label for="name">Name</label>
+                    <label>Name</label>
                     <input type="text" name="name" value="{{ $brand->name }}" required/>
                 </div>
                 <div class="field column">
-                    <label for="name">Handle</label>
+                    <label>Handle</label>
                     <input type="text" name="handle" value="{{ $brand->handle }}" required/>
                 </div>
             </div>
 
             <div class="columns field">
                 <div class="field column">
-                    <label for="name">Contact Name</label>
+                    <label>Contact Name</label>
                     <input type="text" name="contact_name" value="{{ $brand->contact_name }}" />
                 </div>
 
                 <div class="field column">
-                    <label for="name">Contact Email</label>
+                    <label>Contact Email</label>
                     <input type="email" name="contact_email" value="{{ $brand->contact_email }}" />
                 </div>
             </div>
 
             <div class="columns field">
                 <div class="field column">
-                    <label for="name">Bill.com Vendor ID</label>
+                    <label>Bill.com Vendor ID</label>
                     <input type="text" name="bill_id" value="{{ $brand->bill_id }}" />
                 </div>
                 <div class="field column">
-                    <label for="name">Minimum Order</label>
+                    <label>Minimum Order</label>
                     <div class="input-with-label">
                         <span>$</span>
                         <input type="text" name="order_min" value="{{ $brand->order_min }}" />
@@ -59,9 +59,23 @@
                 </div>
             </div>
 
-            <div class="field">
-                <label for="name">Description</label>
-                <textarea name="description">{{ $brand->description }}</textarea>
+            <div class="columns field">
+                <div class="field column">
+                    <label>Description</label>
+                    <textarea name="description" class="tall">{{ $brand->description }}</textarea>
+                </div>
+
+                <div class="field column">
+                    <label>Impacts</label>
+                    <ul class="columns x2 layout">
+                        @foreach($impacts as $impact)
+                            <li class="column">
+                                <input type="checkbox" name="impacts[]" value="{{ $impact->name }}" @if(in_array($impact->name, $brandImpacts)) checked @endif />
+                                {{ $impact->name }}
+                            </li>
+                        @endforeach
+                    </ul>
+                </div>
             </div>
 
             <div class="field">

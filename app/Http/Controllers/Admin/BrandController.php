@@ -6,7 +6,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\View;
 use App\Http\Controllers\Controller;
 use App\Models\Brand;
+use App\Models\Impact;
+use App\Models\BrandImpact;
 use \Auth;
+use \DB;
 
 class BrandController extends Controller
 {
@@ -34,8 +37,13 @@ class BrandController extends Controller
         $brand = Brand::find($id);
         if(!$brand) $brand = new Brand;
 
+        $impacts = Impact::orderBy('name')->get();
+        $brandImpacts = BrandImpact::where('brand_id', $brand->id)->pluck('impact')->toArray();
+
         return view('admin.brand')->with([
-            'brand' => $brand
+            'brand' => $brand,
+            'impacts' => $impacts,
+            'brandImpacts' => $brandImpacts
         ]);
     }
 
@@ -56,6 +64,19 @@ class BrandController extends Controller
         $brand->handle = $r->handle;
         $brand->is_active = $r->is_active ? 1 : 0;
         $brand->save();
+
+        DB::beginTransaction();
+
+        BrandImpact::where('brand_id', $brand->id)->delete();
+        foreach($r->impacts as $impact)
+        {
+            BrandImpact::create([
+                'brand_id' => $brand->id,
+                'impact' => $impact
+            ]);
+        }
+
+        DB::commit();
 
         return redirect("admin/brands/$brand->id")->with([
             'status' => 'The vendor has been saved'

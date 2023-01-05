@@ -94,6 +94,14 @@ h6 {
             flex: 0 0 100px;
         }
     }
+
+    &.x2 {
+        flex-wrap: wrap;
+        .column {
+            min-width: 45%;
+        }
+    }
+
 }
 
 .show {

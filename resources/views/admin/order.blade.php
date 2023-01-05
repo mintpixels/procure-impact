@@ -315,7 +315,7 @@
       </div>
 
       <div class="section">
-        <h5>Staff Notes</h5>
+        <h5>Procure Impact Notes</h5>
         <textarea v-model="order.staff_notes"></textarea>
       </div>
 
