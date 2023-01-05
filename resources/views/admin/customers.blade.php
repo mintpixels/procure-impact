@@ -45,7 +45,7 @@
                             </a>
                         </td>
                         <td>{{ $customer->email }}</td>
-                        <td>{{ $customer->buyer->name }}</td>
+                        <td>{{ $customer->buyer->name ?? '' }}</td>
                         <td>{{ $customer->type }}</td>
                         <td>{{ $customer->phone }}</td>
                         <td>{{ $customer->orders_count }}</td>
