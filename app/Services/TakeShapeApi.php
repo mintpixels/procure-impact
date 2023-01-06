@@ -105,12 +105,20 @@ class TakeShapeApi
         getHomePage {
           _id
           sections {
+            __typename
             ... on FrequentlyAskedQuestions {
               faQs {
                 answer
                 question
               }
               headline
+            }
+            ... on SectionFeaturedProductGrid {
+              headline
+              linkUrl
+              products {
+                handle
+              }
             }
             ... on SectionCtaIntroSimple {
               heading
@@ -296,6 +304,10 @@ class TakeShapeApi
             missionStatement
             sections {
               __typename
+              ... on SectionGeneralContent {
+                headline
+                content(format:html)
+              }
               ... on FrequentlyAskedQuestions {
                 faQs {
                   answer
@@ -361,10 +373,6 @@ class TakeShapeApi
                   headline
                   statement
                 }
-                headline
-              }
-              ... on SectionGeneralContent {
-                content
                 headline
               }
               ... on SectionHeader {

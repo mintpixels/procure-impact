@@ -111,9 +111,7 @@
                 ${ section.headline }
             </div>
 
-            <div class="statement">
-                ${ section.content }
-            </div>
+            <div v-html="section.content"></div>
         </div>
 
         <div class="testimonial max-w" v-if="section.__typename == 'SectionTestimonialWithLargeAvatar'">
