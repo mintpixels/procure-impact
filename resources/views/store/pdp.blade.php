@@ -233,7 +233,7 @@
 		</div>
 	</div>
 
-	<div class="reviews section">
+	<div class="reviews section padded-content">
 
 		<h5 style="margin-bottom:20px;">3 Product Reviews</h5>
 

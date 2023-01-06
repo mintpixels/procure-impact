@@ -182,7 +182,7 @@
 
     .general-content {
 
-        margin-bottom: 50px;
+        margin-bottom: 70px;
 
         .headline {
             font-family: $playfair;
@@ -199,6 +199,24 @@
             font-size: 22px;
             line-height: 1.7em;
             color: #4F4F4F;
+        }
+
+        p {
+            margin-bottom: 24px; 
+            font-size: 16px; 
+            line-height: 1.25em;
+        }
+
+        h2,h2,h3 {
+            margin-bottom: 24px
+        }
+
+        h2 {
+            font-size:32px;
+        }
+           
+        h3 {
+            font-size:24px;
         }
     }
 
