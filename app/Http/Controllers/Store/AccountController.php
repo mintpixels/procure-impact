@@ -173,6 +173,11 @@ class AccountController extends Controller
      */
     public function ordersView()
     {
+        if(!Auth::guard('customer')->user())
+        {
+            return redirect('/');
+        }
+        
         return view('store.account.orders')->with([
             'page' => 'orders',
             'customer' => Auth::guard('customer')->user()
@@ -551,7 +556,7 @@ class AccountController extends Controller
                 Mail::to($customer->email)->send(new ReturnCreated($return));
             }
             else {
-                Mail::to('aimtest@ryanas.com')->send(new ReturnCreated($return));
+                Mail::to('pi@ryanas.com')->send(new ReturnCreated($return));
             }
         }
         catch(\Exception $e) {}

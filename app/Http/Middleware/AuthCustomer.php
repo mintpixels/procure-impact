@@ -9,7 +9,7 @@ class AuthCustomer extends Middleware
 {
     public function handle($request, Closure $next, ...$guards)
     {
-        if(!auth()->guard('customer')->check()) {
+        if(!auth()->check() && !auth()->guard('customer')->check()) {
             return redirect(route('store.login'));
         }
         return $next($request);
